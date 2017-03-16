@@ -1,0 +1,1 @@
+Adds extensions to the FHIR server conformance statement according to the SMART specification.

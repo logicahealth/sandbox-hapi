@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.hspconsortium</groupId>
+    <artifactId>reference-api-parent</artifactId>
+    <relativePath>../pom.xml</relativePath>
+    <version>1.2-SNAPSHOT</version>
+  </parent>
+
+  <groupId>org.hspconsortium.reference</groupId>
+  <artifactId>hspc-reference-api-oauth2</artifactId>
+  <packaging>jar</packaging>
+
+  <scm>
+    <connection>scm:git:ssh://git@bitbucket.org/hspconsortium/reference-api-oauth2.git</connection>
+    <developerConnection>scm:git:ssh://git@bitbucket.org/hspconsortium/reference-api-oauth2.git</developerConnection>
+    <url>https://bitbucket.org/hspconsortium/reference-api-oauth2.git</url>
+    <tag>HEAD</tag>
+  </scm>
+
+  <!-- These dependencies are needed by both the base and example modules -->
+  <dependencies>
+
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-security</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.springframework.security.oauth</groupId>
+      <artifactId>spring-security-oauth2</artifactId>
+    </dependency>
+
+    <!-- Needed for JEE/Servlet support -->
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>javax.servlet-api</artifactId>
+      <!--<scope>provided</scope>-->
+    </dependency>
+
+    <!-- For OAuth2 Validation -->
+    <dependency>
+      <groupId>ca.uhn.hapi.fhir</groupId>
+      <artifactId>hapi-fhir-base</artifactId>
+      <version>${hapi.version}</version>
+    </dependency>
+
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
