@@ -24,7 +24,6 @@
         <module>reference-api-webapp</module>
         <module>reference-api-webapp-base</module>
         <module>reference-api-webapp-multitenant</module>
-        <module>../reference-auth-parent</module>
     </modules>
 
     <properties>
