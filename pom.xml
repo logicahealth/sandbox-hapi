@@ -52,7 +52,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <!-- We don't want an executable jar, so don't repackage -->
+                    <!-- Make the executable jar optional -->
                     <skip>${springboot_jar.skip}</skip>
                 </configuration>
             </plugin>
