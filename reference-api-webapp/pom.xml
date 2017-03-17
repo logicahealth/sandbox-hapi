@@ -16,6 +16,7 @@
 
     <properties>
         <artifact.name>hspc-reference-api-v3</artifact.name>
+        <springboot_jar.skip>false</springboot_jar.skip>
     </properties>
 
     <scm>

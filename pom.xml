@@ -42,6 +42,21 @@
         <javassist.version>3.20.0-GA</javassist.version>
         <google.gson.version>2.3.1</google.gson.version>
         <guava.version>16.0.1</guava.version>
+        <!-- Most artifacts don't need to be executable an executable jar, so skip by default -->
+        <springboot_jar.skip>true</springboot_jar.skip>
     </properties>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <!-- We don't want an executable jar, so don't repackage -->
+                    <skip>${springboot_jar.skip}</skip>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
