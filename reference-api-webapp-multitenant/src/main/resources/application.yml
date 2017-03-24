@@ -37,11 +37,11 @@ hspc:
         clientSecret: secret
         scopes: openid,launch,smart/orchestrate_launch
       sandbox:
-        name: hspc3
+        name: hspc4
         useHspcStarterData: false
       fhir:
         db:
-          schema: hspc_3_${hspc.platform.api.sandbox.name}
+          schema: hspc_4_${hspc.platform.api.sandbox.name}
           driver-class-name: com.mysql.jdbc.Driver
           host: localhost:3306
           url: jdbc:mysql://${hspc.platform.api.fhir.db.host}/${hspc.platform.api.fhir.db.schema}
