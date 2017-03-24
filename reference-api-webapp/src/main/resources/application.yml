@@ -4,7 +4,7 @@ spring:
   jmx:
     enabled: false
   profiles:
-    active: default
+    active: default,stu3
   resources:
     chain:
       enabled: true

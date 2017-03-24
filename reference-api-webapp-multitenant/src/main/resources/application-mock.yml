@@ -1,80 +1,11 @@
 spring:
-  application:
-    name: HSPC Reference API
-  jmx:
-    enabled: false
   profiles:
-    active: multitenant,production
-  resources:
-    chain:
-      enabled: true
-  jpa:
-    hibernate:
-      ddl-auto: none
-      show_sql: false
-      format_sql: true
+    active: multitenant,production,stu3,mock
 
-hibernate:
-  search:
-    default:
-      indexBase: target/lucenefiles
-
-logging:
-  level:
-    org.springframework.security: INFO
-
-# Platform Servers
 hspc:
   platform:
-    api:
-      security:
-        # determines if security is applied at the contextPath
-        mode: secured
-#        mode: mock
-#        mode: open
-      oauth2:
-        clientId: hspc_resource_server
-        clientSecret: secret
-        scopes: openid,launch,smart/orchestrate_launch
-      sandbox:
-        name: hspc3
-        useHspcStarterData: false
-      fhir:
-        db:
-          schema: hspc_3_${hspc.platform.api.sandbox.name}
-          driver-class-name: com.mysql.jdbc.Driver
-          host: localhost:3306
-          url: jdbc:mysql://${hspc.platform.api.fhir.db.host}/${hspc.platform.api.fhir.db.schema}
-          username: root
-          password: password
-        defaultTenantId: ${hspc.platform.api.sandbox.name}
-        hibernate:
-          dialect: org.hibernate.dialect.MySQL5InnoDBDialect
-        terminology:
-          proxy:
-            host: fhir3.healthintersections.com.au
-            contextPath: /open
-        federatedEndpointURL: dataphoria.org/datafhir
-        contextPath: data
-        # remove openContextPath to disable the open endpoint
-        openContextPath: open
     authorization:
       url: http://localhost:8080/hspc-reference-authorization-mock
-      urlContext: ${hspc.platform.authorization.url}/
-      authorizeUrl: ${hspc.platform.authorization.urlContext}authorize
-      tokenUrl: ${hspc.platform.authorization.urlContext}token
-#      authorizeUrl: ${hspc.platform.authorization.urlContext}mock/authorize
-#      tokenUrl: ${hspc.platform.authorization.urlContext}mock/token
-      tokenCheckUrl: ${hspc.platform.authorization.urlContext}introspect
-      userinfoUrl: ${hspc.platform.authorization.urlContext}userinfo
-      smart:
-        launchUrl: ${hspc.platform.authorization.urlContext}Launch
-        registrationEndpointUrl: ${hspc.platform.authorization.urlContext}register
-        urisEndpointExtensionUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
     messaging:
-      url: http://localhost:8080/hspc-reference-messaging
-      urlContext: ${hspc.platform.messaging.url}/
       subscriptionSupport:
         enabled: true
-        subscriptionEndpoint: ${hspc.platform.messaging.urlContext}subscription
-        resourceEndpoint: ${hspc.platform.messaging.urlContext}resource
