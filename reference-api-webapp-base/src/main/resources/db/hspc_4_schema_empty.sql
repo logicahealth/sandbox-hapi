@@ -16,736 +16,736 @@
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
 --
--- Table structure for table `HFJ_FORCED_ID`
+-- Table structure for table `hfj_forced_id`
 --
 
-DROP TABLE IF EXISTS `HFJ_FORCED_ID`;
+DROP TABLE IF EXISTS `hfj_forced_id`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HFJ_FORCED_ID` (
-  `PID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `FORCED_ID` varchar(100) NOT NULL,
-  `RESOURCE_PID` bigint(20) NOT NULL,
-  `RESOURCE_TYPE` varchar(100) DEFAULT '',
-  PRIMARY KEY (`PID`),
-  UNIQUE KEY `IDX_FORCEDID_RESID` (`RESOURCE_PID`),
-  UNIQUE KEY `IDX_FORCEDID_TYPE_RESID` (`RESOURCE_TYPE`,`RESOURCE_PID`),
-  KEY `IDX_FORCEDID_TYPE_FORCEDID` (`RESOURCE_TYPE`,`FORCED_ID`),
-  CONSTRAINT `FK1saewbugq02dh94ybn9xhklfa` FOREIGN KEY (`RESOURCE_PID`) REFERENCES `HFJ_RESOURCE` (`RES_ID`)
+CREATE TABLE `hfj_forced_id` (
+  `pid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `forced_id` varchar(100) NOT NULL,
+  `resource_pid` bigint(20) NOT NULL,
+  `resource_type` varchar(100) DEFAULT '',
+  PRIMARY KEY (`pid`),
+  UNIQUE KEY `IDX_FORCEDID_RESID` (`resource_pid`),
+  UNIQUE KEY `IDX_FORCEDID_TYPE_RESID` (`resource_type`,`resource_pid`),
+  KEY `IDX_FORCEDID_TYPE_FORCEDID` (`resource_type`,`forced_id`),
+  CONSTRAINT `FK1saewbugq02dh94ybn9xhklfa` FOREIGN KEY (`resource_pid`) REFERENCES `hfj_resource` (`res_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `HFJ_FORCED_ID`
+-- Dumping data for table `hfj_forced_id`
 --
 
-LOCK TABLES `HFJ_FORCED_ID` WRITE;
-/*!40000 ALTER TABLE `HFJ_FORCED_ID` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HFJ_FORCED_ID` ENABLE KEYS */;
+LOCK TABLES `hfj_forced_id` WRITE;
+/*!40000 ALTER TABLE `hfj_forced_id` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hfj_forced_id` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `HFJ_HISTORY_TAG`
+-- Table structure for table `hfj_history_tag`
 --
 
-DROP TABLE IF EXISTS `HFJ_HISTORY_TAG`;
+DROP TABLE IF EXISTS `hfj_history_tag`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HFJ_HISTORY_TAG` (
-  `PID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `TAG_ID` bigint(20) DEFAULT NULL,
-  `RES_ID` bigint(20) NOT NULL,
-  `RES_TYPE` varchar(30) NOT NULL,
-  `RES_VER_PID` bigint(20) NOT NULL,
-  PRIMARY KEY (`PID`),
-  KEY `FKtderym7awj6q8iq5c51xv4ndw` (`TAG_ID`),
-  KEY `FKpx7wj9hmu5tw5ky1rgscivceh` (`RES_VER_PID`),
-  CONSTRAINT `FKpx7wj9hmu5tw5ky1rgscivceh` FOREIGN KEY (`RES_VER_PID`) REFERENCES `HFJ_RES_VER` (`PID`),
-  CONSTRAINT `FKtderym7awj6q8iq5c51xv4ndw` FOREIGN KEY (`TAG_ID`) REFERENCES `HFJ_TAG_DEF` (`TAG_ID`)
+CREATE TABLE `hfj_history_tag` (
+  `pid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `tag_id` bigint(20) DEFAULT NULL,
+  `res_id` bigint(20) NOT NULL,
+  `res_type` varchar(30) NOT NULL,
+  `res_ver_pid` bigint(20) NOT NULL,
+  PRIMARY KEY (`pid`),
+  KEY `FKtderym7awj6q8iq5c51xv4ndw` (`tag_id`),
+  KEY `FKpx7wj9hmu5tw5ky1rgscivceh` (`res_ver_pid`),
+  CONSTRAINT `FKpx7wj9hmu5tw5ky1rgscivceh` FOREIGN KEY (`res_ver_pid`) REFERENCES `hfj_res_ver` (`pid`),
+  CONSTRAINT `FKtderym7awj6q8iq5c51xv4ndw` FOREIGN KEY (`tag_id`) REFERENCES `hfj_tag_def` (`tag_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `HFJ_HISTORY_TAG`
+-- Dumping data for table `hfj_history_tag`
 --
 
-LOCK TABLES `HFJ_HISTORY_TAG` WRITE;
-/*!40000 ALTER TABLE `HFJ_HISTORY_TAG` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HFJ_HISTORY_TAG` ENABLE KEYS */;
+LOCK TABLES `hfj_history_tag` WRITE;
+/*!40000 ALTER TABLE `hfj_history_tag` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hfj_history_tag` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `HFJ_RESOURCE`
+-- Table structure for table `hfj_resource`
 --
 
-DROP TABLE IF EXISTS `HFJ_RESOURCE`;
+DROP TABLE IF EXISTS `hfj_resource`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HFJ_RESOURCE` (
-  `RES_ID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `RES_DELETED_AT` datetime DEFAULT NULL,
-  `RES_ENCODING` varchar(5) NOT NULL,
-  `RES_VERSION` varchar(7) DEFAULT NULL,
-  `HAS_TAGS` bit(1) NOT NULL,
-  `RES_PUBLISHED` datetime NOT NULL,
-  `RES_TEXT` longblob NOT NULL,
-  `RES_TITLE` varchar(100) DEFAULT NULL,
-  `RES_UPDATED` datetime NOT NULL,
-  `SP_HAS_LINKS` bit(1) DEFAULT NULL,
-  `SP_INDEX_STATUS` bigint(20) DEFAULT NULL,
-  `RES_LANGUAGE` varchar(20) DEFAULT NULL,
-  `SP_COORDS_PRESENT` bit(1) DEFAULT NULL,
-  `SP_DATE_PRESENT` bit(1) DEFAULT NULL,
-  `SP_NUMBER_PRESENT` bit(1) DEFAULT NULL,
-  `SP_QUANTITY_PRESENT` bit(1) DEFAULT NULL,
-  `SP_STRING_PRESENT` bit(1) DEFAULT NULL,
-  `SP_TOKEN_PRESENT` bit(1) DEFAULT NULL,
-  `SP_URI_PRESENT` bit(1) DEFAULT NULL,
-  `RES_PROFILE` varchar(200) DEFAULT NULL,
-  `RES_TYPE` varchar(30) DEFAULT NULL,
-  `RES_VER` bigint(20) DEFAULT NULL,
-  `FORCED_ID_PID` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`RES_ID`),
-  KEY `IDX_RES_DATE` (`RES_UPDATED`),
-  KEY `IDX_RES_LANG` (`RES_TYPE`,`RES_LANGUAGE`),
-  KEY `IDX_RES_PROFILE` (`RES_PROFILE`),
-  KEY `IDX_RES_TYPE` (`RES_TYPE`),
-  KEY `IDX_INDEXSTATUS` (`SP_INDEX_STATUS`),
-  KEY `FKhjgj8cp879gfxko25cx5o692r` (`FORCED_ID_PID`),
-  CONSTRAINT `FKhjgj8cp879gfxko25cx5o692r` FOREIGN KEY (`FORCED_ID_PID`) REFERENCES `HFJ_FORCED_ID` (`PID`)
+CREATE TABLE `hfj_resource` (
+  `res_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `res_deleted_at` datetime DEFAULT NULL,
+  `res_encoding` varchar(5) NOT NULL,
+  `res_version` varchar(7) DEFAULT NULL,
+  `has_tags` bit(1) NOT NULL,
+  `res_published` datetime NOT NULL,
+  `res_text` longblob NOT NULL,
+  `res_title` varchar(100) DEFAULT NULL,
+  `res_updated` datetime NOT NULL,
+  `sp_has_links` bit(1) DEFAULT NULL,
+  `sp_index_status` bigint(20) DEFAULT NULL,
+  `res_language` varchar(20) DEFAULT NULL,
+  `res_coords_present` bit(1) DEFAULT NULL,
+  `res_date_present` bit(1) DEFAULT NULL,
+  `sp_number_present` bit(1) DEFAULT NULL,
+  `sp_quantity_present` bit(1) DEFAULT NULL,
+  `sp_string_present` bit(1) DEFAULT NULL,
+  `sp_token_present` bit(1) DEFAULT NULL,
+  `sp_uri_present` bit(1) DEFAULT NULL,
+  `res_profile` varchar(200) DEFAULT NULL,
+  `res_type` varchar(30) DEFAULT NULL,
+  `res_ver` bigint(20) DEFAULT NULL,
+  `forced_id_pid` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`res_id`),
+  KEY `IDX_RES_DATE` (`res_updated`),
+  KEY `IDX_RES_LANG` (`res_type`,`res_language`),
+  KEY `IDX_RES_PROFILE` (`res_profile`),
+  KEY `IDX_RES_TYPE` (`res_type`),
+  KEY `IDX_INDEXSTATUS` (`sp_index_status`),
+  KEY `FKhjgj8cp879gfxko25cx5o692r` (`forced_id_pid`),
+  CONSTRAINT `FKhjgj8cp879gfxko25cx5o692r` FOREIGN KEY (`forced_id_pid`) REFERENCES `hfj_forced_id` (`pid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `HFJ_RESOURCE`
+-- Dumping data for table `hfj_resource`
 --
 
-LOCK TABLES `HFJ_RESOURCE` WRITE;
-/*!40000 ALTER TABLE `HFJ_RESOURCE` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HFJ_RESOURCE` ENABLE KEYS */;
+LOCK TABLES `hfj_resource` WRITE;
+/*!40000 ALTER TABLE `hfj_resource` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hfj_resource` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `HFJ_RES_LINK`
+-- Table structure for table `hfj_res_link`
 --
 
-DROP TABLE IF EXISTS `HFJ_RES_LINK`;
+DROP TABLE IF EXISTS `hfj_res_link`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HFJ_RES_LINK` (
-  `PID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `SRC_PATH` varchar(100) NOT NULL,
-  `SRC_RESOURCE_ID` bigint(20) NOT NULL,
-  `SOURCE_RESOURCE_TYPE` varchar(30) NOT NULL DEFAULT '',
-  `TARGET_RESOURCE_ID` bigint(20) DEFAULT NULL,
-  `TARGET_RESOURCE_TYPE` varchar(30) NOT NULL DEFAULT '',
-  `TARGET_RESOURCE_URL` varchar(200) DEFAULT NULL,
-  `SP_UPDATED` datetime DEFAULT NULL,
-  PRIMARY KEY (`PID`),
-  KEY `IDX_RL_TPATHRES` (`SRC_PATH`,`TARGET_RESOURCE_ID`),
-  KEY `IDX_RL_SRC` (`SRC_RESOURCE_ID`),
-  KEY `IDX_RL_DEST` (`TARGET_RESOURCE_ID`),
-  CONSTRAINT `FKlj7n25tu55w1mflw41agllgpl` FOREIGN KEY (`SRC_RESOURCE_ID`) REFERENCES `HFJ_RESOURCE` (`RES_ID`),
-  CONSTRAINT `FKo2qdks5l1hc8ls9glb9m8qyd3` FOREIGN KEY (`TARGET_RESOURCE_ID`) REFERENCES `HFJ_RESOURCE` (`RES_ID`)
+CREATE TABLE `hfj_res_link` (
+  `pid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `src_path` varchar(100) NOT NULL,
+  `src_resource_id` bigint(20) NOT NULL,
+  `src_resource_type` varchar(30) NOT NULL DEFAULT '',
+  `target_resource_id` bigint(20) DEFAULT NULL,
+  `target_resource_type` varchar(30) NOT NULL DEFAULT '',
+  `target_resource_url` varchar(200) DEFAULT NULL,
+  `sp_updated` datetime DEFAULT NULL,
+  PRIMARY KEY (`pid`),
+  KEY `IDX_RL_TPATHRES` (`src_path`,`target_resource_id`),
+  KEY `IDX_RL_SRC` (`src_resource_id`),
+  KEY `IDX_RL_DEST` (`target_resource_id`),
+  CONSTRAINT `FKlj7n25tu55w1mflw41agllgpl` FOREIGN KEY (`src_resource_id`) REFERENCES `hfj_resource` (`res_id`),
+  CONSTRAINT `FKo2qdks5l1hc8ls9glb9m8qyd3` FOREIGN KEY (`target_resource_id`) REFERENCES `hfj_resource` (`res_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `HFJ_RES_LINK`
+-- Dumping data for table `hfj_res_link`
 --
 
-LOCK TABLES `HFJ_RES_LINK` WRITE;
-/*!40000 ALTER TABLE `HFJ_RES_LINK` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HFJ_RES_LINK` ENABLE KEYS */;
+LOCK TABLES `hfj_res_link` WRITE;
+/*!40000 ALTER TABLE `hfj_res_link` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hfj_res_link` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `HFJ_RES_TAG`
+-- Table structure for table `hfj_res_tag`
 --
 
-DROP TABLE IF EXISTS `HFJ_RES_TAG`;
+DROP TABLE IF EXISTS `hfj_res_tag`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HFJ_RES_TAG` (
-  `PID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `TAG_ID` bigint(20) DEFAULT NULL,
-  `RES_ID` bigint(20) DEFAULT NULL,
-  `RES_TYPE` varchar(30) NOT NULL,
-  PRIMARY KEY (`PID`),
-  KEY `FKbfcjbaftmiwr3rxkwsy23vneo` (`TAG_ID`),
-  KEY `FKj082d2j6aslx7exyefotb3adq` (`RES_ID`),
-  CONSTRAINT `FKbfcjbaftmiwr3rxkwsy23vneo` FOREIGN KEY (`TAG_ID`) REFERENCES `HFJ_TAG_DEF` (`TAG_ID`),
-  CONSTRAINT `FKj082d2j6aslx7exyefotb3adq` FOREIGN KEY (`RES_ID`) REFERENCES `HFJ_RESOURCE` (`RES_ID`)
+CREATE TABLE `hfj_res_tag` (
+  `pid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `tag_id` bigint(20) DEFAULT NULL,
+  `res_id` bigint(20) DEFAULT NULL,
+  `res_type` varchar(30) NOT NULL,
+  PRIMARY KEY (`pid`),
+  KEY `FKbfcjbaftmiwr3rxkwsy23vneo` (`tag_id`),
+  KEY `FKj082d2j6aslx7exyefotb3adq` (`res_id`),
+  CONSTRAINT `FKbfcjbaftmiwr3rxkwsy23vneo` FOREIGN KEY (`tag_id`) REFERENCES `hfj_tag_def` (`tag_id`),
+  CONSTRAINT `FKj082d2j6aslx7exyefotb3adq` FOREIGN KEY (`res_id`) REFERENCES `hfj_resource` (`res_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `HFJ_RES_TAG`
+-- Dumping data for table `hfj_res_tag`
 --
 
-LOCK TABLES `HFJ_RES_TAG` WRITE;
-/*!40000 ALTER TABLE `HFJ_RES_TAG` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HFJ_RES_TAG` ENABLE KEYS */;
+LOCK TABLES `hfj_res_tag` WRITE;
+/*!40000 ALTER TABLE `hfj_res_tag` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hfj_res_tag` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `HFJ_RES_VER`
+-- Table structure for table `hfj_res_ver`
 --
 
-DROP TABLE IF EXISTS `HFJ_RES_VER`;
+DROP TABLE IF EXISTS `hfj_res_ver`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HFJ_RES_VER` (
-  `PID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `RES_DELETED_AT` datetime DEFAULT NULL,
-  `RES_ENCODING` varchar(5) NOT NULL,
-  `RES_VERSION` varchar(7) DEFAULT NULL,
-  `HAS_TAGS` bit(1) NOT NULL,
-  `RES_PUBLISHED` datetime NOT NULL,
-  `RES_TEXT` longblob NOT NULL,
-  `RES_TITLE` varchar(100) DEFAULT NULL,
-  `RES_UPDATED` datetime NOT NULL,
-  `RES_ID` bigint(20) DEFAULT NULL,
-  `RES_TYPE` varchar(30) NOT NULL,
-  `RES_VER` bigint(20) NOT NULL,
-  `FORCED_ID_PID` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`PID`),
-  UNIQUE KEY `IDX_RESVER_ID_VER` (`RES_ID`,`RES_VER`),
-  KEY `IDX_RESVER_TYPE_DATE` (`RES_TYPE`,`RES_UPDATED`),
-  KEY `IDX_RESVER_ID_DATE` (`RES_ID`,`RES_UPDATED`),
-  KEY `IDX_RESVER_DATE` (`RES_UPDATED`),
-  KEY `FKh20i7lcbchkaxekvwg9ix4hc5` (`FORCED_ID_PID`),
-  CONSTRAINT `FKh20i7lcbchkaxekvwg9ix4hc5` FOREIGN KEY (`FORCED_ID_PID`) REFERENCES `HFJ_FORCED_ID` (`PID`)
+CREATE TABLE `hfj_res_ver` (
+  `pid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `res_deleted_at` datetime DEFAULT NULL,
+  `res_encoding` varchar(5) NOT NULL,
+  `res_version` varchar(7) DEFAULT NULL,
+  `has_tags` bit(1) NOT NULL,
+  `res_published` datetime NOT NULL,
+  `res_text` longblob NOT NULL,
+  `res_title` varchar(100) DEFAULT NULL,
+  `res_updated` datetime NOT NULL,
+  `res_id` bigint(20) DEFAULT NULL,
+  `res_type` varchar(30) NOT NULL,
+  `res_ver` bigint(20) NOT NULL,
+  `forced_id_pid` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`pid`),
+  UNIQUE KEY `IDX_RESVER_ID_VER` (`res_id`,`res_ver`),
+  KEY `IDX_RESVER_TYPE_DATE` (`res_type`,`res_updated`),
+  KEY `IDX_RESVER_ID_DATE` (`res_id`,`res_updated`),
+  KEY `IDX_RESVER_DATE` (`res_updated`),
+  KEY `FKh20i7lcbchkaxekvwg9ix4hc5` (`forced_id_pid`),
+  CONSTRAINT `FKh20i7lcbchkaxekvwg9ix4hc5` FOREIGN KEY (`forced_id_pid`) REFERENCES `hfj_forced_id` (`pid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `HFJ_RES_VER`
+-- Dumping data for table `hfj_res_ver`
 --
 
-LOCK TABLES `HFJ_RES_VER` WRITE;
-/*!40000 ALTER TABLE `HFJ_RES_VER` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HFJ_RES_VER` ENABLE KEYS */;
+LOCK TABLES `hfj_res_ver` WRITE;
+/*!40000 ALTER TABLE `hfj_res_ver` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hfj_res_ver` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `HFJ_SEARCH`
+-- Table structure for table `hfj_search`
 --
 
-DROP TABLE IF EXISTS `HFJ_SEARCH`;
+DROP TABLE IF EXISTS `hfj_search`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HFJ_SEARCH` (
-  `PID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `CREATED` datetime NOT NULL,
-  `LAST_UPDATED_HIGH` datetime DEFAULT NULL,
-  `LAST_UPDATED_LOW` datetime DEFAULT NULL,
-  `PREFERRED_PAGE_SIZE` int(11) DEFAULT NULL,
-  `RESOURCE_ID` bigint(20) DEFAULT NULL,
-  `RESOURCE_TYPE` varchar(200) DEFAULT NULL,
-  `SEARCH_TYPE` int(11) NOT NULL,
-  `TOTAL_COUNT` int(11) NOT NULL,
-  `SEARCH_UUID` varchar(40) NOT NULL,
-  PRIMARY KEY (`PID`),
-  UNIQUE KEY `IDX_SEARCH_UUID` (`SEARCH_UUID`),
-  KEY `JDX_SEARCH_CREATED` (`CREATED`)
+CREATE TABLE `hfj_search` (
+  `pid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `created` datetime NOT NULL,
+  `last_updated_high` datetime DEFAULT NULL,
+  `last_updated_low` datetime DEFAULT NULL,
+  `preferred_page_size` int(11) DEFAULT NULL,
+  `resource_id` bigint(20) DEFAULT NULL,
+  `resource_type` varchar(200) DEFAULT NULL,
+  `search_type` int(11) NOT NULL,
+  `total_count` int(11) NOT NULL,
+  `search_uuid` varchar(40) NOT NULL,
+  PRIMARY KEY (`pid`),
+  UNIQUE KEY `IDX_SEARCH_UUID` (`search_uuid`),
+  KEY `JDX_SEARCH_CREATED` (`created`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `HFJ_SEARCH`
+-- Dumping data for table `hfj_search`
 --
 
-LOCK TABLES `HFJ_SEARCH` WRITE;
-/*!40000 ALTER TABLE `HFJ_SEARCH` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HFJ_SEARCH` ENABLE KEYS */;
+LOCK TABLES `hfj_search` WRITE;
+/*!40000 ALTER TABLE `hfj_search` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hfj_search` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `HFJ_SEARCH_INCLUDE`
+-- Table structure for table `hfj_search_include`
 --
 
-DROP TABLE IF EXISTS `HFJ_SEARCH_INCLUDE`;
+DROP TABLE IF EXISTS `hfj_search_include`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HFJ_SEARCH_INCLUDE` (
-  `PID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `SEARCH_INCLUDE` varchar(200) NOT NULL,
-  `INC_RECURSE` bit(1) NOT NULL,
-  `REVINCLUDE` bit(1) NOT NULL,
-  `SEARCH_PID` bigint(20) NOT NULL,
-  PRIMARY KEY (`PID`),
-  KEY `FK_SEARCHINC_SEARCH` (`SEARCH_PID`),
-  CONSTRAINT `FK_SEARCHINC_SEARCH` FOREIGN KEY (`SEARCH_PID`) REFERENCES `HFJ_SEARCH` (`PID`)
+CREATE TABLE `hfj_search_include` (
+  `pid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `search_include` varchar(200) NOT NULL,
+  `inc_recurse` bit(1) NOT NULL,
+  `revinclude` bit(1) NOT NULL,
+  `search_pid` bigint(20) NOT NULL,
+  PRIMARY KEY (`pid`),
+  KEY `FK_SEARCHINC_SEARCH` (`search_pid`),
+  CONSTRAINT `FK_SEARCHINC_SEARCH` FOREIGN KEY (`search_pid`) REFERENCES `hfj_search` (`pid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `HFJ_SEARCH_INCLUDE`
+-- Dumping data for table `hfj_search_include`
 --
 
-LOCK TABLES `HFJ_SEARCH_INCLUDE` WRITE;
-/*!40000 ALTER TABLE `HFJ_SEARCH_INCLUDE` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HFJ_SEARCH_INCLUDE` ENABLE KEYS */;
+LOCK TABLES `hfj_search_include` WRITE;
+/*!40000 ALTER TABLE `hfj_search_include` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hfj_search_include` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `HFJ_SEARCH_RESULT`
+-- Table structure for table `hfj_search_result`
 --
 
-DROP TABLE IF EXISTS `HFJ_SEARCH_RESULT`;
+DROP TABLE IF EXISTS `hfj_search_result`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HFJ_SEARCH_RESULT` (
-  `PID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `SEARCH_ORDER` int(11) NOT NULL,
-  `RESOURCE_PID` bigint(20) NOT NULL,
-  `SEARCH_PID` bigint(20) NOT NULL,
-  PRIMARY KEY (`PID`),
-  UNIQUE KEY `IDX_SEARCHRES_ORDER` (`SEARCH_PID`,`SEARCH_ORDER`),
-  KEY `FK_SEARCHRES_RES` (`RESOURCE_PID`),
-  CONSTRAINT `FK_SEARCHRES_RES` FOREIGN KEY (`RESOURCE_PID`) REFERENCES `HFJ_RESOURCE` (`RES_ID`),
-  CONSTRAINT `FK_SEARCHRES_SEARCH` FOREIGN KEY (`SEARCH_PID`) REFERENCES `HFJ_SEARCH` (`PID`)
+CREATE TABLE `hfj_search_result` (
+  `pid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `search_order` int(11) NOT NULL,
+  `resource_pid` bigint(20) NOT NULL,
+  `search_pid` bigint(20) NOT NULL,
+  PRIMARY KEY (`pid`),
+  UNIQUE KEY `IDX_SEARCHRES_ORDER` (`search_pid`,`search_order`),
+  KEY `FK_SEARCHRES_RES` (`resource_pid`),
+  CONSTRAINT `FK_SEARCHRES_RES` FOREIGN KEY (`resource_pid`) REFERENCES `hfj_resource` (`res_id`),
+  CONSTRAINT `FK_SEARCHRES_SEARCH` FOREIGN KEY (`search_pid`) REFERENCES `hfj_search` (`pid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `HFJ_SEARCH_RESULT`
+-- Dumping data for table `hfj_search_result`
 --
 
-LOCK TABLES `HFJ_SEARCH_RESULT` WRITE;
-/*!40000 ALTER TABLE `HFJ_SEARCH_RESULT` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HFJ_SEARCH_RESULT` ENABLE KEYS */;
+LOCK TABLES `hfj_search_result` WRITE;
+/*!40000 ALTER TABLE `hfj_search_result` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hfj_search_result` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `HFJ_SPIDX_COORDS`
+-- Table structure for table `hfj_spidx_coords`
 --
 
-DROP TABLE IF EXISTS `HFJ_SPIDX_COORDS`;
+DROP TABLE IF EXISTS `hfj_spidx_coords`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HFJ_SPIDX_COORDS` (
-  `SP_ID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `SP_NAME` varchar(100) NOT NULL,
-  `RES_ID` bigint(20) DEFAULT NULL,
-  `RES_TYPE` varchar(255) NOT NULL,
-  `SP_UPDATED` datetime DEFAULT NULL,
-  `SP_LATITUDE` double DEFAULT NULL,
-  `SP_LONGITUDE` double DEFAULT NULL,
-  PRIMARY KEY (`SP_ID`),
-  KEY `IDX_SP_COORDS` (`RES_TYPE`,`SP_NAME`,`SP_LATITUDE`,`SP_LONGITUDE`),
-  KEY `IDX_SP_COORDS_UPDATED` (`SP_UPDATED`),
-  KEY `IDX_SP_COORDS_RESID` (`RES_ID`),
-  CONSTRAINT `FKc97mpk37okwu8qvtceg2nh9vn` FOREIGN KEY (`RES_ID`) REFERENCES `HFJ_RESOURCE` (`RES_ID`)
+CREATE TABLE `hfj_spidx_coords` (
+  `sp_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `sp_name` varchar(100) NOT NULL,
+  `res_id` bigint(20) DEFAULT NULL,
+  `res_type` varchar(255) NOT NULL,
+  `sp_updated` datetime DEFAULT NULL,
+  `sp_latitude` double DEFAULT NULL,
+  `sp_longitude` double DEFAULT NULL,
+  PRIMARY KEY (`sp_id`),
+  KEY `IDX_SP_COORDS` (`res_type`,`sp_name`,`sp_latitude`,`sp_longitude`),
+  KEY `IDX_SP_COORDS_UPDATED` (`sp_updated`),
+  KEY `IDX_SP_COORDS_RESID` (`res_id`),
+  CONSTRAINT `FKc97mpk37okwu8qvtceg2nh9vn` FOREIGN KEY (`res_id`) REFERENCES `hfj_resource` (`res_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `HFJ_SPIDX_COORDS`
+-- Dumping data for table `hfj_spidx_coords`
 --
 
-LOCK TABLES `HFJ_SPIDX_COORDS` WRITE;
-/*!40000 ALTER TABLE `HFJ_SPIDX_COORDS` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HFJ_SPIDX_COORDS` ENABLE KEYS */;
+LOCK TABLES `hfj_spidx_coords` WRITE;
+/*!40000 ALTER TABLE `hfj_spidx_coords` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hfj_spidx_coords` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `HFJ_SPIDX_DATE`
+-- Table structure for table `hfj_spidx_date`
 --
 
-DROP TABLE IF EXISTS `HFJ_SPIDX_DATE`;
+DROP TABLE IF EXISTS `hfj_spidx_date`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HFJ_SPIDX_DATE` (
-  `SP_ID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `SP_NAME` varchar(100) NOT NULL,
-  `RES_ID` bigint(20) DEFAULT NULL,
-  `RES_TYPE` varchar(255) NOT NULL,
-  `SP_UPDATED` datetime DEFAULT NULL,
-  `SP_VALUE_HIGH` datetime DEFAULT NULL,
-  `SP_VALUE_LOW` datetime DEFAULT NULL,
-  PRIMARY KEY (`SP_ID`),
-  KEY `IDX_SP_DATE` (`RES_TYPE`,`SP_NAME`,`SP_VALUE_LOW`,`SP_VALUE_HIGH`),
-  KEY `IDX_SP_DATE_UPDATED` (`SP_UPDATED`),
-  KEY `IDX_SP_DATE_RESID` (`RES_ID`),
-  CONSTRAINT `FK17s70oa59rm9n61k9thjqrsqm` FOREIGN KEY (`RES_ID`) REFERENCES `HFJ_RESOURCE` (`RES_ID`)
+CREATE TABLE `hfj_spidx_date` (
+  `sp_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `sp_name` varchar(100) NOT NULL,
+  `res_id` bigint(20) DEFAULT NULL,
+  `res_type` varchar(255) NOT NULL,
+  `sp_updated` datetime DEFAULT NULL,
+  `sp_value_high` datetime DEFAULT NULL,
+  `sp_value_low` datetime DEFAULT NULL,
+  PRIMARY KEY (`sp_id`),
+  KEY `IDX_SP_DATE` (`res_type`,`sp_name`,`sp_value_low`,`sp_value_high`),
+  KEY `IDX_SP_DATE_UPDATED` (`sp_updated`),
+  KEY `IDX_SP_DATE_RESID` (`res_id`),
+  CONSTRAINT `FK17s70oa59rm9n61k9thjqrsqm` FOREIGN KEY (`res_id`) REFERENCES `hfj_resource` (`res_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `HFJ_SPIDX_DATE`
+-- Dumping data for table `hfj_spidx_date`
 --
 
-LOCK TABLES `HFJ_SPIDX_DATE` WRITE;
-/*!40000 ALTER TABLE `HFJ_SPIDX_DATE` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HFJ_SPIDX_DATE` ENABLE KEYS */;
+LOCK TABLES `hfj_spidx_date` WRITE;
+/*!40000 ALTER TABLE `hfj_spidx_date` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hfj_spidx_date` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `HFJ_SPIDX_NUMBER`
+-- Table structure for table `hfj_spidx_number`
 --
 
-DROP TABLE IF EXISTS `HFJ_SPIDX_NUMBER`;
+DROP TABLE IF EXISTS `hfj_spidx_number`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HFJ_SPIDX_NUMBER` (
-  `SP_ID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `SP_NAME` varchar(100) NOT NULL,
-  `RES_ID` bigint(20) DEFAULT NULL,
-  `RES_TYPE` varchar(255) NOT NULL,
-  `SP_UPDATED` datetime DEFAULT NULL,
-  `SP_VALUE` decimal(19,2) DEFAULT NULL,
-  PRIMARY KEY (`SP_ID`),
-  KEY `IDX_SP_NUMBER` (`RES_TYPE`,`SP_NAME`,`SP_VALUE`),
-  KEY `IDX_SP_NUMBER_UPDATED` (`SP_UPDATED`),
-  KEY `IDX_SP_NUMBER_RESID` (`RES_ID`),
-  CONSTRAINT `FKcltihnc5tgprj9bhpt7xi5otb` FOREIGN KEY (`RES_ID`) REFERENCES `HFJ_RESOURCE` (`RES_ID`)
+CREATE TABLE `hfj_spidx_number` (
+  `sp_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `sp_name` varchar(100) NOT NULL,
+  `res_id` bigint(20) DEFAULT NULL,
+  `res_type` varchar(255) NOT NULL,
+  `sp_updated` datetime DEFAULT NULL,
+  `sp_value` decimal(19,2) DEFAULT NULL,
+  PRIMARY KEY (`sp_id`),
+  KEY `IDX_SP_NUMBER` (`res_type`,`sp_name`,`sp_value`),
+  KEY `IDX_SP_NUMBER_UPDATED` (`sp_updated`),
+  KEY `IDX_SP_NUMBER_RESID` (`res_id`),
+  CONSTRAINT `FKcltihnc5tgprj9bhpt7xi5otb` FOREIGN KEY (`res_id`) REFERENCES `hfj_resource` (`res_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `HFJ_SPIDX_NUMBER`
+-- Dumping data for table `hfj_spidx_number`
 --
 
-LOCK TABLES `HFJ_SPIDX_NUMBER` WRITE;
-/*!40000 ALTER TABLE `HFJ_SPIDX_NUMBER` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HFJ_SPIDX_NUMBER` ENABLE KEYS */;
+LOCK TABLES `hfj_spidx_number` WRITE;
+/*!40000 ALTER TABLE `hfj_spidx_number` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hfj_spidx_number` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `HFJ_SPIDX_QUANTITY`
+-- Table structure for table `hfj_spidx_quantity`
 --
 
-DROP TABLE IF EXISTS `HFJ_SPIDX_QUANTITY`;
+DROP TABLE IF EXISTS `hfj_spidx_quantity`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HFJ_SPIDX_QUANTITY` (
-  `SP_ID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `SP_NAME` varchar(100) NOT NULL,
-  `RES_ID` bigint(20) DEFAULT NULL,
-  `RES_TYPE` varchar(255) NOT NULL,
-  `SP_UPDATED` datetime DEFAULT NULL,
-  `SP_SYSTEM` varchar(200) DEFAULT NULL,
-  `SP_UNITS` varchar(200) DEFAULT NULL,
-  `SP_VALUE` decimal(19,2) DEFAULT NULL,
-  PRIMARY KEY (`SP_ID`),
-  KEY `IDX_SP_QUANTITY` (`RES_TYPE`,`SP_NAME`,`SP_SYSTEM`,`SP_UNITS`,`SP_VALUE`),
-  KEY `IDX_SP_QUANTITY_UPDATED` (`SP_UPDATED`),
-  KEY `IDX_SP_QUANTITY_RESID` (`RES_ID`),
-  CONSTRAINT `FKn603wjjoi1a6asewxbbd78bi5` FOREIGN KEY (`RES_ID`) REFERENCES `HFJ_RESOURCE` (`RES_ID`)
+CREATE TABLE `hfj_spidx_quantity` (
+  `sp_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `sp_name` varchar(100) NOT NULL,
+  `res_id` bigint(20) DEFAULT NULL,
+  `res_type` varchar(255) NOT NULL,
+  `sp_updated` datetime DEFAULT NULL,
+  `sp_system` varchar(200) DEFAULT NULL,
+  `sp_units` varchar(200) DEFAULT NULL,
+  `sp_value` decimal(19,2) DEFAULT NULL,
+  PRIMARY KEY (`sp_id`),
+  KEY `IDX_SP_QUANTITY` (`res_type`,`sp_name`,`sp_system`,`sp_units`,`sp_value`),
+  KEY `IDX_SP_QUANTITY_UPDATED` (`sp_updated`),
+  KEY `IDX_SP_QUANTITY_RESID` (`res_id`),
+  CONSTRAINT `FKn603wjjoi1a6asewxbbd78bi5` FOREIGN KEY (`res_id`) REFERENCES `hfj_resource` (`res_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `HFJ_SPIDX_QUANTITY`
+-- Dumping data for table `hfj_spidx_quantity`
 --
 
-LOCK TABLES `HFJ_SPIDX_QUANTITY` WRITE;
-/*!40000 ALTER TABLE `HFJ_SPIDX_QUANTITY` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HFJ_SPIDX_QUANTITY` ENABLE KEYS */;
+LOCK TABLES `hfj_spidx_quantity` WRITE;
+/*!40000 ALTER TABLE `hfj_spidx_quantity` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hfj_spidx_quantity` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `HFJ_SPIDX_STRING`
+-- Table structure for table `hfj_spidx_string`
 --
 
-DROP TABLE IF EXISTS `HFJ_SPIDX_STRING`;
+DROP TABLE IF EXISTS `hfj_spidx_string`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HFJ_SPIDX_STRING` (
-  `SP_ID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `SP_NAME` varchar(100) NOT NULL,
-  `RES_ID` bigint(20) DEFAULT NULL,
-  `RES_TYPE` varchar(255) NOT NULL,
-  `SP_UPDATED` datetime DEFAULT NULL,
-  `SP_VALUE_EXACT` varchar(200) DEFAULT NULL,
-  `SP_VALUE_NORMALIZED` varchar(200) DEFAULT NULL,
-  PRIMARY KEY (`SP_ID`),
-  KEY `IDX_SP_STRING` (`RES_TYPE`,`SP_NAME`,`SP_VALUE_NORMALIZED`),
-  KEY `IDX_SP_STRING_UPDATED` (`SP_UPDATED`),
-  KEY `IDX_SP_STRING_RESID` (`RES_ID`),
-  CONSTRAINT `FKsv6pu15m5yo9qqv2ne5c7cack` FOREIGN KEY (`RES_ID`) REFERENCES `HFJ_RESOURCE` (`RES_ID`)
+CREATE TABLE `hfj_spidx_string` (
+  `sp_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `sp_name` varchar(100) NOT NULL,
+  `res_id` bigint(20) DEFAULT NULL,
+  `res_type` varchar(255) NOT NULL,
+  `sp_updated` datetime DEFAULT NULL,
+  `sp_value_exact` varchar(200) DEFAULT NULL,
+  `sp_value_normalized` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`sp_id`),
+  KEY `IDX_SP_STRING` (`res_type`,`sp_name`,`sp_value_normalized`),
+  KEY `IDX_SP_STRING_UPDATED` (`sp_updated`),
+  KEY `IDX_SP_STRING_RESID` (`res_id`),
+  CONSTRAINT `FKsv6pu15m5yo9qqv2ne5c7cack` FOREIGN KEY (`res_id`) REFERENCES `hfj_resource` (`res_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `HFJ_SPIDX_STRING`
+-- Dumping data for table `hfj_spidx_string`
 --
 
-LOCK TABLES `HFJ_SPIDX_STRING` WRITE;
-/*!40000 ALTER TABLE `HFJ_SPIDX_STRING` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HFJ_SPIDX_STRING` ENABLE KEYS */;
+LOCK TABLES `hfj_spidx_string` WRITE;
+/*!40000 ALTER TABLE `hfj_spidx_string` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hfj_spidx_string` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `HFJ_SPIDX_TOKEN`
+-- Table structure for table `hfj_spidx_token`
 --
 
-DROP TABLE IF EXISTS `HFJ_SPIDX_TOKEN`;
+DROP TABLE IF EXISTS `hfj_spidx_token`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HFJ_SPIDX_TOKEN` (
-  `SP_ID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `SP_NAME` varchar(100) NOT NULL,
-  `RES_ID` bigint(20) DEFAULT NULL,
-  `RES_TYPE` varchar(255) NOT NULL,
-  `SP_UPDATED` datetime DEFAULT NULL,
-  `SP_SYSTEM` varchar(200) DEFAULT NULL,
-  `SP_VALUE` varchar(200) DEFAULT NULL,
-  PRIMARY KEY (`SP_ID`),
-  KEY `IDX_SP_TOKEN` (`RES_TYPE`,`SP_NAME`,`SP_SYSTEM`,`SP_VALUE`),
-  KEY `IDX_SP_TOKEN_UNQUAL` (`RES_TYPE`,`SP_NAME`,`SP_VALUE`),
-  KEY `IDX_SP_TOKEN_UPDATED` (`SP_UPDATED`),
-  KEY `IDX_SP_TOKEN_RESID` (`RES_ID`),
-  CONSTRAINT `FK7ulx3j1gg3v7maqrejgc7ybc4` FOREIGN KEY (`RES_ID`) REFERENCES `HFJ_RESOURCE` (`RES_ID`)
+CREATE TABLE `hfj_spidx_token` (
+  `sp_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `sp_name` varchar(100) NOT NULL,
+  `res_id` bigint(20) DEFAULT NULL,
+  `res_type` varchar(255) NOT NULL,
+  `sp_updated` datetime DEFAULT NULL,
+  `sp_system` varchar(200) DEFAULT NULL,
+  `sp_value` varchar(200) DEFAULT NULL,
+  PRIMARY KEY (`sp_id`),
+  KEY `IDX_SP_TOKEN` (`res_type`,`sp_name`,`sp_system`,`sp_value`),
+  KEY `IDX_SP_TOKEN_UNQUAL` (`res_type`,`sp_name`,`sp_value`),
+  KEY `IDX_SP_TOKEN_UPDATED` (`sp_updated`),
+  KEY `IDX_SP_TOKEN_RESID` (`res_id`),
+  CONSTRAINT `FK7ulx3j1gg3v7maqrejgc7ybc4` FOREIGN KEY (`res_id`) REFERENCES `hfj_resource` (`res_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `HFJ_SPIDX_TOKEN`
+-- Dumping data for table `hfj_spidx_token`
 --
 
-LOCK TABLES `HFJ_SPIDX_TOKEN` WRITE;
-/*!40000 ALTER TABLE `HFJ_SPIDX_TOKEN` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HFJ_SPIDX_TOKEN` ENABLE KEYS */;
+LOCK TABLES `hfj_spidx_token` WRITE;
+/*!40000 ALTER TABLE `hfj_spidx_token` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hfj_spidx_token` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `HFJ_SPIDX_URI`
+-- Table structure for table `hfj_spidx_uri`
 --
 
-DROP TABLE IF EXISTS `HFJ_SPIDX_URI`;
+DROP TABLE IF EXISTS `hfj_spidx_uri`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HFJ_SPIDX_URI` (
-  `SP_ID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `SP_NAME` varchar(100) NOT NULL,
-  `RES_ID` bigint(20) DEFAULT NULL,
-  `RES_TYPE` varchar(255) NOT NULL,
-  `SP_UPDATED` datetime DEFAULT NULL,
-  `SP_URI` varchar(255) DEFAULT NULL,
-  PRIMARY KEY (`SP_ID`),
-  KEY `IDX_SP_URI` (`RES_TYPE`,`SP_NAME`,`SP_URI`),
-  KEY `IDX_SP_URI_RESTYPE_NAME` (`RES_TYPE`,`SP_NAME`),
-  KEY `IDX_SP_URI_UPDATED` (`SP_UPDATED`),
-  KEY `IDX_SP_URI_COORDS` (`RES_ID`),
-  CONSTRAINT `FKgxsreutymmfjuwdswv3y887do` FOREIGN KEY (`RES_ID`) REFERENCES `HFJ_RESOURCE` (`RES_ID`)
+CREATE TABLE `hfj_spidx_uri` (
+  `sp_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `sp_name` varchar(100) NOT NULL,
+  `res_id` bigint(20) DEFAULT NULL,
+  `res_type` varchar(255) NOT NULL,
+  `sp_updated` datetime DEFAULT NULL,
+  `sp_uri` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`sp_id`),
+  KEY `IDX_SP_URI` (`res_type`,`sp_name`,`sp_uri`),
+  KEY `IDX_SP_URI_RESTYPE_NAME` (`res_type`,`sp_name`),
+  KEY `IDX_SP_URI_UPDATED` (`sp_updated`),
+  KEY `IDX_SP_URI_COORDS` (`res_id`),
+  CONSTRAINT `FKgxsreutymmfjuwdswv3y887do` FOREIGN KEY (`res_id`) REFERENCES `hfj_resource` (`res_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `HFJ_SPIDX_URI`
+-- Dumping data for table `hfj_spidx_uri`
 --
 
-LOCK TABLES `HFJ_SPIDX_URI` WRITE;
-/*!40000 ALTER TABLE `HFJ_SPIDX_URI` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HFJ_SPIDX_URI` ENABLE KEYS */;
+LOCK TABLES `hfj_spidx_uri` WRITE;
+/*!40000 ALTER TABLE `hfj_spidx_uri` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hfj_spidx_uri` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `HFJ_SUBSCRIPTION`
+-- Table structure for table `hfj_subscription`
 --
 
-DROP TABLE IF EXISTS `HFJ_SUBSCRIPTION`;
+DROP TABLE IF EXISTS `hfj_subscription`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HFJ_SUBSCRIPTION` (
-  `PID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `CHECK_INTERVAL` bigint(20) NOT NULL,
-  `CREATED_TIME` datetime NOT NULL,
-  `LAST_CLIENT_POLL` datetime DEFAULT NULL,
-  `MOST_RECENT_MATCH` datetime NOT NULL,
-  `NEXT_CHECK` datetime NOT NULL,
-  `RES_ID` bigint(20) DEFAULT NULL,
-  `SUBSCRIPTION_STATUS` varchar(20) NOT NULL,
-  PRIMARY KEY (`PID`),
-  UNIQUE KEY `IDX_SUBS_NEXTCHECK` (`SUBSCRIPTION_STATUS`,`NEXT_CHECK`),
-  UNIQUE KEY `IDX_SUBS_RESID` (`RES_ID`),
-  CONSTRAINT `FK_SUBSCRIPTION_RESOURCE_ID` FOREIGN KEY (`RES_ID`) REFERENCES `HFJ_RESOURCE` (`RES_ID`)
+CREATE TABLE `hfj_subscription` (
+  `pid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `check_interval` bigint(20) NOT NULL,
+  `created_time` datetime NOT NULL,
+  `last_client_poll` datetime DEFAULT NULL,
+  `most_recent_match` datetime NOT NULL,
+  `next_check` datetime NOT NULL,
+  `res_id` bigint(20) DEFAULT NULL,
+  `subscription_status` varchar(20) NOT NULL,
+  PRIMARY KEY (`pid`),
+  UNIQUE KEY `IDX_SUBS_NEXTCHECK` (`subscription_status`,`next_check`),
+  UNIQUE KEY `IDX_SUBS_RESID` (`res_id`),
+  CONSTRAINT `FK_SUBSCRIPTION_RESOURCE_ID` FOREIGN KEY (`res_id`) REFERENCES `hfj_resource` (`res_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `HFJ_SUBSCRIPTION`
+-- Dumping data for table `hfj_subscription`
 --
 
-LOCK TABLES `HFJ_SUBSCRIPTION` WRITE;
-/*!40000 ALTER TABLE `HFJ_SUBSCRIPTION` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HFJ_SUBSCRIPTION` ENABLE KEYS */;
+LOCK TABLES `hfj_subscription` WRITE;
+/*!40000 ALTER TABLE `hfj_subscription` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hfj_subscription` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `HFJ_SUBSCRIPTION_FLAG_RES`
+-- Table structure for table `hfj_subscription_flag_res`
 --
 
-DROP TABLE IF EXISTS `HFJ_SUBSCRIPTION_FLAG_RES`;
+DROP TABLE IF EXISTS `hfj_subscription_flag_res`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HFJ_SUBSCRIPTION_FLAG_RES` (
-  `PID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `RES_VERSION` bigint(20) NOT NULL,
-  `RES_ID` bigint(20) NOT NULL,
-  `SUBSCRIPTION_ID` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`PID`),
-  KEY `FKmj5n34rhfrkjrlvgrwkp6h25q` (`RES_ID`),
-  KEY `FK_SUBSFLAG_SUBS` (`SUBSCRIPTION_ID`),
-  CONSTRAINT `FK_SUBSFLAG_SUBS` FOREIGN KEY (`SUBSCRIPTION_ID`) REFERENCES `HFJ_SUBSCRIPTION` (`PID`),
-  CONSTRAINT `FKmj5n34rhfrkjrlvgrwkp6h25q` FOREIGN KEY (`RES_ID`) REFERENCES `HFJ_RESOURCE` (`RES_ID`)
+CREATE TABLE `hfj_subscription_flag_res` (
+  `pid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `res_version` bigint(20) NOT NULL,
+  `res_id` bigint(20) NOT NULL,
+  `subscription_id` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`pid`),
+  KEY `FKmj5n34rhfrkjrlvgrwkp6h25q` (`res_id`),
+  KEY `FK_SUBSFLAG_SUBS` (`subscription_id`),
+  CONSTRAINT `FK_SUBSFLAG_SUBS` FOREIGN KEY (`subscription_id`) REFERENCES `hfj_subscription` (`pid`),
+  CONSTRAINT `FKmj5n34rhfrkjrlvgrwkp6h25q` FOREIGN KEY (`res_id`) REFERENCES `hfj_resource` (`res_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `HFJ_SUBSCRIPTION_FLAG_RES`
+-- Dumping data for table `hfj_subscription_flag_res`
 --
 
-LOCK TABLES `HFJ_SUBSCRIPTION_FLAG_RES` WRITE;
-/*!40000 ALTER TABLE `HFJ_SUBSCRIPTION_FLAG_RES` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HFJ_SUBSCRIPTION_FLAG_RES` ENABLE KEYS */;
+LOCK TABLES `hfj_subscription_flag_res` WRITE;
+/*!40000 ALTER TABLE `hfj_subscription_flag_res` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hfj_subscription_flag_res` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `HFJ_TAG_DEF`
+-- Table structure for table `hfj_tag_def`
 --
 
-DROP TABLE IF EXISTS `HFJ_TAG_DEF`;
+DROP TABLE IF EXISTS `hfj_tag_def`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `HFJ_TAG_DEF` (
-  `TAG_ID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `TAG_CODE` varchar(200) DEFAULT NULL,
-  `TAG_DISPLAY` varchar(200) DEFAULT NULL,
-  `TAG_SYSTEM` varchar(200) DEFAULT NULL,
-  `TAG_TYPE` int(11) NOT NULL,
-  PRIMARY KEY (`TAG_ID`),
-  UNIQUE KEY `UK7rtv56frrjtafhumaceutboxd` (`TAG_TYPE`,`TAG_SYSTEM`,`TAG_CODE`)
+CREATE TABLE `hfj_tag_def` (
+  `tag_id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `tab_code` varchar(200) DEFAULT NULL,
+  `tab_display` varchar(200) DEFAULT NULL,
+  `tab_system` varchar(200) DEFAULT NULL,
+  `tab_type` int(11) NOT NULL,
+  PRIMARY KEY (`tag_id`),
+  UNIQUE KEY `UK7rtv56frrjtafhumaceutboxd` (`tab_type`,`tab_system`,`tab_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `HFJ_TAG_DEF`
+-- Dumping data for table `hfj_tag_def`
 --
 
-LOCK TABLES `HFJ_TAG_DEF` WRITE;
-/*!40000 ALTER TABLE `HFJ_TAG_DEF` DISABLE KEYS */;
-/*!40000 ALTER TABLE `HFJ_TAG_DEF` ENABLE KEYS */;
+LOCK TABLES `hfj_tag_def` WRITE;
+/*!40000 ALTER TABLE `hfj_tag_def` DISABLE KEYS */;
+/*!40000 ALTER TABLE `hfj_tag_def` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `TRM_CODESYSTEM`
+-- Table structure for table `trm_codesystem`
 --
 
-DROP TABLE IF EXISTS `TRM_CODESYSTEM`;
+DROP TABLE IF EXISTS `trm_codesystem`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `TRM_CODESYSTEM` (
-  `PID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `CODE_SYSTEM_URI` varchar(255) NOT NULL,
-  `RES_ID` bigint(20) DEFAULT NULL,
-  `CURRENT_VERSION_PID` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`PID`),
-  UNIQUE KEY `IDX_CS_CODESYSTEM` (`CODE_SYSTEM_URI`),
-  KEY `FKqod2rr40icfwrdjccl0pl0dn4` (`CURRENT_VERSION_PID`),
-  KEY `FKlhtq2eln4v1sx81xhj50xhdb1` (`RES_ID`),
-  CONSTRAINT `FKlhtq2eln4v1sx81xhj50xhdb1` FOREIGN KEY (`RES_ID`) REFERENCES `HFJ_RESOURCE` (`RES_ID`),
-  CONSTRAINT `FKqod2rr40icfwrdjccl0pl0dn4` FOREIGN KEY (`CURRENT_VERSION_PID`) REFERENCES `TRM_CODESYSTEM_VER` (`PID`)
+CREATE TABLE `trm_codesystem` (
+  `pid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `code_system_uri` varchar(255) NOT NULL,
+  `res_id` bigint(20) DEFAULT NULL,
+  `current_version_pid` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`pid`),
+  UNIQUE KEY `IDX_CS_CODESYSTEM` (`code_system_uri`),
+  KEY `FKqod2rr40icfwrdjccl0pl0dn4` (`current_version_pid`),
+  KEY `FKlhtq2eln4v1sx81xhj50xhdb1` (`res_id`),
+  CONSTRAINT `FKlhtq2eln4v1sx81xhj50xhdb1` FOREIGN KEY (`res_id`) REFERENCES `hfj_resource` (`res_id`),
+  CONSTRAINT `FKqod2rr40icfwrdjccl0pl0dn4` FOREIGN KEY (`current_version_pid`) REFERENCES `trm_codesystem_ver` (`pid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `TRM_CODESYSTEM`
+-- Dumping data for table `trm_codesystem`
 --
 
-LOCK TABLES `TRM_CODESYSTEM` WRITE;
-/*!40000 ALTER TABLE `TRM_CODESYSTEM` DISABLE KEYS */;
-/*!40000 ALTER TABLE `TRM_CODESYSTEM` ENABLE KEYS */;
+LOCK TABLES `trm_codesystem` WRITE;
+/*!40000 ALTER TABLE `trm_codesystem` DISABLE KEYS */;
+/*!40000 ALTER TABLE `trm_codesystem` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `TRM_CODESYSTEM_VER`
+-- Table structure for table `trm_codesystem_ver`
 --
 
-DROP TABLE IF EXISTS `TRM_CODESYSTEM_VER`;
+DROP TABLE IF EXISTS `trm_codesystem_ver`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `TRM_CODESYSTEM_VER` (
-  `PID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `RES_VERSION_ID` bigint(20) NOT NULL,
-  `RES_ID` bigint(20) NOT NULL,
-  PRIMARY KEY (`PID`),
-  UNIQUE KEY `IDX_CSV_RESOURCEPID_AND_VER` (`RES_ID`,`RES_VERSION_ID`),
-  CONSTRAINT `FK_CODESYSVER_RES_ID` FOREIGN KEY (`RES_ID`) REFERENCES `HFJ_RESOURCE` (`RES_ID`)
+CREATE TABLE `trm_codesystem_ver` (
+  `pid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `res_version_pid` bigint(20) NOT NULL,
+  `res_id` bigint(20) NOT NULL,
+  PRIMARY KEY (`pid`),
+  UNIQUE KEY `IDX_CSV_RESOURCEPID_AND_VER` (`res_id`,`res_version_pid`),
+  CONSTRAINT `FK_CODESYSVER_RES_ID` FOREIGN KEY (`res_id`) REFERENCES `hfj_resource` (`res_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `TRM_CODESYSTEM_VER`
+-- Dumping data for table `trm_codesystem_ver`
 --
 
-LOCK TABLES `TRM_CODESYSTEM_VER` WRITE;
-/*!40000 ALTER TABLE `TRM_CODESYSTEM_VER` DISABLE KEYS */;
-/*!40000 ALTER TABLE `TRM_CODESYSTEM_VER` ENABLE KEYS */;
+LOCK TABLES `trm_codesystem_ver` WRITE;
+/*!40000 ALTER TABLE `trm_codesystem_ver` DISABLE KEYS */;
+/*!40000 ALTER TABLE `trm_codesystem_ver` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `TRM_CONCEPT`
+-- Table structure for table `trm_concept`
 --
 
-DROP TABLE IF EXISTS `TRM_CONCEPT`;
+DROP TABLE IF EXISTS `trm_concept`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `TRM_CONCEPT` (
-  `PID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `CODE` varchar(100) NOT NULL,
-  `CODESYSTEM_PID` bigint(20) DEFAULT NULL,
-  `DISPLAY` varchar(400) DEFAULT NULL,
-  `INDEX_STATUS` bigint(20) DEFAULT NULL,
-  PRIMARY KEY (`PID`),
-  UNIQUE KEY `IDX_CONCEPT_CS_CODE` (`CODESYSTEM_PID`,`CODE`),
-  KEY `IDX_CONCEPT_INDEXSTATUS` (`INDEX_STATUS`),
-  CONSTRAINT `FK_CONCEPT_PID_CS_PID` FOREIGN KEY (`CODESYSTEM_PID`) REFERENCES `TRM_CODESYSTEM_VER` (`PID`)
+CREATE TABLE `trm_concept` (
+  `pid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `code` varchar(100) NOT NULL,
+  `codesystem_pid` bigint(20) DEFAULT NULL,
+  `display` varchar(400) DEFAULT NULL,
+  `index_status` bigint(20) DEFAULT NULL,
+  PRIMARY KEY (`pid`),
+  UNIQUE KEY `IDX_CONCEPT_CS_CODE` (`codesystem_pid`,`code`),
+  KEY `IDX_CONCEPT_INDEXSTATUS` (`index_status`),
+  CONSTRAINT `FK_CONCEPT_PID_CS_PID` FOREIGN KEY (`codesystem_pid`) REFERENCES `trm_codesystem_ver` (`pid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `TRM_CONCEPT`
+-- Dumping data for table `trm_concept`
 --
 
-LOCK TABLES `TRM_CONCEPT` WRITE;
-/*!40000 ALTER TABLE `TRM_CONCEPT` DISABLE KEYS */;
-/*!40000 ALTER TABLE `TRM_CONCEPT` ENABLE KEYS */;
+LOCK TABLES `trm_concept` WRITE;
+/*!40000 ALTER TABLE `trm_concept` DISABLE KEYS */;
+/*!40000 ALTER TABLE `trm_concept` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `TRM_CONCEPT_PC_LINK`
+-- Table structure for table `trm_concept_pc_link`
 --
 
-DROP TABLE IF EXISTS `TRM_CONCEPT_PC_LINK`;
+DROP TABLE IF EXISTS `trm_concept_pc_link`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `TRM_CONCEPT_PC_LINK` (
-  `PID` bigint(20) NOT NULL AUTO_INCREMENT,
-  `CHILD_PID` bigint(20) DEFAULT NULL,
-  `PARENT_PID` bigint(20) DEFAULT NULL,
-  `REL_TYPE` int(11) DEFAULT NULL,
-  `CODESYSTEM_PID` bigint(20) NOT NULL,
-  PRIMARY KEY (`PID`),
-  KEY `FK_TERM_CONCEPTPC_CHILD` (`CHILD_PID`),
-  KEY `FK_TERM_CONCEPTPC_CS` (`CODESYSTEM_PID`),
-  KEY `FK_TERM_CONCEPTPC_PARENT` (`PARENT_PID`),
-  CONSTRAINT `FK_TERM_CONCEPTPC_CHILD` FOREIGN KEY (`CHILD_PID`) REFERENCES `TRM_CONCEPT` (`PID`),
-  CONSTRAINT `FK_TERM_CONCEPTPC_CS` FOREIGN KEY (`CODESYSTEM_PID`) REFERENCES `TRM_CODESYSTEM_VER` (`PID`),
-  CONSTRAINT `FK_TERM_CONCEPTPC_PARENT` FOREIGN KEY (`PARENT_PID`) REFERENCES `TRM_CONCEPT` (`PID`)
+CREATE TABLE `trm_concept_pc_link` (
+  `pid` bigint(20) NOT NULL AUTO_INCREMENT,
+  `child_pid` bigint(20) DEFAULT NULL,
+  `parent_pid` bigint(20) DEFAULT NULL,
+  `rel_type` int(11) DEFAULT NULL,
+  `codesystem_pid` bigint(20) NOT NULL,
+  PRIMARY KEY (`pid`),
+  KEY `FK_TERM_CONCEPTPC_CHILD` (`child_pid`),
+  KEY `FK_TERM_CONCEPTPC_CS` (`codesystem_pid`),
+  KEY `FK_TERM_CONCEPTPC_PARENT` (`parent_pid`),
+  CONSTRAINT `FK_TERM_CONCEPTPC_CHILD` FOREIGN KEY (`child_pid`) REFERENCES `trm_concept` (`pid`),
+  CONSTRAINT `FK_TERM_CONCEPTPC_CS` FOREIGN KEY (`codesystem_pid`) REFERENCES `trm_codesystem_ver` (`pid`),
+  CONSTRAINT `FK_TERM_CONCEPTPC_PARENT` FOREIGN KEY (`parent_pid`) REFERENCES `trm_concept` (`pid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `TRM_CONCEPT_PC_LINK`
+-- Dumping data for table `trm_concept_pc_link`
 --
 
-LOCK TABLES `TRM_CONCEPT_PC_LINK` WRITE;
-/*!40000 ALTER TABLE `TRM_CONCEPT_PC_LINK` DISABLE KEYS */;
-/*!40000 ALTER TABLE `TRM_CONCEPT_PC_LINK` ENABLE KEYS */;
+LOCK TABLES `trm_concept_pc_link` WRITE;
+/*!40000 ALTER TABLE `trm_concept_pc_link` DISABLE KEYS */;
+/*!40000 ALTER TABLE `trm_concept_pc_link` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
