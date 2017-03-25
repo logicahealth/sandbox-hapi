@@ -94,8 +94,8 @@ CREATE TABLE `hfj_resource` (
   `sp_has_links` bit(1) DEFAULT NULL,
   `sp_index_status` bigint(20) DEFAULT NULL,
   `res_language` varchar(20) DEFAULT NULL,
-  `res_coords_present` bit(1) DEFAULT NULL,
-  `res_date_present` bit(1) DEFAULT NULL,
+  `sp_coords_present` bit(1) DEFAULT NULL,
+  `sp_date_present` bit(1) DEFAULT NULL,
   `sp_number_present` bit(1) DEFAULT NULL,
   `sp_quantity_present` bit(1) DEFAULT NULL,
   `sp_string_present` bit(1) DEFAULT NULL,
@@ -136,7 +136,7 @@ CREATE TABLE `hfj_res_link` (
   `pid` bigint(20) NOT NULL AUTO_INCREMENT,
   `src_path` varchar(100) NOT NULL,
   `src_resource_id` bigint(20) NOT NULL,
-  `src_resource_type` varchar(30) NOT NULL DEFAULT '',
+  `source_resource_type` varchar(30) NOT NULL DEFAULT '',
   `target_resource_id` bigint(20) DEFAULT NULL,
   `target_resource_type` varchar(30) NOT NULL DEFAULT '',
   `target_resource_url` varchar(200) DEFAULT NULL,
@@ -613,12 +613,12 @@ DROP TABLE IF EXISTS `hfj_tag_def`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `hfj_tag_def` (
   `tag_id` bigint(20) NOT NULL AUTO_INCREMENT,
-  `tab_code` varchar(200) DEFAULT NULL,
-  `tab_display` varchar(200) DEFAULT NULL,
-  `tab_system` varchar(200) DEFAULT NULL,
-  `tab_type` int(11) NOT NULL,
+  `tag_code` varchar(200) DEFAULT NULL,
+  `tag_display` varchar(200) DEFAULT NULL,
+  `tag_system` varchar(200) DEFAULT NULL,
+  `tag_type` int(11) NOT NULL,
   PRIMARY KEY (`tag_id`),
-  UNIQUE KEY `UK7rtv56frrjtafhumaceutboxd` (`tab_type`,`tab_system`,`tab_code`)
+  UNIQUE KEY `UK7rtv56frrjtafhumaceutboxd` (`tag_type`,`tag_system`,`tag_code`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -670,10 +670,10 @@ DROP TABLE IF EXISTS `trm_codesystem_ver`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `trm_codesystem_ver` (
   `pid` bigint(20) NOT NULL AUTO_INCREMENT,
-  `res_version_pid` bigint(20) NOT NULL,
+  `res_version_id` bigint(20) NOT NULL,
   `res_id` bigint(20) NOT NULL,
   PRIMARY KEY (`pid`),
-  UNIQUE KEY `IDX_CSV_RESOURCEPID_AND_VER` (`res_id`,`res_version_pid`),
+  UNIQUE KEY `IDX_CSV_RESOURCEPID_AND_VER` (`res_id`,`res_version_id`),
   CONSTRAINT `FK_CODESYSVER_RES_ID` FOREIGN KEY (`res_id`) REFERENCES `hfj_resource` (`res_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 /*!40101 SET character_set_client = @saved_cs_client */;
