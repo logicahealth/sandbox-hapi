@@ -17,7 +17,7 @@ spring:
 hibernate:
   search:
     default:
-      indexBase: @artifact.name@/lucenefiles
+      indexBase: target/@artifact.name@/lucenefiles
 
 logging:
   level:
