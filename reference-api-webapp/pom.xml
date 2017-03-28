@@ -15,7 +15,7 @@
     <packaging>war</packaging>
 
     <properties>
-        <artifact.name>hspc-reference-api-v3</artifact.name>
+        <artifact.name>hspc-reference-api</artifact.name>
         <springboot_jar.skip>false</springboot_jar.skip>
     </properties>
 
