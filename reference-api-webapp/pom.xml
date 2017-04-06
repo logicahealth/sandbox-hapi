@@ -173,7 +173,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <artifact.name>hspc-reference-api-v3</artifact.name>
+                <artifact.name>hspc-reference-api-v4</artifact.name>
             </properties>
             <build>
                 <plugins>
@@ -224,7 +224,7 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
-                <artifact.name>hspc-reference-api-v3-persona</artifact.name>
+                <artifact.name>hspc-reference-api-v4-persona</artifact.name>
             </properties>
             <build>
                 <plugins>
@@ -275,7 +275,7 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
-                <artifact.name>hspc-reference-api-v3-mock</artifact.name>
+                <artifact.name>hspc-reference-api-v4-mock</artifact.name>
             </properties>
             <build>
                 <plugins>
