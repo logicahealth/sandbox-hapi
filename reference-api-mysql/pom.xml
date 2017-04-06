@@ -7,7 +7,7 @@
         <groupId>org.hspconsortium</groupId>
         <artifactId>reference-api-parent</artifactId>
         <relativePath>../pom.xml</relativePath>
-        <version>1.2-SNAPSHOT</version>
+        <version>1.3</version>
     </parent>
 
     <groupId>org.hspconsortium.reference</groupId>
