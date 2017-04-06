@@ -1,11 +1,14 @@
 package org.hspconsortium.platform.api.fhir.multitenant;
 
+import org.hspconsortium.platform.api.fhir.DatabaseProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -20,8 +23,20 @@ public class DataSourceRepository {
     @Autowired
     private MultitenantDatabaseProperties multitenancyProperties;
 
+    @Autowired
+    private CacheManager cacheManager;
+
+    @Autowired
+    private DataSource dataSource;
+
     @Cacheable(cacheNames = "dataSource", key = "#p1 + '~' + #p0", unless = "#result == null")
     public DataSource getDataSource(String hspcSchemaVersion, String tenantIdentifier) {
+
+        if (DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION.equals(hspcSchemaVersion) &&
+                (DatabaseProperties.SANDBOX_SCHEMA_PREFIX + DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION).equals(tenantIdentifier)) {
+            return dataSource;
+        }
+
         DataSource dataSource = createDataSource(hspcSchemaVersion, tenantIdentifier);
         if (dataSource != null) {
             LOGGER.info(String.format("Tenant '%s' maps to '%s' database url.", tenantIdentifier

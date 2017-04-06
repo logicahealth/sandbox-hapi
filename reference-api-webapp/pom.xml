@@ -7,7 +7,7 @@
         <groupId>org.hspconsortium</groupId>
         <artifactId>reference-api-parent</artifactId>
         <relativePath>../pom.xml</relativePath>
-        <version>1.2</version>
+        <version>1.3</version>
     </parent>
 
     <groupId>org.hspconsortium.reference</groupId>
@@ -173,7 +173,7 @@
                 <activeByDefault>true</activeByDefault>
             </activation>
             <properties>
-                <artifact.name>hspc-reference-api-v3</artifact.name>
+                <artifact.name>hspc-reference-api-v4</artifact.name>
             </properties>
             <build>
                 <plugins>
@@ -224,7 +224,7 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
-                <artifact.name>hspc-reference-api-v3-persona</artifact.name>
+                <artifact.name>hspc-reference-api-v4-persona</artifact.name>
             </properties>
             <build>
                 <plugins>
@@ -275,7 +275,7 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
             <properties>
-                <artifact.name>hspc-reference-api-v3-mock</artifact.name>
+                <artifact.name>hspc-reference-api-v4-mock</artifact.name>
             </properties>
             <build>
                 <plugins>

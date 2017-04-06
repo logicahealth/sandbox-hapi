@@ -5,6 +5,7 @@ import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import org.apache.commons.lang3.time.DateUtils;
+import org.apache.lucene.util.Version;
 import org.hibernate.cfg.Environment;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.slf4j.Logger;
@@ -116,7 +117,7 @@ public class MySQLConfig {
     protected Properties jpaProperties(DataSource dataSource) {
         Properties hibernateProps = new Properties();
         // defaults
-        hibernateProps.put(Environment.SHOW_SQL, "false");
+        hibernateProps.put(Environment.SHOW_SQL, "true");
         hibernateProps.put(Environment.FORMAT_SQL, "true");
         hibernateProps.put(Environment.STATEMENT_BATCH_SIZE, "20");
         hibernateProps.put(Environment.USE_MINIMAL_PUTS, "false");
@@ -128,7 +129,7 @@ public class MySQLConfig {
         hibernateProps.put(Environment.DIALECT, hibernateDialect);
         hibernateProps.put(Environment.USE_MINIMAL_PUTS, "false");
         hibernateProps.put("hibernate.search.default.indexBase", luceneBase);
-        hibernateProps.put("hibernate.search.lucene_version", "LUCENE_CURRENT");
+        hibernateProps.put("hibernate.search.lucene_version", Version.LATEST);
         hibernateProps.put("hibernate.search.default.directory_provider", "filesystem");
         // overrides
         hibernateProps.putAll(jpaProperties.getHibernateProperties(dataSource));

@@ -36,7 +36,7 @@ public class ScopeBasedAuthorizationParamsStu3 implements ScopeBasedAuthorizatio
             case MeasureReport:
             case MedicationDispense:
             case MedicationRequest:
-            case NutritionRequest:
+            //case NutritionRequest:
             case Person:
             case RelatedPerson:
             case SupplyDelivery:
@@ -67,9 +67,9 @@ public class ScopeBasedAuthorizationParamsStu3 implements ScopeBasedAuthorizatio
             case Communication: // sender, recipient
             case CommunicationRequest: // sender, recipient, requester
             case Composition: // author, attester
-            case DeviceUseRequest: // requester, filler
+            //case DeviceUseRequest: // requester, filler
             case List: // source
-            case DiagnosticRequest: // filler
+            //case DiagnosticRequest: // filler
             case DocumentManifest: // author, recipient
             case DocumentReference: // author
                 return "subject";
