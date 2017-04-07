@@ -4,13 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.hspconsortium</groupId>
+        <groupId>org.hspconsortium.reference</groupId>
         <artifactId>reference-api-parent</artifactId>
         <relativePath>../pom.xml</relativePath>
         <version>1.4-SNAPSHOT</version>
     </parent>
 
-    <groupId>org.hspconsortium.reference</groupId>
     <artifactId>hspc-reference-api</artifactId>
     <packaging>war</packaging>
 
