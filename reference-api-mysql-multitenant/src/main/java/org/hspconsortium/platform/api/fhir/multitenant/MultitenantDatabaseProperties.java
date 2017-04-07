@@ -7,8 +7,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Profile;
 
-import java.util.Arrays;
-
 @ConfigurationProperties("hspc.platform.api.fhir")
 @Profile("multitenant")
 @Qualifier("MultitenantDatabaseProperties")
@@ -17,7 +15,7 @@ public class MultitenantDatabaseProperties extends DatabaseProperties {
 	@Value("${hspc.platform.api.fhir.datasource.cache.size:10}")
 	private String dataSourceCacheSize;
 
-	@Value("${hspc.platform.api.fhir.defaultTenantId:hspc3}")
+	@Value("${hspc.platform.api.fhir.defaultTenantId}")
 	private String defaultTenantId;
 
 	public String getDataSourceCacheSize() {

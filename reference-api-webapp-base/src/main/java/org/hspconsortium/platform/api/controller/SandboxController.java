@@ -18,7 +18,7 @@ import javax.validation.constraints.NotNull;
 @Profile("default")
 public class SandboxController {
 
-    @Value("${hspc.platform.api.sandbox.name:hspc3}")
+    @Value("${hspc.platform.api.sandbox.name}")
     private String sandboxName;
 
     private SandboxService sandboxService;
