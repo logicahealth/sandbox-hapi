@@ -5,9 +5,9 @@
 
     <parent>
         <groupId>org.hspconsortium.reference</groupId>
-        <artifactId>reference-api-parent</artifactId>
+        <artifactId>hspc-reference-api-parent</artifactId>
         <relativePath>../pom.xml</relativePath>
-        <version>1.4.0-SNAPSHOT</version>
+        <version>1.4.0-RELEASE</version>
     </parent>
 
     <artifactId>hspc-reference-api-mysql</artifactId>
