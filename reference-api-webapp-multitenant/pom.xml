@@ -7,7 +7,7 @@
         <groupId>org.hspconsortium.reference</groupId>
         <artifactId>hspc-reference-api-parent</artifactId>
         <relativePath>../pom.xml</relativePath>
-        <version>1.4.1-SNAPSHOT</version>
+        <version>1.4.1</version>
     </parent>
 
     <artifactId>hspc-reference-api-webapp-multitenant</artifactId>
@@ -15,7 +15,7 @@
 
     <properties>
         <artifact.name>hspc-reference-api</artifact.name>
-        <reference-messaging.version>1.2-SNAPSHOT</reference-messaging.version>
+        <reference-messaging.version>1.2</reference-messaging.version>
         <springboot_jar.skip>false</springboot_jar.skip>
     </properties>
 
