@@ -7,6 +7,8 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Profile;
 
+import java.util.Collections;
+
 @ConfigurationProperties("hspc.platform.api.fhir")
 @Profile("multitenant")
 @Qualifier("MultitenantDatabaseProperties")
@@ -30,9 +32,9 @@ public class MultitenantDatabaseProperties extends DatabaseProperties {
 		// override the database url and schema
 		DataSourceProperties baseProperties = super.getDb();
 		final String schema = String.format(SANDBOX_SCHEMA_NAMING, SANDBOX_SCHEMA_PREFIX, hspcSchemaVersion, tenant);
-		String url = getDb().getUrl().replace(baseProperties.getSchema(), schema);
+		String url = getDb().getUrl().replace(baseProperties.getSchema().get(0), schema);
 		baseProperties.setUrl(url);
-		baseProperties.setSchema(schema);
+		baseProperties.setSchema(Collections.singletonList(schema));
 		return baseProperties;
 	}
 }
