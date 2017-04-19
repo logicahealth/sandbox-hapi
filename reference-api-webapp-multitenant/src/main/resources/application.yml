@@ -1,5 +1,6 @@
 server:
-  port: 8090
+  address: 127.0.0.1
+  port: 8070
 
 spring:
   application:
@@ -7,7 +8,8 @@ spring:
   jmx:
     enabled: false
   profiles:
-    active: multitenant,production,stu3
+    active: multitenant,stu3
+#    active: multitenant,stu3,globalexception
   resources:
     chain:
       enabled: true
@@ -46,8 +48,7 @@ hspc:
         db:
           schema: hspc_4_${hspc.platform.api.sandbox.name}
           driver-class-name: com.mysql.jdbc.Driver
-          host: localhost:3306
-          url: jdbc:mysql://${hspc.platform.api.fhir.db.host}/${hspc.platform.api.fhir.db.schema}
+          url: jdbc:mysql://localhost:3306/${hspc.platform.api.fhir.db.schema}
           username: root
           password: password
         defaultTenantId: ${hspc.platform.api.sandbox.name}
@@ -63,21 +64,19 @@ hspc:
         openContextPath: open
     authorization:
       url: http://localhost:8080/hspc-reference-authorization
-      urlContext: ${hspc.platform.authorization.url}/
-      authorizeUrl: ${hspc.platform.authorization.urlContext}authorize
-      tokenUrl: ${hspc.platform.authorization.urlContext}token
-#      authorizeUrl: ${hspc.platform.authorization.urlContext}mock/authorize
-#      tokenUrl: ${hspc.platform.authorization.urlContext}mock/token
-      tokenCheckUrl: ${hspc.platform.authorization.urlContext}introspect
-      userinfoUrl: ${hspc.platform.authorization.urlContext}userinfo
+      authorizeUrl: ${hspc.platform.authorization.url}/authorize
+      tokenUrl: ${hspc.platform.authorization.url}/token
+#      authorizeUrl: ${hspc.platform.authorization.url}/mock/authorize
+#      tokenUrl: ${hspc.platform.authorization.url}/mock/token
+      tokenCheckUrl: ${hspc.platform.authorization.url}/introspect
+      userinfoUrl: ${hspc.platform.authorization.url}/userinfo
       smart:
-        launchUrl: ${hspc.platform.authorization.urlContext}Launch
-        registrationEndpointUrl: ${hspc.platform.authorization.urlContext}register
+        launchUrl: ${hspc.platform.authorization.url}/Launch
+        registrationEndpointUrl: ${hspc.platform.authorization.url}/register
         urisEndpointExtensionUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
     messaging:
       url: http://localhost:8080/hspc-reference-messaging
-      urlContext: ${hspc.platform.messaging.url}/
       subscriptionSupport:
         enabled: false
-        subscriptionEndpoint: ${hspc.platform.messaging.urlContext}subscription
-        resourceEndpoint: ${hspc.platform.messaging.urlContext}resource
+        subscriptionEndpoint: ${hspc.platform.messaging.url}/subscription
+        resourceEndpoint: ${hspc.platform.messaging.url}/resource

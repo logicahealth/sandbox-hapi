@@ -44,15 +44,15 @@ The reference-api-fhir-library is an extension of [HAPI FHIR](http://jamesagnew.
     java -jar reference-api-webapp-multitenant/target/hspc-reference-api-webapp-multitenant-*.war
 
 ### Verify ###
-* http://localhost:8090/hspc4/data/metadata
+* http://localhost:8070/hspc4/data/metadata
 
 ## Open Mode ##
 When the HSPC Reference API server is run in open mode, no security is applied.  This is very convenient for development, allowing resources to be read and written without authentication.  See reference-api-webapp/src/main/resources/application.yml.
 * hsp.platform.api.security.mode=open
 
 ### Sample Operations ###
-* http://localhost:8080/hspc4/open/Patient
-* http://localhost:8080/hspc4/open/Observation
+* http://localhost:8070/hspc4/open/Patient
+* http://localhost:8070/hspc4/open/Observation
 
 ## Secured Mode ##
 When the HSPC Reference API server is run in secured mode, authentication is required for most endpoints with the exception of the conformance statement.  See reference-api-webapp/src/main/resources/application.yml.

@@ -80,7 +80,7 @@ public class MultitenantMySQLConfig extends MySQLConfig {
                 .username(db.getUsername())
                 .password(db.getPassword())
                 .url(urlNoSchema);
-        DataSource dataSource =  factory.build();
+        DataSource dataSource = factory.build();
 
         if (dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource) {
             ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getPoolProperties().setTestOnBorrow(true);
@@ -123,7 +123,7 @@ public class MultitenantMySQLConfig extends MySQLConfig {
         };
 
         GuavaCache dataSourceCache = new GuavaCache("dataSource", CacheBuilder.newBuilder()
-                .maximumSize(Long.parseLong(((MultitenantDatabaseProperties)getDatabaseProperties()).getDataSourceCacheSize()))
+                .maximumSize(Long.parseLong(((MultitenantDatabaseProperties) getDatabaseProperties()).getDataSourceCacheSize()))
                 .removalListener(removalListener)
                 .recordStats()
                 .build());
