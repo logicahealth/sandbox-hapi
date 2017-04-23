@@ -7,7 +7,7 @@
         <groupId>org.hspconsortium.reference</groupId>
         <artifactId>hspc-reference-api-parent</artifactId>
         <relativePath>../pom.xml</relativePath>
-        <version>1.4.2-SNAPSHOT</version>
+        <version>1.4.2</version>
     </parent>
 
     <artifactId>hspc-reference-api-smart-support</artifactId>
