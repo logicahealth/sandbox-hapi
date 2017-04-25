@@ -25,6 +25,8 @@ public class ScopeBasedAuthorizationParamsStu3 implements ScopeBasedAuthorizatio
             case BodySite:
             case CarePlan:
             case Consent:
+            case Claim:
+            case ClaimResponse:
             case DetectedIssue:
             case EpisodeOfCare:
             case FamilyMemberHistory:
@@ -35,12 +37,10 @@ public class ScopeBasedAuthorizationParamsStu3 implements ScopeBasedAuthorizatio
             case ImmunizationRecommendation:
             case MeasureReport:
             case MedicationDispense:
-            case MedicationRequest:
-            //case NutritionRequest:
+            case NutritionOrder:
             case Person:
             case RelatedPerson:
             case SupplyDelivery:
-            case SupplyRequest:
             case VisionPrescription:
             case Basic: // author
             case AllergyIntolerance: // recorder, asserter
@@ -51,11 +51,15 @@ public class ScopeBasedAuthorizationParamsStu3 implements ScopeBasedAuthorizatio
             case ReferralRequest: // requester
             case ImagingManifest: // author
             case MedicationAdministration: // performer
+            case EligibilityRequest:
+            case ExplanationOfBenefit:
                 return "patient";
+            case Account:
+            case AdverseEvent:
+            case ChargeItem:
             case DeviceUseStatement:
             case DiagnosticReport:
             case EnrollmentRequest:
-            case Account:
             case Media:
             case MedicationStatement:
             case RiskAssessment:
@@ -63,15 +67,17 @@ public class ScopeBasedAuthorizationParamsStu3 implements ScopeBasedAuthorizatio
             case Observation: // performer
             case ProcedureRequest: // orderer, performer
             case QuestionnaireResponse: // author
-            case RequestGroup: // participantcase ClinicalImpression:
+            case RequestGroup: // participan
+            case ClinicalImpression:
             case Communication: // sender, recipient
             case CommunicationRequest: // sender, recipient, requester
             case Composition: // author, attester
-            //case DeviceUseRequest: // requester, filler
+            case DeviceRequest: // requester, filler
             case List: // source
-            //case DiagnosticRequest: // filler
+                //case DiagnosticRequest: // filler
             case DocumentManifest: // author, recipient
             case DocumentReference: // author
+            case MedicationRequest:
                 return "subject";
             case Appointment:
             case AppointmentResponse:
@@ -85,6 +91,10 @@ public class ScopeBasedAuthorizationParamsStu3 implements ScopeBasedAuthorizatio
                 return "target.subject";
             case ResearchSubject:
                 return "individual";
+            case Coverage:
+                return "policy-holder";
+            case SupplyRequest:
+                return "requester";
 
         }
 
