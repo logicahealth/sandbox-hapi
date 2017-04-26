@@ -20,7 +20,6 @@ spring:
   datasource:
     initialSize: 1
     maxActive: 5
-    maxActive: 10
 
 hibernate:
   search:
@@ -54,6 +53,9 @@ hspc:
           url: jdbc:mysql://localhost:3306/${hspc.platform.api.fhir.db.schema}
           username: root
           password: password
+        datasource:
+          cache:
+            size: 5
         defaultTenantId: ${hspc.platform.api.sandbox.name}
         hibernate:
           dialect: org.hibernate.dialect.MySQL5InnoDBDialect
