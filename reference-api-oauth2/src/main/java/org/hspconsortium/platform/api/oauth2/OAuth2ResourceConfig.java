@@ -102,6 +102,12 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE)
+    public InvalidMediaTypeFilter invalidMediaTypeFilter() {
+        return new InvalidMediaTypeFilter();
+    }
+
+    @Bean
+    @Order(Ordered.HIGHEST_PRECEDENCE + 1)
     public CorsFilter corsFilter() {
         return new CorsFilter();
     }
@@ -109,7 +115,16 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
     @Override
     public void configure(HttpSecurity http) throws Exception {
         Validate.isTrue(fhirContextPath != null, "Fhir context path not specified");
-        http.addFilterBefore(corsFilter(), ChannelProcessingFilter.class);
+
+        // add the corsFilter before the ChannelProcessingFilter
+        CorsFilter corsFilter = corsFilter();
+        http.addFilterBefore(corsFilter, ChannelProcessingFilter.class);
+
+        // add the invalidMediaTypeFilter before the CorsFilter
+        // (otherwise the CorsFilter will throw an exception for invalid media type)
+        InvalidMediaTypeFilter invalidMediaTypeFilter = invalidMediaTypeFilter();
+        http.addFilterBefore(invalidMediaTypeFilter, CorsFilter.class);
+
         configureHttpEndpoints(http);
     }
 
