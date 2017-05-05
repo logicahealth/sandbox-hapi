@@ -50,7 +50,8 @@ hspc:
         db:
           schema: hspc_4_${hspc.platform.api.sandbox.name}
           driver-class-name: com.mysql.jdbc.Driver
-          url: jdbc:mysql://localhost:3306/${hspc.platform.api.fhir.db.schema}
+          host: localhost
+          url: jdbc:mysql://${hspc.platform.api.fhir.db.host}:3306/${hspc.platform.api.fhir.db.schema}
           username: root
           password: password
         datasource:
@@ -68,7 +69,8 @@ hspc:
         # remove openContextPath to disable the open endpoint
         openContextPath: open
     authorization:
-      url: http://localhost:8080/hspc-reference-authorization
+      host: localhost
+      url: http://${hspc.platform.authorization.host}:8080/hspc-reference-authorization
       authorizeUrl: ${hspc.platform.authorization.url}/authorize
       tokenUrl: ${hspc.platform.authorization.url}/token
 #      authorizeUrl: ${hspc.platform.authorization.url}/mock/authorize
@@ -80,7 +82,8 @@ hspc:
         registrationEndpointUrl: ${hspc.platform.authorization.url}/register
         urisEndpointExtensionUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
     messaging:
-      url: http://localhost:8080/hspc-reference-messaging
+      host: localhost
+      url: http://${hspc.platform.messaging.host}:8080/hspc-reference-messaging
       subscriptionSupport:
         enabled: false
         subscriptionEndpoint: ${hspc.platform.messaging.url}/subscription

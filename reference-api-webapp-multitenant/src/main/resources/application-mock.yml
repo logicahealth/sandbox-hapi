@@ -1,4 +1,0 @@
-hspc:
-  platform:
-    authorization:
-      url: http://localhost:8080/hspc-reference-authorization-mock

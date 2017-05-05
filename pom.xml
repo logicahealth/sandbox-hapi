@@ -12,7 +12,7 @@
 
     <groupId>org.hspconsortium.reference</groupId>
     <artifactId>hspc-reference-api-parent</artifactId>
-    <version>1.4.3</version>
+    <version>1.4.4-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -24,6 +24,7 @@
         <module>reference-api-webapp</module>
         <module>reference-api-webapp-base</module>
         <module>reference-api-webapp-multitenant</module>
+        <!--<module>aws-bundle</module>-->
     </modules>
 
     <properties>
