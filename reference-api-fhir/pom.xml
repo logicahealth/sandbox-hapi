@@ -7,7 +7,7 @@
         <groupId>org.hspconsortium.reference</groupId>
         <artifactId>hspc-reference-api-parent</artifactId>
         <relativePath>../pom.xml</relativePath>
-        <version>1.4.4-SNAPSHOT</version>
+        <version>1.5.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>hspc-reference-api-fhir</artifactId>
@@ -53,7 +53,6 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>${apache.httpcomponents.version}</version>
         </dependency>
 
     </dependencies>

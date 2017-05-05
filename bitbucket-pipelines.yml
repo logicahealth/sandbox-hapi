@@ -17,7 +17,3 @@ pipelines:
             - openssl aes-256-cbc -pass pass:$OPENSSL_PWD -in private-key.gpg.enc -out private-key.gpg -d
             - gpg --import private-key.gpg
             - mvn -V -B -s settings.xml deploy -P DEPLOY
-# deploy to test environment
-            - echo $AWS_PEM_VALUE > hspc_sandbox.pem
-            - chmod 600 hspc_sandbox.pem
-            - sftp -i hspc_sandbox.pem ubuntu@test.hspconsortium.org:servers/api-fhir-1.9 <<< $'put reference-api-webapp-multitenant/target/hspc-reference-api-webapp-multitenant-*.jar'
