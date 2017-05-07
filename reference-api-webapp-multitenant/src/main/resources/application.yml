@@ -69,8 +69,12 @@ hspc:
         # remove openContextPath to disable the open endpoint
         openContextPath: open
     authorization:
+      protocol: http
       host: localhost
-      url: http://${hspc.platform.authorization.host}:8080/hspc-reference-authorization
+      port: 8060
+      context: /
+      url: ${hspc.platform.authorization.protocol}://${hspc.platform.authorization.host}:${hspc.platform.authorization.port}${hspc.platform.authorization.context}
+#      url: https://auth.hspconsortium.org/
       authorizeUrl: ${hspc.platform.authorization.url}/authorize
       tokenUrl: ${hspc.platform.authorization.url}/token
 #      authorizeUrl: ${hspc.platform.authorization.url}/mock/authorize
@@ -82,8 +86,11 @@ hspc:
         registrationEndpointUrl: ${hspc.platform.authorization.url}/register
         urisEndpointExtensionUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
     messaging:
+      protocol: http
       host: localhost
-      url: http://${hspc.platform.messaging.host}:8080/hspc-reference-messaging
+      port: 8091
+      context: /
+      url: ${hspc.platform.messaging.protocol}://${hspc.platform.messaging.host}:${hspc.platform.messaging.port}${hspc.platform.messaging.context}
       subscriptionSupport:
         enabled: false
         subscriptionEndpoint: ${hspc.platform.messaging.url}/subscription
