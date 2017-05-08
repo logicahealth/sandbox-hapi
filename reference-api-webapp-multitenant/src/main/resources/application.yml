@@ -4,22 +4,17 @@ server:
 spring:
   application:
     name: HSPC Reference API
-  jmx:
-    enabled: false
   profiles:
     active: multitenant,stu3
 #    active: multitenant,stu3,globalexception
-  resources:
-    chain:
-      enabled: true
+  datasource:
+    initialSize: 1
+    maxActive: 5
   jpa:
     hibernate:
       ddl-auto: none
       show_sql: false
       format_sql: true
-  datasource:
-    initialSize: 1
-    maxActive: 5
 
 hibernate:
   search:
