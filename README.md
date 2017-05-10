@@ -16,6 +16,17 @@ A deployable multitenant, web application that includes configuration of a FHIR 
 ## reference-api-webapp
 A example of a deployable web application that includes configuration of a FHIR server (reference-api-fhir, reference-api-mysql) for OAuth2 (reference-api-oauth2) and SMART launch (reference-api-smart-support).  The reference-api-webapp may be used as an example for a custom HSPC FHIR Resource server.
 
+# Default Ports
+The following default port assignments exist
+
+| Port        | Version             | Schema Version |
+|------------:| ------------------- | -------------- |
+| 8070        | Current Dev Version | ?              |
+| 8071        | DSTU2 1.0.2         | HSPC_1         |
+| 8072        | STU3 1.6            | HSPC_2         |
+| 8073        | STU3 1.8            | HSPC_3         |
+| 8074        | STU3 3.0.1          | HSPC_4         |
+
 # Libraries
 
 ## reference-api-smart-support
