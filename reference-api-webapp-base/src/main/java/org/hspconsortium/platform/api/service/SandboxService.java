@@ -70,6 +70,7 @@ public class SandboxService {
         Sandbox saved = sandboxPersister.saveSandbox(sandbox);
 
         boolean useStarterData = Boolean.valueOf(useHspcStarterData);
+        logger.info("useStarterData: " + useStarterData);
         if (existing == null) {
             sandboxPersister.loadInitialDataset(sandbox, useStarterData);
         }
