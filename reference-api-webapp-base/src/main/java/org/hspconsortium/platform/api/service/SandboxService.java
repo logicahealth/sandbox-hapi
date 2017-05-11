@@ -42,6 +42,7 @@ public class SandboxService {
     }
 
     public Sandbox save(@NotNull Sandbox sandbox) {
+        logger.info("Saving sandbox: " + sandbox);
         Validate.notNull(sandbox, "Sandbox must be provided");
         Validate.notNull(sandbox.getTeamId(), "Sandbox.teamId must be provided");
 
@@ -56,6 +57,7 @@ public class SandboxService {
         Sandbox existing = null;
         try {
             existing = sandboxPersister.findSandbox(sandbox.getTeamId());
+            logger.info("Existing sandbox: " + existing);
             if (existing == null) {
                 // check that the sandbox is unique across versions
                 if (!sandboxPersister.isTeamIdUnique(sandbox.getTeamId())) {
@@ -63,17 +65,23 @@ public class SandboxService {
                 }
             }
         } catch (SchemaNotInitializedException e) {
+            logger.info("SchemaNotInitializedException ignored for now");
             // ignore, will be fixed when saving
         }
 
         // save the sandbox info
         Sandbox saved = sandboxPersister.saveSandbox(sandbox);
+        logger.info("Saved sandbox: " + saved);
 
         boolean useStarterData = Boolean.valueOf(useHspcStarterData);
         logger.info("useStarterData: " + useStarterData);
         if (existing == null) {
             sandboxPersister.loadInitialDataset(sandbox, useStarterData);
         }
+
+        // Make sure the initial data set didn't replace the sandbox info
+        saved = sandboxPersister.saveSandbox(sandbox);
+        logger.info("Saved sandbox: " + saved);
 
         // update security
         if (sandbox.isAllowOpenAccess()) {

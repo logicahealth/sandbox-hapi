@@ -153,6 +153,7 @@ public class DatabaseManager {
     boolean createTenantInfoTableIfNotExist(String schema) {
         List<String> tables = getTablesLike(schema, TENANT_INFO_TABLE);
         boolean result = false;
+        LOGGER.info("Tenant tables empty?: " + tables.isEmpty());
         if (tables.isEmpty()) {
             LOGGER.info("Creating tenant info: " + schema);
             result = executeUpdateWithSchema(schema,
@@ -169,7 +170,7 @@ public class DatabaseManager {
     }
 
     private boolean addPropertiesToTenantInfoTable(String schema) {
-        LOGGER.info("Creating tenant info: " + schema);
+        LOGGER.info("addPropertiesToTenantInfoTable: " + schema);
         return executeUpdateWithSchema(schema,
                 "ALTER TABLE " + TENANT_INFO_TABLE + " " +
                         "ADD (properties VARCHAR(4096) NULL)");
@@ -219,6 +220,7 @@ public class DatabaseManager {
                 tenantInfo.setBaselineDate(resultSet.getDate(4) != null ? resultSet.getDate(4).toLocalDate() : null);
                 tenantInfo.setSnapshots(resultSet.getString(5));
                 tenantInfo.setProperties(resultSet.getString(6));
+                LOGGER.info("Returning tenant info: " + tenantInfo);
                 return tenantInfo;
             }
             return null;
@@ -239,6 +241,7 @@ public class DatabaseManager {
         Validate.notNull(tenantInfo.getHspcSchemaVersion());
         Validate.notNull(tenantInfo.getTenantId());
 
+        LOGGER.info("saving schema: " + schema + ", tenantInfo: " + tenantInfo + ", withSnapshots: " + withSnapshots);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         String query;
@@ -248,13 +251,14 @@ public class DatabaseManager {
                     "Tenant schema version can not change");
             query = "UPDATE hspc_tenant_info " +
                     "SET " +
-                    " allow_open_endpoint='" + toTOrF(tenantInfo.isAllowOpenEndpoint()) + "' " +
+                    " tenant_id='" + tenantInfo.getTenantId() + "' " +
+                    ", hspc_schema_version='" + tenantInfo.getHspcSchemaVersion() + "' " +
+                    ", allow_open_endpoint='" + toTOrF(tenantInfo.isAllowOpenEndpoint()) + "' " +
                     ", baseline_date=" + (tenantInfo.getBaselineDate() != null ? "'" + formatter.format(tenantInfo.getBaselineDate()) + "'" : "NULL") + " " +
                     ", properties=" + (tenantInfo.getProperties().isEmpty() ? "NULL" : "'" + tenantInfo.getPropertiesAsString() + "'") + " " +
                     (withSnapshots
                             ? " , snapshots=" + (tenantInfo.getSnapshotsAsString() != null ? "'" + tenantInfo.getSnapshotsAsString() + "'" : "NULL") + " "
-                            : " ") +
-                    "WHERE tenant_id='" + tenantInfo.getTenantId() + "' ";
+                            : " ");
         } else {
             query = "INSERT INTO hspc_tenant_info (tenant_id, hspc_schema_version, allow_open_endpoint, baseline_date, properties" +
                     (withSnapshots ? ", snapshots" : "") +
