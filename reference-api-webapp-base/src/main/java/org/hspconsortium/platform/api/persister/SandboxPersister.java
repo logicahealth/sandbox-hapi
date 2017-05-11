@@ -148,7 +148,10 @@ public class SandboxPersister {
         if (schema != null) {
             try {
                 TenantInfo tenantInfo = databaseManager.getTenantInfo(schema);
-                return toSandbox.apply(tenantInfo);
+                if (tenantInfo != null) {
+                    return toSandbox.apply(tenantInfo);
+                }
+                throw new SchemaNotInitializedException().forTeam(teamId);
             } catch (Exception e) {
                 throw new SchemaNotInitializedException().forTeam(teamId);
             }
