@@ -73,9 +73,10 @@ public class SqlDatabaseSnapshotStrategy implements SnapshotStrategy {
         Assert.notNull(snapshotKey);
 
         TenantInfo tenantInfo = databaseManager.getTenantInfo(sourceSchema);
-        if (!tenantInfo.getSnapshots().contains(snapshotKey)) {
-            throw new RuntimeException("Snapshot does not exist for " + tenantInfo.toString());
-        }
+        // don' fail, just try to delete anyway
+//        if (!tenantInfo.getSnapshots().contains(snapshotKey)) {
+//            throw new RuntimeException("Snapshot does not exist for " + tenantInfo.toString());
+//        }
 
         String snapshotSchema = sourceSchema + DatabaseProperties.SANDBOX_SCHEMA_SNAPSHOT_DELIMITER + snapshotKey;
 
@@ -85,7 +86,9 @@ public class SqlDatabaseSnapshotStrategy implements SnapshotStrategy {
             databaseManager.dropSchema(snapshotSchema);
         }
 
-        tenantInfo.getSnapshots().remove(snapshotKey);
+        if (tenantInfo.getSnapshots() != null) {
+            tenantInfo.getSnapshots().remove(snapshotKey);
+        }
         return databaseManager.save(sourceSchema, tenantInfo, true);
     }
 
