@@ -14,7 +14,7 @@ pipelines:
     master:
       - step:
           script:
-            - apt-get install python
+            - apt-get install python pip
             - pip install ansible-tower-cli
             - openssl aes-256-cbc -pass pass:$OPENSSL_PWD -in private-key.gpg.enc -out private-key.gpg -d
             - gpg --import private-key.gpg
