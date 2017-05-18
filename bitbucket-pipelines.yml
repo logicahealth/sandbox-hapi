@@ -14,6 +14,8 @@ pipelines:
     master:
       - step:
           script:
+            - cat /etc/lsb-release
+            - lsb_release -a
             - pip install ansible-tower-cli
             - openssl aes-256-cbc -pass pass:$OPENSSL_PWD -in private-key.gpg.enc -out private-key.gpg -d
             - gpg --import private-key.gpg
