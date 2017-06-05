@@ -1,5 +1,8 @@
 server:
   port: 8074
+  tomcat:
+    remote_ip_header: x-forwarded-for
+    protocol_header: x-forwarded-proto
 
 spring:
   application:
