@@ -31,7 +31,8 @@ import java.util.List;
 @Component
 public class MetadataRepositoryStu3Impl implements MetadataRepositoryStu3 {
 
-    static public String SECURE_MODE = "secured";
+    static private String SECURE_MODE = "secured";
+    static private String SECURE_MODE_MOCK = "mock";
 
     @Value("${hspc.platform.api.security.mode}")
     private String securityMode;
@@ -49,9 +50,8 @@ public class MetadataRepositoryStu3Impl implements MetadataRepositoryStu3 {
     private String urisEndpointExtensionUrl;
 
     public CapabilityStatement addCapabilityStatement(CapabilityStatement capabilityStatement) {
-        if (SECURE_MODE.equalsIgnoreCase(securityMode)) {
+        if (SECURE_MODE.equalsIgnoreCase(securityMode) || SECURE_MODE_MOCK.equalsIgnoreCase(securityMode)) {
             List<CapabilityStatement.CapabilityStatementRestComponent> restList = capabilityStatement.getRest();
-
 
             CapabilityStatement.CapabilityStatementRestComponent rest = restList.get(0);
             CapabilityStatement.CapabilityStatementRestSecurityComponent restSecurity = rest.getSecurity();
