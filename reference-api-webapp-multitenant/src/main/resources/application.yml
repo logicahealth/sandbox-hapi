@@ -70,7 +70,7 @@ hspc:
       protocol: http
       host: localhost
       port: 8060
-      context: /
+      context: ~
       url: ${hspc.platform.authorization.protocol}://${hspc.platform.authorization.host}:${hspc.platform.authorization.port}${hspc.platform.authorization.context}
 #      url: https://auth.hspconsortium.org/
       authorizeUrl: ${hspc.platform.authorization.url}/authorize
