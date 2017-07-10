@@ -1,12 +1,15 @@
 package org.hspconsortium.platform.api.model;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
+// Don't leak schema version out of the API server
+@JsonIgnoreProperties(value = "schemaVersion")
 public class Sandbox implements Serializable {
 
     private String teamId;

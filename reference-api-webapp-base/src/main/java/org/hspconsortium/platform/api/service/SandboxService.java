@@ -2,6 +2,7 @@ package org.hspconsortium.platform.api.service;
 
 import org.apache.commons.lang3.Validate;
 import org.hspconsortium.platform.api.fhir.DatabaseProperties;
+import org.hspconsortium.platform.api.model.DataSet;
 import org.hspconsortium.platform.api.model.Sandbox;
 import org.hspconsortium.platform.api.persister.SandboxPersister;
 import org.hspconsortium.platform.api.persister.SchemaNotInitializedException;
@@ -9,7 +10,6 @@ import org.hspconsortium.platform.api.security.TenantInfoRequestMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
@@ -29,9 +29,6 @@ public class SandboxService {
         this.tenantInfoRequestMatcher = tenantInfoRequestMatcher;
     }
 
-    @Value("${hspc.platform.api.sandbox.useHspcStarterData:false}")
-    public String useHspcStarterData;
-
     public void reset() {
         tenantInfoRequestMatcher.reset();
         logger.info("Sandbox Service reset");
@@ -41,18 +38,12 @@ public class SandboxService {
         return sandboxPersister.getSandboxes();
     }
 
-    public Sandbox save(@NotNull Sandbox sandbox) {
+    public Sandbox save(@NotNull Sandbox sandbox, @NotNull DataSet dataSet) {
         logger.info("Saving sandbox: " + sandbox);
         Validate.notNull(sandbox, "Sandbox must be provided");
         Validate.notNull(sandbox.getTeamId(), "Sandbox.teamId must be provided");
 
-        if (sandbox.getSchemaVersion() != null) {
-            Validate.isTrue(DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION.equals(sandbox.getSchemaVersion()),
-                    "Sandbox schema version [" + sandbox.getSchemaVersion() + "] is not expected schema version [" +
-                            DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION + "]");
-        } else {
-            sandbox.setSchemaVersion(DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION);
-        }
+        sandbox.setSchemaVersion(DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION);
 
         Sandbox existing = null;
         try {
@@ -73,10 +64,9 @@ public class SandboxService {
         Sandbox saved = sandboxPersister.saveSandbox(sandbox);
         logger.info("Saved sandbox: " + saved);
 
-        boolean useStarterData = Boolean.valueOf(useHspcStarterData);
-        logger.info("useStarterData: " + useStarterData);
+        logger.info("useStarterData: " + dataSet);
         if (existing == null) {
-            sandboxPersister.loadInitialDataset(sandbox, useStarterData);
+            sandboxPersister.loadInitialDataset(sandbox, dataSet);
         }
 
         // Make sure the initial data set didn't replace the sandbox info
@@ -98,7 +88,7 @@ public class SandboxService {
         try {
             sandbox = sandboxPersister.findSandbox(teamId);
         } catch (SchemaNotInitializedException e) {
-            sandbox = save(SandboxPersister.sandboxTemplate().setTeamId(teamId));
+            sandbox = save(SandboxPersister.sandboxTemplate().setTeamId(teamId), DataSet.NONE);
         }
 
         return sandbox;
@@ -120,7 +110,7 @@ public class SandboxService {
         }
     }
 
-    public Sandbox reset(String teamId) {
+    public Sandbox reset(String teamId, DataSet dataSet) {
         Sandbox existing = get(teamId);
 
         if (existing == null) {
@@ -132,7 +122,7 @@ public class SandboxService {
             }
         }
 
-        return save(SandboxPersister.sandboxTemplate().setTeamId(teamId));
+        return save(SandboxPersister.sandboxTemplate().setTeamId(teamId), dataSet);
     }
 
     public Sandbox takeSnapshot(String teamId, String snapshotId) {

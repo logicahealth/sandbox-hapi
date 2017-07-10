@@ -2,6 +2,7 @@ package org.hspconsortium.platform.api.controller;
 
 import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
 import org.apache.commons.lang3.Validate;
+import org.hspconsortium.platform.api.model.DataSet;
 import org.hspconsortium.platform.api.model.ResetSandboxCommand;
 import org.hspconsortium.platform.api.model.Sandbox;
 import org.hspconsortium.platform.api.model.SnapshotSandboxCommand;
@@ -29,14 +30,17 @@ public class SandboxController {
     }
 
     @RequestMapping(method = RequestMethod.PUT)
-    public Sandbox save(@NotNull @RequestBody Sandbox sandbox) {
+    public Sandbox save(@NotNull @RequestBody Sandbox sandbox, @RequestParam(value = "dataSet", required = false) DataSet dataSet) {
         Validate.notNull(sandbox);
         Validate.notNull(sandbox.getTeamId());
 
 //        don't validate the name to allow for initialization
 //        validate(sandbox.getTeamId());
+        if (dataSet == null) {
+            dataSet = DataSet.NONE;
+        }
 
-        return sandboxService.save(sandbox);
+        return sandboxService.save(sandbox, dataSet);
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -50,7 +54,7 @@ public class SandboxController {
 
     @RequestMapping(path = "/reset", method = RequestMethod.POST)
     public String reset(@RequestBody ResetSandboxCommand resetSandboxCommand) {
-        sandboxService.reset(sandboxName);
+        sandboxService.reset(sandboxName, resetSandboxCommand.getDataSet());
         return "Success";
     }
 

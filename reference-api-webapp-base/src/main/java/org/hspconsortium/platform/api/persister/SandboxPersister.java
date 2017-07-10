@@ -3,6 +3,7 @@ package org.hspconsortium.platform.api.persister;
 import org.hspconsortium.platform.api.fhir.DatabaseManager;
 import org.hspconsortium.platform.api.fhir.DatabaseProperties;
 import org.hspconsortium.platform.api.fhir.model.TenantInfo;
+import org.hspconsortium.platform.api.model.DataSet;
 import org.hspconsortium.platform.api.model.Sandbox;
 import org.hspconsortium.platform.api.oauth2.OAuth2ResourceConfig;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +23,12 @@ public class SandboxPersister {
 
     private static final String EMPTY_SCHEMA_PATH = "db/hspc_%s_schema_empty.sql";
 
-    private static final String STARTER_SCHEMA_PATH = "db/hspc_%s_initial_dataset.sql";
+    private static final String STARTER_SCHEMA_PATH = "db/hspc_%s_%s_%s_dataset.sql";
 
     private static String DEFAULT_OPEN_CONTEXT_PATH = OAuth2ResourceConfig.NO_ENDPOINT;
 
+    @Value("${spring.profiles.active}")
+    private String profile;
 
     @Value("${hspc.platform.api.fhir.openContextPath:" + OAuth2ResourceConfig.NO_ENDPOINT + "}")
     private SandboxPersister setOpenContextPath(String openContextPath) {
@@ -185,13 +188,13 @@ public class SandboxPersister {
         return toSandbox.apply(tenantInfo);
     }
 
-    public boolean loadInitialDataset(Sandbox sandbox, boolean starterDataSet) {
+    public boolean loadInitialDataset(Sandbox sandbox, DataSet starterDataSet) {
         String schemaName = toSchemaName.apply(sandbox);
 
         // copy in the starter set
         final String dataFileName = String.format(
-                starterDataSet ? STARTER_SCHEMA_PATH : EMPTY_SCHEMA_PATH,
-                sandbox.getSchemaVersion());
+                starterDataSet == DataSet.DEFAULT ? STARTER_SCHEMA_PATH : EMPTY_SCHEMA_PATH,
+                sandbox.getSchemaVersion(), profile.contains("stu3") ? "stu3" : "dstu2", starterDataSet.toString().toLowerCase());
         try {
             ClassPathResource classPathResource = new ClassPathResource(dataFileName);
             InputStream inputStream = classPathResource.getInputStream();
