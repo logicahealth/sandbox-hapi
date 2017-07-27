@@ -88,7 +88,7 @@ public class SandboxService {
         try {
             sandbox = sandboxPersister.findSandbox(teamId);
         } catch (SchemaNotInitializedException e) {
-            sandbox = save(SandboxPersister.sandboxTemplate().setTeamId(teamId), DataSet.NONE);
+            sandbox = save(SandboxPersister.sandboxTemplate().setTeamId(teamId), DataSet.DEFAULT);
         }
 
         return sandbox;
