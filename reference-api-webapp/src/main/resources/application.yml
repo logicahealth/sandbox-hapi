@@ -1,3 +1,9 @@
+server:
+  port: 8074
+  tomcat:
+    remote_ip_header: x-forwarded-for
+    protocol_header: x-forwarded-proto
+
 spring:
   application:
     name: HSPC Reference API
@@ -37,7 +43,6 @@ hspc:
         scopes: openid,launch,smart/orchestrate_launch
       sandbox:
         name: hspc4
-        useHspcStarterData: false
       fhir:
         db:
           schema: hspc_4_${hspc.platform.api.sandbox.name}
@@ -58,7 +63,7 @@ hspc:
         # remove openContextPath to disable the open endpoint
         openContextPath: open
     authorization:
-      url: http://localhost:8080/hspc-reference-authorization
+      url: http://localhost:8060
       urlContext: ${hspc.platform.authorization.url}/
       authorizeUrl: ${hspc.platform.authorization.urlContext}authorize
       tokenUrl: ${hspc.platform.authorization.urlContext}token
@@ -69,7 +74,7 @@ hspc:
         registrationEndpointUrl: ${hspc.platform.authorization.urlContext}register
         urisEndpointExtensionUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
     messaging:
-      url: http://localhost:8080/hspc-reference-messaging
+      url: http://localhost:8091
       urlContext: ${hspc.platform.messaging.url}/
       subscriptionSupport:
         enabled: true

@@ -2,6 +2,7 @@ package org.hspconsortium.platform.api.controller;
 
 import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
 import org.apache.commons.lang3.Validate;
+import org.hspconsortium.platform.api.model.DataSet;
 import org.hspconsortium.platform.api.model.ResetSandboxCommand;
 import org.hspconsortium.platform.api.model.Sandbox;
 import org.hspconsortium.platform.api.model.SnapshotSandboxCommand;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 @RestController
 @RequestMapping("${hspc.platform.api.sandboxPath:/{teamId}/sandbox}")
@@ -23,7 +25,8 @@ public class MultitenantSandboxController {
     }
 
     @RequestMapping(method = RequestMethod.PUT)
-    public Sandbox save(@PathVariable String teamId, @NotNull @RequestBody Sandbox sandbox) {
+    public Sandbox save(@PathVariable String teamId, @NotNull @RequestBody Sandbox sandbox,
+                        @RequestParam(value = "dataSet", required = false) DataSet dataSet) {
         Validate.notNull(sandbox);
         Validate.notNull(sandbox.getTeamId());
 
@@ -32,7 +35,11 @@ public class MultitenantSandboxController {
 
         Validate.isTrue(teamId.equals(sandbox.getTeamId()));
 
-        return sandboxService.save(sandbox);
+        if (dataSet == null) {
+            dataSet = DataSet.NONE;
+        }
+
+        return sandboxService.save(sandbox, dataSet);
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -52,12 +59,17 @@ public class MultitenantSandboxController {
 
     @RequestMapping(path = "/reset", method = RequestMethod.POST)
     public String reset(@PathVariable String teamId, @RequestBody ResetSandboxCommand resetSandboxCommand) {
-        sandboxService.reset(teamId);
+        sandboxService.reset(teamId, resetSandboxCommand.getDataSet());
         return "Success";
     }
 
+    @RequestMapping(path = "/snapshot", method = RequestMethod.GET)
+    public Set<String> getSnapshots(@PathVariable String teamId) {
+        return sandboxService.getSandboxSnapshots(teamId);
+    }
+
     @RequestMapping(path = "/snapshot/{snapshotId}", method = RequestMethod.POST)
-    public Sandbox snapshot(@PathVariable String teamId,
+    public String snapshot(@PathVariable String teamId,
                             @PathVariable("snapshotId") String snapshotId,
                             @RequestBody SnapshotSandboxCommand snapshotSandboxCommand) {
         Validate.notNull(teamId);

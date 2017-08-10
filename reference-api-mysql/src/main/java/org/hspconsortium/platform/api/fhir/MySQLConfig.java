@@ -64,7 +64,7 @@ public class MySQLConfig {
         return this;
     }
 
-    public DatabaseProperties getDatabaseProperties() {
+    protected DatabaseProperties getDatabaseProperties() {
         return databaseProperties;
     }
 
@@ -117,7 +117,7 @@ public class MySQLConfig {
     protected Properties jpaProperties(DataSource dataSource) {
         Properties hibernateProps = new Properties();
         // defaults
-        hibernateProps.put(Environment.SHOW_SQL, "true");
+        hibernateProps.put(Environment.SHOW_SQL, "false");
         hibernateProps.put(Environment.FORMAT_SQL, "true");
         hibernateProps.put(Environment.STATEMENT_BATCH_SIZE, "20");
         hibernateProps.put(Environment.USE_MINIMAL_PUTS, "false");
@@ -154,8 +154,7 @@ public class MySQLConfig {
      */
     @Bean(autowire = Autowire.BY_TYPE)
     public IServerInterceptor responseHighlighterInterceptor() {
-        ResponseHighlighterInterceptor retVal = new ResponseHighlighterInterceptor();
-        return retVal;
+        return new ResponseHighlighterInterceptor();
     }
 
     @Bean()

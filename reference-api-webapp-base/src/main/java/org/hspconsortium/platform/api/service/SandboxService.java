@@ -2,6 +2,7 @@ package org.hspconsortium.platform.api.service;
 
 import org.apache.commons.lang3.Validate;
 import org.hspconsortium.platform.api.fhir.DatabaseProperties;
+import org.hspconsortium.platform.api.model.DataSet;
 import org.hspconsortium.platform.api.model.Sandbox;
 import org.hspconsortium.platform.api.persister.SandboxPersister;
 import org.hspconsortium.platform.api.persister.SchemaNotInitializedException;
@@ -9,11 +10,11 @@ import org.hspconsortium.platform.api.security.TenantInfoRequestMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
+import java.util.Set;
 
 @Component
 public class SandboxService {
@@ -29,9 +30,6 @@ public class SandboxService {
         this.tenantInfoRequestMatcher = tenantInfoRequestMatcher;
     }
 
-    @Value("${hspc.platform.api.sandbox.useHspcStarterData:false}")
-    public String useHspcStarterData;
-
     public void reset() {
         tenantInfoRequestMatcher.reset();
         logger.info("Sandbox Service reset");
@@ -41,38 +39,40 @@ public class SandboxService {
         return sandboxPersister.getSandboxes();
     }
 
-    public Sandbox save(@NotNull Sandbox sandbox) {
+    public Sandbox save(@NotNull Sandbox sandbox, @NotNull DataSet dataSet) {
+        logger.info("Saving sandbox: " + sandbox);
         Validate.notNull(sandbox, "Sandbox must be provided");
         Validate.notNull(sandbox.getTeamId(), "Sandbox.teamId must be provided");
 
-        if (sandbox.getSchemaVersion() != null) {
-            Validate.isTrue(DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION.equals(sandbox.getSchemaVersion()),
-                    "Sandbox schema version [" + sandbox.getSchemaVersion() + "] is not expected schema version [" +
-                            DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION + "]");
-        } else {
-            sandbox.setSchemaVersion(DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION);
-        }
+        sandbox.setSchemaVersion(DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION);
 
         Sandbox existing = null;
         try {
             existing = sandboxPersister.findSandbox(sandbox.getTeamId());
+            logger.info("Existing sandbox: " + existing);
             if (existing == null) {
                 // check that the sandbox is unique across versions
                 if (!sandboxPersister.isTeamIdUnique(sandbox.getTeamId())) {
-                    throw new RuntimeException("TeamID is not unique");
+                    throw new RuntimeException("TeamId is not unique");
                 }
             }
         } catch (SchemaNotInitializedException e) {
+            logger.info("SchemaNotInitializedException ignored for now");
             // ignore, will be fixed when saving
         }
 
         // save the sandbox info
         Sandbox saved = sandboxPersister.saveSandbox(sandbox);
+        logger.info("Saved sandbox: " + saved);
 
-        boolean useStarterData = Boolean.valueOf(useHspcStarterData);
+        logger.info("useStarterData: " + dataSet);
         if (existing == null) {
-            sandboxPersister.loadInitialDataset(sandbox, useStarterData);
+            sandboxPersister.loadInitialDataset(sandbox, dataSet);
         }
+
+        // Make sure the initial data set didn't replace the sandbox info
+        saved = sandboxPersister.saveSandbox(sandbox);
+        logger.info("Saved sandbox: " + saved);
 
         // update security
         if (sandbox.isAllowOpenAccess()) {
@@ -89,7 +89,7 @@ public class SandboxService {
         try {
             sandbox = sandboxPersister.findSandbox(teamId);
         } catch (SchemaNotInitializedException e) {
-            sandbox = save(SandboxPersister.sandboxTemplate().setTeamId(teamId));
+            sandbox = save(SandboxPersister.sandboxTemplate().setTeamId(teamId), DataSet.DEFAULT);
         }
 
         return sandbox;
@@ -111,7 +111,7 @@ public class SandboxService {
         }
     }
 
-    public Sandbox reset(String teamId) {
+    public Sandbox reset(String teamId, DataSet dataSet) {
         Sandbox existing = get(teamId);
 
         if (existing == null) {
@@ -123,10 +123,23 @@ public class SandboxService {
             }
         }
 
-        return save(SandboxPersister.sandboxTemplate().setTeamId(teamId));
+        return save(SandboxPersister.sandboxTemplate().setTeamId(teamId), dataSet);
     }
+    
+    public Set<String> getSandboxSnapshots(String teamId) {
+        logger.info("getSandboxSnapshots for: " + teamId);
+        Sandbox existing = get(teamId);
 
-    public Sandbox takeSnapshot(String teamId, String snapshotId) {
+        if (existing == null) {
+            throw new RuntimeException("Unable to take snapshot of sandbox that does not exist: [" + teamId + "]");
+        }
+
+        Set<String> results = sandboxPersister.getSnapshots(existing);
+        logger.info("found snapshots: {" + String.join(", ", results) + "}");
+        return results;
+    }
+    
+    public String takeSnapshot(String teamId, String snapshotId) {
         Sandbox existing = get(teamId);
 
         if (existing == null) {
@@ -136,7 +149,7 @@ public class SandboxService {
         return sandboxPersister.takeSnapshot(existing, snapshotId);
     }
 
-    public Sandbox restoreSnapshot(String teamId, String snapshotId) {
+    public String restoreSnapshot(String teamId, String snapshotId) {
         Sandbox existing = get(teamId);
 
         if (existing == null) {
@@ -146,7 +159,7 @@ public class SandboxService {
         return sandboxPersister.restoreSnapshot(existing, snapshotId);
     }
 
-    public Sandbox deleteSnapshot(String teamId, String snapshotId) {
+    public String deleteSnapshot(String teamId, String snapshotId) {
         Sandbox existing = get(teamId);
 
         if (existing == null) {

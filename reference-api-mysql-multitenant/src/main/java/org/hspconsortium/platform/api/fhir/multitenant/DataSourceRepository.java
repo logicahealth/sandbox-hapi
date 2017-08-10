@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -33,7 +32,7 @@ public class DataSourceRepository {
     public DataSource getDataSource(String hspcSchemaVersion, String tenantIdentifier) {
 
         if (DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION.equals(hspcSchemaVersion) &&
-                (DatabaseProperties.SANDBOX_SCHEMA_PREFIX + DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION).equals(tenantIdentifier)) {
+                multitenancyProperties.getDefaultTenantId().equals(tenantIdentifier)) {
             return dataSource;
         }
 

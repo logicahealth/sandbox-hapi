@@ -1,4 +1,4 @@
-# This is a sample build configuration for Java – Maven.
+# This is a sample build configuration for Java - Maven.
 # Check our guides at https://confluence.atlassian.com/x/zd-5Mw for more examples.
 # Only use spaces to indent your .yml configuration.
 # -----
@@ -9,12 +9,15 @@ pipelines:
   default:
     - step:
         script:
-          - mvn clean install
+          - mvn -V -B install
   branches:
     master:
       - step:
           script:
-            - mvn clean install
+#            - apt-get update
+#            - apt-get install -y python python-pip
+#            - pip install ansible-tower-cli
             - openssl aes-256-cbc -pass pass:$OPENSSL_PWD -in private-key.gpg.enc -out private-key.gpg -d
             - gpg --import private-key.gpg
             - mvn -V -B -s settings.xml deploy -P DEPLOY
+#            - ./tower.bash

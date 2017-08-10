@@ -4,8 +4,7 @@ CREATE TABLE hspc_tenant_info (
     tenant_id VARCHAR(255) NOT NULL PRIMARY KEY,
     hspc_schema_version VARCHAR(10) NOT NULL,
     allow_open_endpoint VARCHAR(1) NOT NULL,
-    baseline_date DATE NULL,
-    snapshots VARCHAR(4096) NULL
+    baseline_date DATE NULL
 );
 
 INSERT INTO hspc_tenant_info (tenant_id, hspc_schema_version, allow_open_endpoint)
@@ -26,9 +25,6 @@ select
 		);')
 from
 (select distinct table_schema from tables where table_schema like 'hapi_%' or table_schema like 'hspc_%') sub1;
-
--- add snapshots
-alter table hspc_tenant_info add snapshots VARCHAR(4096);
 
 -- add baseline date
 alter table hspc_tenant_info add baseline_date DATE;

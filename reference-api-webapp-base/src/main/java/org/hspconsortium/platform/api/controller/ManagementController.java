@@ -3,6 +3,7 @@ package org.hspconsortium.platform.api.controller;
 import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
 import ca.uhn.fhir.rest.server.exceptions.ResourceNotFoundException;
 import com.google.common.collect.Sets;
+import org.hspconsortium.platform.api.model.DataSet;
 import org.hspconsortium.platform.api.model.Sandbox;
 import org.hspconsortium.platform.api.service.SandboxService;
 import org.slf4j.Logger;
@@ -55,7 +56,7 @@ public class ManagementController {
     @RequestMapping(value = "/sandbox/{teamId}", method = RequestMethod.PUT)
     public Sandbox create(@PathVariable String teamId, @RequestBody Sandbox sandbox) {
         validate(teamId);
-        return sandboxService.save(sandbox);
+        return sandboxService.save(sandbox, DataSet.NONE);
 //        return sandboxService.addOrReplace(teamId, sandbox);
     }
 

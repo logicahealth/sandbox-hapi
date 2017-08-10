@@ -2,6 +2,7 @@ package org.hspconsortium.platform.api.controller;
 
 import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
 import org.apache.commons.lang3.Validate;
+import org.hspconsortium.platform.api.model.DataSet;
 import org.hspconsortium.platform.api.model.ResetSandboxCommand;
 import org.hspconsortium.platform.api.model.Sandbox;
 import org.hspconsortium.platform.api.model.SnapshotSandboxCommand;
@@ -12,6 +13,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 @RestController
 @RequestMapping("${hspc.platform.api.sandboxPath:/sandbox}")
@@ -29,14 +31,17 @@ public class SandboxController {
     }
 
     @RequestMapping(method = RequestMethod.PUT)
-    public Sandbox save(@NotNull @RequestBody Sandbox sandbox) {
+    public Sandbox save(@NotNull @RequestBody Sandbox sandbox, @RequestParam(value = "dataSet", required = false) DataSet dataSet) {
         Validate.notNull(sandbox);
         Validate.notNull(sandbox.getTeamId());
 
 //        don't validate the name to allow for initialization
 //        validate(sandbox.getTeamId());
+        if (dataSet == null) {
+            dataSet = DataSet.NONE;
+        }
 
-        return sandboxService.save(sandbox);
+        return sandboxService.save(sandbox, dataSet);
     }
 
     @RequestMapping(method = RequestMethod.GET)
@@ -50,12 +55,17 @@ public class SandboxController {
 
     @RequestMapping(path = "/reset", method = RequestMethod.POST)
     public String reset(@RequestBody ResetSandboxCommand resetSandboxCommand) {
-        sandboxService.reset(sandboxName);
+        sandboxService.reset(sandboxName, resetSandboxCommand.getDataSet());
         return "Success";
     }
 
+    @RequestMapping(path = "/snapshot", method = RequestMethod.GET)
+    public Set<String> getSnapshots() {
+        return sandboxService.getSandboxSnapshots(sandboxName);
+    }
+
     @RequestMapping(path = "/snapshot/{snapshotId}", method = RequestMethod.POST)
-    public Sandbox snapshot(@PathVariable("snapshotId") String snapshotId,
+    public String snapshot(@PathVariable("snapshotId") String snapshotId,
                                 @RequestBody SnapshotSandboxCommand snapshotSandboxCommand) {
         Validate.notNull(snapshotId);
         Validate.isTrue(snapshotId.matches("^[a-zA-Z0-9]+$"), "Snapshot ID must only contain alphanumeric characters");
@@ -84,5 +94,4 @@ public class SandboxController {
             // good, not a reserved name
         }
     }
-
 }

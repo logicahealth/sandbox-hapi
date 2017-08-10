@@ -14,8 +14,8 @@ import java.util.List;
 @Component
 @Lazy
 public class MetadataRepositoryDstu2Impl implements MetadataRepositoryDstu2 {
-    static public String SECURE_MODE = "secured";
-    static public String SECURE_MODE_MOCK = "mock";
+    static private String SECURE_MODE = "secured";
+    static private String SECURE_MODE_MOCK = "mock";
 
     @Value("${hspc.platform.api.security.mode}")
     private String securityMode;

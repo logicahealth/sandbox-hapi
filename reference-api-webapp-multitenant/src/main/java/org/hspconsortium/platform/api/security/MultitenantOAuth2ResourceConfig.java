@@ -9,7 +9,7 @@ import org.springframework.security.oauth2.config.annotation.web.configuration.E
 
 @Configuration
 @EnableResourceServer
-@Profile("production")
+@Profile("multitenant")
 public class MultitenantOAuth2ResourceConfig extends OAuth2ResourceConfig {
 
     private static final String TENANT_PATTERN = "\\w+\\/";

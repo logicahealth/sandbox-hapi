@@ -61,14 +61,26 @@ public class MultitenantMySQLConfig extends MySQLConfig {
     public DataSource noSchemaDataSource() {
         // create a datasource that doesn't have a schema in the url
         DataSourceProperties db = getDatabaseProperties().getDb();
-        String urlNoSchema = db.getUrl().substring(0, db.getUrl().indexOf(db.getSchema().toLowerCase()));
+
+        String urlNoSchema = null;
+        for (String schema : db.getSchema()) {
+            if (db.getUrl().contains(schema.toLowerCase())) {
+                urlNoSchema = db.getUrl().substring(0, db.getUrl().indexOf(schema.toLowerCase()));
+                break;
+            }
+        }
+
+        if (urlNoSchema == null) {
+            throw new RuntimeException("Unable to create noSchemaDataSource for " + db.getUrl());
+        }
+
         DataSourceBuilder factory = DataSourceBuilder
                 .create(db.getClassLoader())
                 .driverClassName(db.getDriverClassName())
                 .username(db.getUsername())
                 .password(db.getPassword())
                 .url(urlNoSchema);
-        DataSource dataSource =  factory.build();
+        DataSource dataSource = factory.build();
 
         if (dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource) {
             ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getPoolProperties().setTestOnBorrow(true);
@@ -111,7 +123,7 @@ public class MultitenantMySQLConfig extends MySQLConfig {
         };
 
         GuavaCache dataSourceCache = new GuavaCache("dataSource", CacheBuilder.newBuilder()
-                .maximumSize(Long.parseLong(((MultitenantDatabaseProperties)getDatabaseProperties()).getDataSourceCacheSize()))
+                .maximumSize(Long.parseLong(((MultitenantDatabaseProperties) getDatabaseProperties()).getDataSourceCacheSize()))
                 .removalListener(removalListener)
                 .recordStats()
                 .build());
