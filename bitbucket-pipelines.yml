@@ -1,23 +1,76 @@
-# This is a sample build configuration for Java - Maven.
-# Check our guides at https://confluence.atlassian.com/x/zd-5Mw for more examples.
-# Only use spaces to indent your .yml configuration.
-# -----
-# You can specify a custom docker image from Docker Hub as your build environment.
+# This project uses the GitFlow Workflow as defined here:
+#   https://www.atlassian.com/git/tutorials/comparing-workflows#GitFlow-workflow
 image: maven:3.3.9-jdk-8
 
 pipelines:
   default:
     - step:
         script:
-          - mvn -V -B install
+          - echo "Please use a GitFlow branch"
+          - exit 1;
   branches:
-    master:
+    # In the GitFlow Workflow, the develop branch is the main development branch
+    # and the parent to all feature branches.
+    # CD Pipeline:
+    #  - Commits to develop are automatically pushed to dev
+    #  - Commits to develop are released to the maven repo as snapshot versions
+    develop:
       - step:
+          caches:
+            - maven
           script:
-#            - apt-get update
-#            - apt-get install -y python python-pip
-#            - pip install ansible-tower-cli
             - openssl aes-256-cbc -pass pass:$OPENSSL_PWD -in private-key.gpg.enc -out private-key.gpg -d
             - gpg --import private-key.gpg
             - mvn -V -B -s settings.xml deploy -P DEPLOY
-#            - ./tower.bash
+            # todo push to dev
+    # In the GitFlow Workflow, feature branches are for active development.
+    # CD Pipeline:
+    #  - Commits to feature are verified for testing
+    #  - Commits to develop are not released to maven
+    feature/*:
+      - step:
+          caches:
+            - maven
+          script:
+            - mvn -B verify
+    # In the GitFlow Workflow, release branches are for polishing a release prior to cutting.
+    # Releases are cut by:
+    #  1) merging to master and setting the maven version number
+    #  2) tagging the commit to master with the maven version number
+    #  3) releasing the artifact as part of the master commit
+    #  4) merging the release branch to develop
+    # CD Pipeline:
+    #  - Commits to release are automatically pushed to test
+    #  - Commits to release are released to the maven repo as snapshot or release versions
+    release/*:
+      - step:
+          caches:
+            - maven
+          script:
+            - openssl aes-256-cbc -pass pass:$OPENSSL_PWD -in private-key.gpg.enc -out private-key.gpg -d
+            - gpg --import private-key.gpg
+            - mvn -V -B -s settings.xml deploy -P DEPLOY
+            # todo push to test
+    # In the GitFlow Workflow, hotfix branches are the only branches that should branch off master
+    # CD Pipeline:
+    #  - Commits to release are released to the maven repo as snapshot or release versions
+    #  - Commits to hotfix are automatically pushed to test
+    hotfix/*:
+      - step:
+          caches:
+            - maven
+          script:
+            - openssl aes-256-cbc -pass pass:$OPENSSL_PWD -in private-key.gpg.enc -out private-key.gpg -d
+            - gpg --import private-key.gpg
+            - mvn -V -B -s settings.xml deploy -P DEPLOY
+            # todo push to test
+    # In the GitFlow Workflow, the master branch stores all historical releases.
+    # Once a release branch is ready for cutting, the release branch is merged into
+    # master and tagged with a version number.  In addition, the release branch should
+    # be merged into develop.
+    # CD Pipeline:
+    #  - Commits to master historical, they should be built on a release or hot fix branch
+    master:
+      - step:
+          script:
+            - echo "Thank you for committing to master!"
