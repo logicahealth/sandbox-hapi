@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 @RestController
 @RequestMapping("${hspc.platform.api.sandboxPath:/sandbox}")
@@ -58,8 +59,13 @@ public class SandboxController {
         return "Success";
     }
 
+    @RequestMapping(path = "/snapshot", method = RequestMethod.GET)
+    public Set<String> getSnapshots() {
+        return sandboxService.getSandboxSnapshots(sandboxName);
+    }
+
     @RequestMapping(path = "/snapshot/{snapshotId}", method = RequestMethod.POST)
-    public Sandbox snapshot(@PathVariable("snapshotId") String snapshotId,
+    public String snapshot(@PathVariable("snapshotId") String snapshotId,
                                 @RequestBody SnapshotSandboxCommand snapshotSandboxCommand) {
         Validate.notNull(snapshotId);
         Validate.isTrue(snapshotId.matches("^[a-zA-Z0-9]+$"), "Snapshot ID must only contain alphanumeric characters");
@@ -88,5 +94,4 @@ public class SandboxController {
             // good, not a reserved name
         }
     }
-
 }

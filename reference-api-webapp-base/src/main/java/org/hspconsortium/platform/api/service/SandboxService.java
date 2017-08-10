@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
+import java.util.Set;
 
 @Component
 public class SandboxService {
@@ -52,7 +53,7 @@ public class SandboxService {
             if (existing == null) {
                 // check that the sandbox is unique across versions
                 if (!sandboxPersister.isTeamIdUnique(sandbox.getTeamId())) {
-                    throw new RuntimeException("TeamID is not unique");
+                    throw new RuntimeException("TeamId is not unique");
                 }
             }
         } catch (SchemaNotInitializedException e) {
@@ -124,8 +125,21 @@ public class SandboxService {
 
         return save(SandboxPersister.sandboxTemplate().setTeamId(teamId), dataSet);
     }
+    
+    public Set<String> getSandboxSnapshots(String teamId) {
+        logger.info("getSandboxSnapshots for: " + teamId);
+        Sandbox existing = get(teamId);
 
-    public Sandbox takeSnapshot(String teamId, String snapshotId) {
+        if (existing == null) {
+            throw new RuntimeException("Unable to take snapshot of sandbox that does not exist: [" + teamId + "]");
+        }
+
+        Set<String> results = sandboxPersister.getSnapshots(existing);
+        logger.info("found snapshots: {" + String.join(", ", results) + "}");
+        return results;
+    }
+    
+    public String takeSnapshot(String teamId, String snapshotId) {
         Sandbox existing = get(teamId);
 
         if (existing == null) {
@@ -135,7 +149,7 @@ public class SandboxService {
         return sandboxPersister.takeSnapshot(existing, snapshotId);
     }
 
-    public Sandbox restoreSnapshot(String teamId, String snapshotId) {
+    public String restoreSnapshot(String teamId, String snapshotId) {
         Sandbox existing = get(teamId);
 
         if (existing == null) {
@@ -145,7 +159,7 @@ public class SandboxService {
         return sandboxPersister.restoreSnapshot(existing, snapshotId);
     }
 
-    public Sandbox deleteSnapshot(String teamId, String snapshotId) {
+    public String deleteSnapshot(String teamId, String snapshotId) {
         Sandbox existing = get(teamId);
 
         if (existing == null) {

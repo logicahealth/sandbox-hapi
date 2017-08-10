@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
+import java.util.Set;
 
 @RestController
 @RequestMapping("${hspc.platform.api.sandboxPath:/{teamId}/sandbox}")
@@ -62,8 +63,13 @@ public class MultitenantSandboxController {
         return "Success";
     }
 
+    @RequestMapping(path = "/snapshot", method = RequestMethod.GET)
+    public Set<String> getSnapshots(@PathVariable String teamId) {
+        return sandboxService.getSandboxSnapshots(teamId);
+    }
+
     @RequestMapping(path = "/snapshot/{snapshotId}", method = RequestMethod.POST)
-    public Sandbox snapshot(@PathVariable String teamId,
+    public String snapshot(@PathVariable String teamId,
                             @PathVariable("snapshotId") String snapshotId,
                             @RequestBody SnapshotSandboxCommand snapshotSandboxCommand) {
         Validate.notNull(teamId);

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Component;
 import java.io.*;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -95,7 +96,6 @@ public class SandboxPersister {
         );
         sandbox.setBaselineDate(tenantInfo.getBaselineDate());
         sandbox.setProperties(tenantInfo.getPropertiesAsString());
-        sandbox.getSnapshots().addAll(tenantInfo.getSnapshots());
 
         return sandbox;
     };
@@ -105,7 +105,7 @@ public class SandboxPersister {
 
     public List<String> getSandboxes() {
         // those that begin with the sandbox prefix
-        List<String> schemas = databaseManager.getSchemasLike(
+        Set<String> schemas = databaseManager.getSchemasLike(
                 DatabaseProperties.SANDBOX_SCHEMA_PREFIX +
                         DatabaseProperties.SANDBOX_SCHEMA_DELIMITER +
                         DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION +
@@ -122,14 +122,14 @@ public class SandboxPersister {
 
     public boolean isTeamIdUnique(String teamId) {
         // those that end with the teamId
-        List<String> schemasLike = databaseManager.getSchemasLike(
+        Set<String> schemasLike = databaseManager.getSchemasLike(
                 "%" + DatabaseProperties.SANDBOX_SCHEMA_DELIMITER + teamId);
         return schemasLike.isEmpty();
     }
 
     public String findSchemaForTeam(String teamId) {
         // those that end with the teamId
-        List<String> schemasLike = databaseManager.getSchemasLike(
+        Set<String> schemasLike = databaseManager.getSchemasLike(
                 DatabaseProperties.SANDBOX_SCHEMA_PREFIX +
                         DatabaseProperties.SANDBOX_SCHEMA_DELIMITER +
                         DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION +
@@ -140,7 +140,7 @@ public class SandboxPersister {
             case 0:
                 return null;
             case 1:
-                return schemasLike.get(0);
+                return schemasLike.iterator().next();
             default:
                 throw new RuntimeException("More than one schema matched the teamId: [" + teamId + "]");
         }
@@ -170,22 +170,25 @@ public class SandboxPersister {
         return toSandbox.apply(saved);
     }
 
-    public Sandbox takeSnapshot(Sandbox sandbox, String suffix) {
+    public Set<String> getSnapshots(Sandbox sandbox) {
         String schemaName = toSchemaName.apply(sandbox);
-        TenantInfo tenantInfo = databaseManager.takeSnapshot(schemaName, suffix);
-        return toSandbox.apply(tenantInfo);
+        return databaseManager.getSnapshotsForSchema(schemaName);
     }
 
-    public Sandbox restoreSnapshot(Sandbox sandbox, String suffix) {
+    public String takeSnapshot(Sandbox sandbox, String suffix) {
         String schemaName = toSchemaName.apply(sandbox);
-        TenantInfo tenantInfo = databaseManager.restoreSnapshot(schemaName, suffix);
-        return toSandbox.apply(tenantInfo);
+        String snapshot = databaseManager.takeSnapshot(schemaName, suffix);
+        return snapshot;
     }
 
-    public Sandbox deleteSnapshot(Sandbox sandbox, String suffix) {
+    public String restoreSnapshot(Sandbox sandbox, String suffix) {
         String schemaName = toSchemaName.apply(sandbox);
-        TenantInfo tenantInfo = databaseManager.deleteSnapshot(schemaName, suffix);
-        return toSandbox.apply(tenantInfo);
+        return databaseManager.restoreSnapshot(schemaName, suffix);
+    }
+
+    public String deleteSnapshot(Sandbox sandbox, String suffix) {
+        String schemaName = toSchemaName.apply(sandbox);
+        return databaseManager.deleteSnapshot(schemaName, suffix);
     }
 
     public boolean loadInitialDataset(Sandbox sandbox, DataSet starterDataSet) {

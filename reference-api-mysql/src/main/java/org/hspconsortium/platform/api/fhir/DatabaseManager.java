@@ -20,9 +20,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Component
 @PropertySource("classpath:/config/mysql.properties")
@@ -52,25 +51,39 @@ public class DatabaseManager {
         return noSchemaDataSource;
     }
 
-    public TenantInfo takeSnapshot(String schema, String snapshotKey) {
+    public Set<String> getSnapshotsForSchema(String schemaName) {
+        Set<String> snapshotSchemaNames = getSchemasLike(schemaName +
+                DatabaseProperties.SANDBOX_SCHEMA_SNAPSHOT_DELIMITER +
+                "%"
+        );
+
+        Set<String> snapshotNames = snapshotSchemaNames
+                .stream()
+                .map(schema -> schema.split("\\" + DatabaseProperties.SANDBOX_SCHEMA_SNAPSHOT_DELIMITER)[1])
+                .collect(Collectors.toSet());
+
+        return snapshotNames;
+    }
+
+    public String takeSnapshot(String schema, String snapshotKey) {
         return snapshotStrategy.takeSnapshot(schema, snapshotKey);
     }
 
-    public TenantInfo restoreSnapshot(String schema, String snapshotKey) {
+    public String restoreSnapshot(String schema, String snapshotKey) {
         return snapshotStrategy.restoreSnapshot(schema, snapshotKey);
     }
 
 
-    public TenantInfo deleteSnapshot(String schema, String snapshotKey) {
+    public String deleteSnapshot(String schema, String snapshotKey) {
         return snapshotStrategy.deleteSnapshot(schema, snapshotKey);
     }
 
-    public List<String> getSchemasLike(String schemaSearch) {
+    public Set<String> getSchemasLike(String schemaSearch) {
         return getSchemasLike(schemaSearch, null);
     }
 
-    public List<String> getSchemasLike(String schemaSearch, String notLike) {
-        List<String> results = new ArrayList<>();
+    public Set<String> getSchemasLike(String schemaSearch, String notLike) {
+        Set<String> results = new HashSet<>();
 
         Connection connection = null;
         Statement statement = null;
@@ -135,14 +148,14 @@ public class DatabaseManager {
         createTenantInfoTableIfNotExist(schemaName);
 
         // create the sandbox metadata
-        return save(schemaName, tenantInfo, false);
+        return save(schemaName, tenantInfo);
     }
 
     boolean createSchemaIfNotExist(String schema) {
         if (!validateSchemaName(schema)) {
             throw new RuntimeException("Invalid schema name: " + schema);
         }
-        List<String> existingSchemas = getSchemasLike(schema);
+        Set<String> existingSchemas = getSchemasLike(schema);
         if (existingSchemas.isEmpty()) {
             LOGGER.info("Creating schema: " + schema);
             return executeUpdateNoSchema("CREATE DATABASE " + schema);
@@ -161,8 +174,7 @@ public class DatabaseManager {
                             "tenant_id varchar(255) NOT NULL PRIMARY KEY, " +
                             "hspc_schema_version VARCHAR(10) NOT NULL, " +
                             "allow_open_endpoint VARCHAR(1) NOT NULL, " +
-                            "baseline_date DATE NULL, " +
-                            "snapshots VARCHAR(4096) NULL " +
+                            "baseline_date DATE NULL " +
                             ")");
             result = addPropertiesToTenantInfoTable(schema);
         }
@@ -208,7 +220,7 @@ public class DatabaseManager {
             statement = connection.createStatement();
             // there is only one tenant in a schema
             resultSet = statement.executeQuery(
-                    "SELECT tenant_id, hspc_schema_version, allow_open_endpoint, baseline_date, snapshots, properties " +
+                    "SELECT tenant_id, hspc_schema_version, allow_open_endpoint, baseline_date, properties " +
                             "FROM hspc_tenant_info "
             );
             if (resultSet.next()) {
@@ -218,8 +230,7 @@ public class DatabaseManager {
                         toBoolean(resultSet.getString(3))
                 );
                 tenantInfo.setBaselineDate(resultSet.getDate(4) != null ? resultSet.getDate(4).toLocalDate() : null);
-                tenantInfo.setSnapshots(resultSet.getString(5));
-                tenantInfo.setProperties(resultSet.getString(6));
+                tenantInfo.setProperties(resultSet.getString(5));
                 LOGGER.info("Returning tenant info: " + tenantInfo);
                 return tenantInfo;
             }
@@ -235,13 +246,13 @@ public class DatabaseManager {
         }
     }
 
-    public TenantInfo save(@NotNull String schema, @NotNull TenantInfo tenantInfo, boolean withSnapshots) {
+    public TenantInfo save(@NotNull String schema, @NotNull TenantInfo tenantInfo) {
         Validate.notNull(tenantInfo);
         Validate.notNull(tenantInfo.getTenantId());
         Validate.notNull(tenantInfo.getHspcSchemaVersion());
         Validate.notNull(tenantInfo.getTenantId());
 
-        LOGGER.info("saving schema: " + schema + ", tenantInfo: " + tenantInfo + ", withSnapshots: " + withSnapshots);
+        LOGGER.info("saving schema: " + schema + ", tenantInfo: " + tenantInfo);
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         String query;
@@ -255,23 +266,15 @@ public class DatabaseManager {
                     ", hspc_schema_version='" + tenantInfo.getHspcSchemaVersion() + "' " +
                     ", allow_open_endpoint='" + toTOrF(tenantInfo.isAllowOpenEndpoint()) + "' " +
                     ", baseline_date=" + (tenantInfo.getBaselineDate() != null ? "'" + formatter.format(tenantInfo.getBaselineDate()) + "'" : "NULL") + " " +
-                    ", properties=" + (tenantInfo.getProperties().isEmpty() ? "NULL" : "'" + tenantInfo.getPropertiesAsString() + "'") + " " +
-                    (withSnapshots
-                            ? " , snapshots=" + (tenantInfo.getSnapshotsAsString() != null ? "'" + tenantInfo.getSnapshotsAsString() + "'" : "NULL") + " "
-                            : " ");
+                    ", properties=" + (tenantInfo.getProperties().isEmpty() ? "NULL" : "'" + tenantInfo.getPropertiesAsString() + "'") + " ";
         } else {
-            query = "INSERT INTO hspc_tenant_info (tenant_id, hspc_schema_version, allow_open_endpoint, baseline_date, properties" +
-                    (withSnapshots ? ", snapshots" : "") +
-                    ") " +
+            query = "INSERT INTO hspc_tenant_info (tenant_id, hspc_schema_version, allow_open_endpoint, baseline_date, properties) " +
                     "VALUES ( " +
                     "'" + tenantInfo.getTenantId() + "' " +
                     ", '" + tenantInfo.getHspcSchemaVersion() + "' " +
                     ", '" + toTOrF(tenantInfo.isAllowOpenEndpoint()) + "' " +
                     ", " + (tenantInfo.getBaselineDate() != null ? "'" + formatter.format(tenantInfo.getBaselineDate()) + "' " : "NULL ") +
                     ", " + (tenantInfo.getProperties().isEmpty() ? "NULL" : "'" + tenantInfo.getPropertiesAsString() + "' ") +
-                    (withSnapshots
-                            ? ", " + (tenantInfo.getSnapshotsAsString() != null ? "'" + tenantInfo.getSnapshotsAsString() + "' " : "NULL ")
-                            : " ") +
                     ") ";
         }
         executeUpdateWithSchema(schema, query);

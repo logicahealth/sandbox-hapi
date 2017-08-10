@@ -4,7 +4,8 @@ import org.apache.commons.lang3.builder.ToStringBuilder;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class TenantInfo implements Serializable {
@@ -16,8 +17,6 @@ public class TenantInfo implements Serializable {
     private boolean allowOpenEndpoint;
 
     private LocalDate baselineDate;
-
-    private List<String> snapshots = new ArrayList<>();
 
     private Map<String, String> properties = new HashMap<>();
 
@@ -66,37 +65,6 @@ public class TenantInfo implements Serializable {
         return this;
     }
 
-    public List<String> getSnapshots() {
-        return snapshots;
-    }
-
-    public void setSnapshots(List<String> snapshots) {
-        if (snapshots == null) {
-            this.snapshots = new ArrayList<>();
-        } else {
-            this.snapshots = snapshots;
-        }
-    }
-
-    public String getSnapshotsAsString() {
-        String result = snapshots
-                .stream()
-                .map(Object::toString)
-                .collect(Collectors.joining(","));
-
-        return (result.length() > 0 ? result : null);
-    }
-
-    public void setSnapshots(String snapshotsAsString) {
-        if (snapshotsAsString == null) {
-            this.snapshots = new ArrayList<>();
-        } else {
-            // trim the "[]"
-            String[] sandboxArray = snapshotsAsString.replace("[", "").replace("]", "").split(",");
-            this.snapshots = new ArrayList<>(Arrays.asList(sandboxArray));
-        }
-    }
-
     public Map<String, String> getProperties() {
         return properties;
     }
@@ -143,7 +111,6 @@ public class TenantInfo implements Serializable {
                 .append("hspcSchemaVersion", hspcSchemaVersion)
                 .append("allowOpenEndpoint", allowOpenEndpoint)
                 .append("baselineDate", baselineDate)
-                .append("snapshots", getSnapshotsAsString())
                 .append("properties", getPropertiesAsString())
                 .toString();
     }

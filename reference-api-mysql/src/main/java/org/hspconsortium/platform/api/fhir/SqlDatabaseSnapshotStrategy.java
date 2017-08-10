@@ -1,6 +1,5 @@
 package org.hspconsortium.platform.api.fhir;
 
-import org.hspconsortium.platform.api.fhir.model.TenantInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -8,43 +7,42 @@ import org.springframework.util.Assert;
 
 import java.sql.*;
 import java.util.List;
+import java.util.Set;
 
 @Component
 public class SqlDatabaseSnapshotStrategy implements SnapshotStrategy {
-
-    private final int OFF = 0;
-    private final int ON = 1;
 
     @Autowired
     @Lazy
     private DatabaseManager databaseManager;
 
     @Override
-    public TenantInfo takeSnapshot(String sourceSchema, String snapshotKey) {
-        Assert.notNull(sourceSchema);
-        Assert.notNull(snapshotKey);
+    public String takeSnapshot(String sourceSchema, String snapshotKey) {
+        Assert.notNull(sourceSchema, "sourceSchema is required");
+        Assert.notNull(snapshotKey, "sandboxKey is required");
 
-        TenantInfo tenantInfo = databaseManager.getTenantInfo(sourceSchema);
-        if (tenantInfo.getSnapshots().contains(snapshotKey)) {
-            throw new RuntimeException("Snapshot already exists for " + tenantInfo.toString());
+        Set<String> snapshots = databaseManager.getSnapshotsForSchema(sourceSchema);
+
+        if (snapshots.contains(snapshotKey)) {
+            throw new RuntimeException("Snapshot already exists for " + sourceSchema);
         }
 
         String snapshotSchema = sourceSchema + DatabaseProperties.SANDBOX_SCHEMA_SNAPSHOT_DELIMITER + snapshotKey;
 
         cloneSchema(sourceSchema, snapshotSchema);
 
-        tenantInfo.getSnapshots().add(snapshotKey);
-        return databaseManager.save(sourceSchema, tenantInfo, true);
+        return snapshotKey;
     }
 
     @Override
-    public TenantInfo restoreSnapshot(String sourceSchema, String snapshotKey) {
-        Assert.notNull(sourceSchema);
-        Assert.notNull(snapshotKey);
+    public String restoreSnapshot(String sourceSchema, String snapshotKey) {
+        Assert.notNull(sourceSchema, "sourceSchema is required");
+        Assert.notNull(snapshotKey, "sandboxKey is required");
 
-        TenantInfo sourceTenantInfo = databaseManager.getTenantInfo(sourceSchema);
-        if (!sourceTenantInfo.getSnapshots().contains(snapshotKey)) {
-            throw new RuntimeException("Snapshot does not exist for " + sourceTenantInfo.toString());
+        Set<String> snapshots = databaseManager.getSnapshotsForSchema(sourceSchema);
+
+        if (!snapshots.contains(snapshotKey)) {
+            throw new RuntimeException("Snapshot does not exist for " + sourceSchema);
         }
 
         String snapshotSchema = sourceSchema + DatabaseProperties.SANDBOX_SCHEMA_SNAPSHOT_DELIMITER + snapshotKey;
@@ -60,23 +58,13 @@ public class SqlDatabaseSnapshotStrategy implements SnapshotStrategy {
         // clone the snapshot into the source
         cloneSchema(snapshotSchema, sourceSchema);
 
-        // update the new tenant info (from the restored sandbox)
-        // to have the sandbox list from the original tenant info
-        TenantInfo restoredTenantInfo = databaseManager.getTenantInfo(sourceSchema);
-        restoredTenantInfo.setSnapshots(sourceTenantInfo.getSnapshots());
-        return databaseManager.save(sourceSchema, restoredTenantInfo, true);
+        return snapshotKey;
     }
 
     @Override
-    public TenantInfo deleteSnapshot(String sourceSchema, String snapshotKey) {
-        Assert.notNull(sourceSchema);
-        Assert.notNull(snapshotKey);
-
-        TenantInfo tenantInfo = databaseManager.getTenantInfo(sourceSchema);
-        // don' fail, just try to delete anyway
-//        if (!tenantInfo.getSnapshots().contains(snapshotKey)) {
-//            throw new RuntimeException("Snapshot does not exist for " + tenantInfo.toString());
-//        }
+    public String deleteSnapshot(String sourceSchema, String snapshotKey) {
+        Assert.notNull(sourceSchema, "sourceSchema is required");
+        Assert.notNull(snapshotKey, "sandboxKey is required");
 
         String snapshotSchema = sourceSchema + DatabaseProperties.SANDBOX_SCHEMA_SNAPSHOT_DELIMITER + snapshotKey;
 
@@ -86,14 +74,14 @@ public class SqlDatabaseSnapshotStrategy implements SnapshotStrategy {
             databaseManager.dropSchema(snapshotSchema);
         }
 
-        if (tenantInfo.getSnapshots() != null) {
-            tenantInfo.getSnapshots().remove(snapshotKey);
-        }
-        return databaseManager.save(sourceSchema, tenantInfo, true);
+        return snapshotKey;
     }
 
     private boolean cloneSchema(String sourceSchema, String targetSchema) {
-        // make sure the snapshotSchema doesn't exist
+        final int OFF = 0;
+        final int ON = 1;
+
+        // make sure the targetSchema doesn't exist
         if (!databaseManager.getSchemasLike(targetSchema).isEmpty()) {
             throw new RuntimeException("Schema already exists for " + targetSchema);
         }

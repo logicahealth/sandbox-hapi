@@ -21,8 +21,6 @@ public class Sandbox implements Serializable {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate baselineDate;
     
-    private Set<String> snapshots;
-
     private String properties;
 
     protected Sandbox() {
@@ -37,7 +35,6 @@ public class Sandbox implements Serializable {
         this.schemaVersion = schemaVersion;
         this.allowOpenAccess = allowOpenAccess;
         this.baselineDate = null;
-        this.snapshots = new HashSet<>();
         this.properties = null;
     }
 
@@ -77,14 +74,6 @@ public class Sandbox implements Serializable {
         return this;
     }
 
-    public Set<String> getSnapshots() {
-        return snapshots;
-    }
-
-    public void setSnapshots(Set<String> snapshots) {
-        this.snapshots = snapshots;
-    }
-
     public String getProperties() {
         return properties;
     }
@@ -100,7 +89,6 @@ public class Sandbox implements Serializable {
                 "schemaVersion='" + schemaVersion + "'" +
                 "allowOpenAccess='" + allowOpenAccess + "'" +
                 "baselineDate='" + baselineDate + "'" +
-                "snapshots='" + snapshots + "'" +
                 "properties='" + properties + "'" +
                 '}';
     }
