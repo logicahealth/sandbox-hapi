@@ -6,6 +6,8 @@ import org.hspconsortium.platform.api.fhir.model.TenantInfo;
 import org.hspconsortium.platform.api.model.DataSet;
 import org.hspconsortium.platform.api.model.Sandbox;
 import org.hspconsortium.platform.api.oauth2.OAuth2ResourceConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
@@ -21,6 +23,8 @@ import java.util.stream.Collectors;
 
 @Component
 public class SandboxPersister {
+
+    private static final Logger logger = LoggerFactory.getLogger(SandboxPersister.class);
 
     private static final String EMPTY_SCHEMA_PATH = "db/hspc_%s_schema_empty.sql";
 
@@ -192,17 +196,24 @@ public class SandboxPersister {
     }
 
     public boolean loadInitialDataset(Sandbox sandbox, DataSet starterDataSet) {
-        String schemaName = toSchemaName.apply(sandbox);
+        logger.info("loadInitialDataset [" + starterDataSet + "] in sandbox [" + sandbox.toString() + "]");
+        DataSet loadingDataSet = DataSet.NONE;
+        if (starterDataSet != null) {
+            loadingDataSet = starterDataSet;
+        }
 
         // copy in the starter set
+        String dataFileNameTemplate = loadingDataSet == DataSet.DEFAULT ? STARTER_SCHEMA_PATH : EMPTY_SCHEMA_PATH;
         final String dataFileName = String.format(
-                starterDataSet == DataSet.DEFAULT ? STARTER_SCHEMA_PATH : EMPTY_SCHEMA_PATH,
-                sandbox.getSchemaVersion(), profile.contains("stu3") ? "stu3" : "dstu2", starterDataSet.toString().toLowerCase());
+                dataFileNameTemplate,
+                sandbox.getSchemaVersion(),
+                profile.contains("stu3") ? "stu3" : "dstu2",
+                loadingDataSet.toString().toLowerCase());
         try {
             ClassPathResource classPathResource = new ClassPathResource(dataFileName);
             InputStream inputStream = classPathResource.getInputStream();
             Reader reader = new BufferedReader(new InputStreamReader(inputStream));
-            return databaseManager.loadInitialDataset(schemaName, reader);
+            return databaseManager.loadInitialDataset(toSchemaName.apply(sandbox), reader);
         } catch (IOException e) {
             throw new RuntimeException(String.format("Error creating initial dataset. Data file reference '%s'", dataFileName), e);
         }
