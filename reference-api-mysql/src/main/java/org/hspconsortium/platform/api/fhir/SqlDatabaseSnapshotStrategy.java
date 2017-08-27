@@ -1,5 +1,7 @@
 package org.hspconsortium.platform.api.fhir;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
@@ -11,6 +13,8 @@ import java.util.Set;
 
 @Component
 public class SqlDatabaseSnapshotStrategy implements SnapshotStrategy {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(SqlDatabaseSnapshotStrategy.class);
 
     @Autowired
     @Lazy
@@ -116,11 +120,21 @@ public class SqlDatabaseSnapshotStrategy implements SnapshotStrategy {
 
             // insert all data
             for (String tableName : tables) {
-                createTableStatement = targetSchemaConnection.prepareStatement(
-                        "INSERT INTO `" + tableName + "` SELECT * FROM `" + sourceSchema + "`.`" + tableName + "`"
-                );
-                createTableStatement.executeUpdate();
-                createTableStatement.close();
+                try {
+                    createTableStatement = targetSchemaConnection.prepareStatement(
+                            "INSERT INTO `" + tableName + "` SELECT * FROM `" + sourceSchema + "`.`" + tableName + "`"
+                    );
+                    createTableStatement.executeUpdate();
+                    createTableStatement.close();
+                } catch (SQLException e) {
+                    // special case this table because connecting to a sandbox can also cause this table to be
+                    // created, causing a duplicate key exception
+                    if (tableName.equalsIgnoreCase("hspc_tenant_info")) {
+                        LOGGER.warn("Ignoring SQLException for hspc_tenant_info", e);
+                    } else {
+                        throw e;
+                    }
+                }
             }
 
             createTableStatement = targetSchemaConnection.prepareStatement("SET UNIQUE_CHECKS=" + ON);
