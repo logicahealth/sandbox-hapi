@@ -47,10 +47,7 @@ pipelines:
           caches:
             - maven
           script:
-            - openssl aes-256-cbc -pass pass:$OPENSSL_PWD -in private-key.gpg.enc -out private-key.gpg -d
-            - gpg --import private-key.gpg
-            - mvn -V -B -s settings.xml deploy -P DEPLOY
-            # todo push to test
+            - mvn -B verify
     # In the GitFlow Workflow, hotfix branches are the only branches that should branch off master
     # CD Pipeline:
     #  - Commits to release are released to the maven repo as snapshot or release versions
@@ -60,10 +57,7 @@ pipelines:
           caches:
             - maven
           script:
-            - openssl aes-256-cbc -pass pass:$OPENSSL_PWD -in private-key.gpg.enc -out private-key.gpg -d
-            - gpg --import private-key.gpg
-            - mvn -V -B -s settings.xml deploy -P DEPLOY
-            # todo push to test
+            - mvn -B verify
     # In the GitFlow Workflow, the master branch stores all historical releases.
     # Once a release branch is ready for cutting, the release branch is merged into
     # master and tagged with a version number.  In addition, the release branch should
@@ -73,4 +67,6 @@ pipelines:
     master:
       - step:
           script:
-            - echo "Thank you for committing to master!"
+            - openssl aes-256-cbc -pass pass:$OPENSSL_PWD -in private-key.gpg.enc -out private-key.gpg -d
+            - gpg --import private-key.gpg
+            - mvn -V -B -s settings.xml deploy -P DEPLOY
