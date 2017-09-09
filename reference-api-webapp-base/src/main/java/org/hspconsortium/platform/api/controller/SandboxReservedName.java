@@ -5,6 +5,7 @@ public enum SandboxReservedName {
     hspc2,
     hspc3,
     hspc4,
+    hspc5,
     test,
     sandbox,
     management,

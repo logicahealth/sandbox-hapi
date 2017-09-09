@@ -26,6 +26,7 @@ The following default port assignments exist
 | 8072        | STU3 1.6            | HSPC_2         |
 | 8073        | STU3 1.8            | HSPC_3         |
 | 8074        | STU3 3.0.1          | HSPC_4         |
+| 8075        | STU3 3.0.1          | HSPC_5         |
 
 # Libraries
 

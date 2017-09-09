@@ -26,7 +26,7 @@
         <!-- This dependency includes the core HAPI-FHIR classes -->
         <dependency>
             <groupId>ca.uhn.hapi.fhir</groupId>
-            <artifactId>hapi-fhir-base</artifactId>
+            <artifactId>hapi-fhir-server</artifactId>
             <version>${hapi.version}</version>
         </dependency>
 

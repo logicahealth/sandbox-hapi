@@ -5,5 +5,5 @@ java \
   -Dspring.profiles.active=stu3,multitenant \
   -Xms256M \
   -Xmx512M \
-  -Dserver.port=8074 \
+  -Dserver.port=8075 \
   -jar reference-api-webapp-multitenant/target/hspc-reference-api-webapp-multitenant-*.jar
