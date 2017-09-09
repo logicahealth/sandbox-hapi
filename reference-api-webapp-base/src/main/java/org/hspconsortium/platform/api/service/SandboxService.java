@@ -150,11 +150,13 @@ public class SandboxService {
     }
 
     public String restoreSnapshot(String teamId, String snapshotId) {
+        logger.info("restoreSnapshot called for " + teamId + ", " + snapshotId);
         Sandbox existing = get(teamId);
 
         if (existing == null) {
             throw new RuntimeException("Unable to restore snapshot of sandbox that does not exist: [" + teamId + "]");
         }
+        logger.info("existing: " + existing.getTeamId());
 
         return sandboxPersister.restoreSnapshot(existing, snapshotId);
     }
