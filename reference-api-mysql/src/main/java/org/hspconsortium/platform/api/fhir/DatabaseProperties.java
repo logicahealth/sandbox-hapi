@@ -1,5 +1,6 @@
 package org.hspconsortium.platform.api.fhir;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -16,6 +17,13 @@ public class DatabaseProperties {
 
 	@NestedConfigurationProperty
 	private DataSourceProperties db;
+
+	@Value("${flyway.locations}")
+	private String flywayLocations;
+
+	public String getFlywayLocations() {
+		return flywayLocations;
+	}
 
 	public DataSourceProperties getDb() {
 		return db;

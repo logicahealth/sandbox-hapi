@@ -24,14 +24,6 @@ hibernate:
     default:
       indexBase: target/@artifact.name@/lucenefiles
 
-flyway:
-  enabled: false
-  locations: db/mysql/migration
-  # create a different datasource with a connection to this same url
-#  url: ${hspc.platform.api.fhir.db.url}
-#  user: ${hspc.platform.api.fhir.db.username}
-#  password: ${hspc.platform.api.fhir.db.password}
-
 logging:
   level:
     org.springframework.security: INFO
@@ -61,7 +53,7 @@ hspc:
           password: password
         datasource:
           cache:
-            size: 5
+            size: 40
         defaultTenantId: ${hspc.platform.api.sandbox.name}
         hibernate:
           dialect: org.hibernate.dialect.MySQL5InnoDBDialect

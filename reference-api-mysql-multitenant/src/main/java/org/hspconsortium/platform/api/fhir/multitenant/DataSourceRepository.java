@@ -6,7 +6,6 @@ import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.cache.guava.GuavaCache;
@@ -21,20 +20,18 @@ public class DataSourceRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceRepository.class);
 
-    @Value("${flyway.locations}")
-    private String flywayLocations;
-
-    @Autowired
     private MultitenantDatabaseProperties multitenancyProperties;
 
     private GuavaCache datasourceCache;
 
-    public DataSourceRepository() {
+    @Autowired
+    public DataSourceRepository(MultitenantDatabaseProperties multitenancyProperties) {
+        this.multitenancyProperties = multitenancyProperties;
 
         Cache<Object, Object> cacheBuilder =
                 CacheBuilder
                         .newBuilder()
-                        .maximumSize(25)
+                        .maximumSize(this.multitenancyProperties.getDataSourceCacheSize())
                         .build();
 
         datasourceCache = new GuavaCache("datasourceCache", cacheBuilder);
@@ -83,7 +80,7 @@ public class DataSourceRepository {
             // migrate the database manually because of a circular bean problem
             // with multi-tenant datasources
             Flyway flyway = new Flyway();
-            flyway.setLocations(flywayLocations);
+            flyway.setLocations(multitenancyProperties.getFlywayLocations());
             flyway.setDataSource(dataSource);
             flyway.migrate();
 
