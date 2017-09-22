@@ -4,8 +4,8 @@ import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
-import org.apache.commons.lang3.time.DateUtils;
 import org.apache.lucene.util.Version;
+import org.flywaydb.core.Flyway;
 import org.hibernate.cfg.Environment;
 import org.hibernate.jpa.HibernatePersistenceProvider;
 import org.slf4j.Logger;
@@ -53,7 +53,8 @@ public class MySQLConfig {
     @Value("${hspc.platform.messaging.subscriptionSupport.enabled:false}")
     private boolean subscriptionEnabled;
 
-
+    @Value("${flyway.locations}")
+    private String flywayLocations;
 
     @Autowired
     private JpaProperties jpaProperties;
@@ -74,16 +75,14 @@ public class MySQLConfig {
     @Bean()
     public DaoConfig daoConfig() {
         DaoConfig retVal = new DaoConfig();
-        retVal.setSubscriptionEnabled(subscriptionEnabled);
-        retVal.setSubscriptionPollDelay(5000);
-        retVal.setSubscriptionPurgeInactiveAfterMillis(DateUtils.MILLIS_PER_HOUR);
         retVal.setAllowMultipleDelete(true);
         retVal.setAllowExternalReferences(allowExternalReferences);
         return retVal;
     }
 
     @Primary
-    @Bean(name = {"dataSource"})
+    @Bean//(name = {"dataSource"})
+    @Profile("default")
     public DataSource dataSource() {
         DataSourceProperties db = getDatabaseProperties().getDb();
         DataSourceBuilder factory = DataSourceBuilder
@@ -98,6 +97,14 @@ public class MySQLConfig {
             ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getPoolProperties().setTestOnBorrow(true);
             ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getPoolProperties().setValidationQuery("SELECT 1");
         }
+
+        // migrate the database manually because of a circular bean problem
+        // with multi-tenant datasources
+        Flyway flyway = new Flyway();
+        flyway.setLocations(flywayLocations);
+        flyway.setDataSource(dataSource);
+        flyway.migrate();
+
         return dataSource;
     }
 

@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -219,7 +218,6 @@ public class SandboxPersister {
         }
     }
 
-    @CacheEvict(cacheNames = "dataSource", key = "#p1 + '~' + #p0")
     public boolean removeSandbox(String schemaVersion, String teamId) {
         return databaseManager.dropSchema(toSchemaName.apply(new Sandbox(teamId, schemaVersion, false)));
     }

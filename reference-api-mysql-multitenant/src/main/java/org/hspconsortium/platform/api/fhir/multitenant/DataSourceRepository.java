@@ -1,13 +1,15 @@
 package org.hspconsortium.platform.api.fhir.multitenant;
 
-import org.hspconsortium.platform.api.fhir.DatabaseProperties;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
+import org.flywaydb.core.Flyway;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
-import org.springframework.cache.CacheManager;
-import org.springframework.cache.annotation.Cacheable;
+import org.springframework.cache.guava.GuavaCache;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -19,21 +21,31 @@ public class DataSourceRepository {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(DataSourceRepository.class);
 
+    @Value("${flyway.locations}")
+    private String flywayLocations;
+
     @Autowired
     private MultitenantDatabaseProperties multitenancyProperties;
 
-    @Autowired
-    private CacheManager cacheManager;
+    private GuavaCache datasourceCache;
 
-    @Autowired
-    private DataSource dataSource;
+    public DataSourceRepository() {
 
-    @Cacheable(cacheNames = "dataSource", key = "#p1 + '~' + #p0", unless = "#result == null")
+        Cache<Object, Object> cacheBuilder =
+                CacheBuilder
+                        .newBuilder()
+                        .maximumSize(25)
+                        .build();
+
+        datasourceCache = new GuavaCache("datasourceCache", cacheBuilder);
+    }
+
     public DataSource getDataSource(String hspcSchemaVersion, String tenantIdentifier) {
+        String key = tenantIdentifier + "~" + hspcSchemaVersion;
 
-        if (DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION.equals(hspcSchemaVersion) &&
-                multitenancyProperties.getDefaultTenantId().equals(tenantIdentifier)) {
-            return dataSource;
+        org.springframework.cache.Cache.ValueWrapper valueWrapper = datasourceCache.get(key);
+        if (valueWrapper != null) {
+            return (DataSource)valueWrapper.get();
         }
 
         DataSource dataSource = createDataSource(hspcSchemaVersion, tenantIdentifier);
@@ -46,6 +58,9 @@ public class DataSourceRepository {
             ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getPoolProperties().setTestOnBorrow(true);
             ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getPoolProperties().setValidationQuery("SELECT 1");
         }
+
+        datasourceCache.put(key, dataSource);
+
         return dataSource;
     }
 
@@ -64,8 +79,13 @@ public class DataSourceRepository {
             //verify for a valid datasource
             conn = dataSource.getConnection();
             conn.isValid(2);
-            conn.close(); // Return to connection pool
-            conn = null;  // Make sure we don't close it twice
+
+            // migrate the database manually because of a circular bean problem
+            // with multi-tenant datasources
+            Flyway flyway = new Flyway();
+            flyway.setLocations(flywayLocations);
+            flyway.setDataSource(dataSource);
+            flyway.migrate();
 
         } catch (SQLException e) {
             LOGGER.error(String.format("Connection couldn't be established for tenant '%s' with '%s' database url."
@@ -78,9 +98,8 @@ public class DataSourceRepository {
                 try {
                     conn.close();
                 } catch (SQLException e) {
-                    ;
+                    LOGGER.error("Error closing connection pool", e);
                 }
-                conn = null;
             }
         }
         return dataSource;
