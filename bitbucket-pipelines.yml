@@ -68,8 +68,8 @@ pipelines:
             - export PATH=~/bin:$PATH
             - curl -o /usr/local/bin/jq -L https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && chmod +x /usr/local/bin/jq
             # clear out the other jar files
-            - rm target/*-sources.jar
-            - rm target/*-javadoc.jar
+            - rm reference-api-webapp-multitenant/target/*-sources.jar
+            - rm reference-api-webapp-multitenant/target/*-javadoc.jar
             # build docker image and push to nexus.interopion.com:18083 (docker-interopion)
             - export IMAGE_NAME=$(cat container-definitions_test.json | jq --raw-output '.[0].image')
             - docker login -u $NEXUS_USR -p $NEXUS_PWD nexus.hspconsortium.org:18083
