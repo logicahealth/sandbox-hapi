@@ -2,7 +2,6 @@ package org.hspconsortium.platform.api.oauth2;
 
 import org.apache.commons.lang3.Validate;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
@@ -26,13 +25,11 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RegexRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.filter.CorsFilter;
 
 import javax.servlet.Filter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 @Configuration
 @EnableResourceServer
@@ -110,20 +107,9 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
     }
 
     @Bean
-    CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(Collections.singletonList("*"));
-        configuration.setAllowedMethods(Collections.singletonList("*"));
-        configuration.setAllowedHeaders(Arrays.asList("X-FHIR-Starter", "authorization", "Prefer", "Origin", "Accept", "X-Requested-With", "Content-Type", "Access-Control-Request-Method", "Access-Control-Request-Headers"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        return source;
-    }
-
-    @Bean
-    @Autowired
-    CorsFilter corsFilter(CorsConfigurationSource corsConfigurationSource) {
-        return new CorsFilter(corsConfigurationSource);
+    @Order(Ordered.HIGHEST_PRECEDENCE + 1)
+    public CorsFilter corsFilter() {
+        return new CorsFilter();
     }
 
     @Override
@@ -131,8 +117,8 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
         Validate.isTrue(fhirContextPath != null, "Fhir context path not specified");
 
         // add the corsFilter before the ChannelProcessingFilter
-//        CorsFilter corsFilter = corsFilter();
-//        http.addFilterBefore(corsFilter, ChannelProcessingFilter.class);
+        CorsFilter corsFilter = corsFilter();
+        http.addFilterBefore(corsFilter, ChannelProcessingFilter.class);
 
         // add the invalidMediaTypeFilter before the CorsFilter
         // (otherwise the CorsFilter will throw an exception for invalid media type)
