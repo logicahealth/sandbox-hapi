@@ -179,14 +179,23 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
         if (additionalPermittedEndpointPairs != null && additionalPermittedEndpointPairs.length > 0) {
             if (!NO_ENDPOINT.equals(additionalPermittedEndpointPairs[0])) {
                 for (String endpointMethodPair : additionalPermittedEndpointPairs) {
-                    String[] endpointMethod = endpointMethodPair.split("|");
-                    if (endpointMethod.length == 2) {
-                        http
-                                .authorizeRequests()
-                                .antMatchers(HttpMethod.valueOf(endpointMethod[1]), endpointMethod[0])
-                                .permitAll();
+                    String[] endpointMethod = endpointMethodPair.split("\\|");
+                    switch (endpointMethod.length) {
+                        case 1:
+                            http
+                                    .authorizeRequests()
+                                    .antMatchers(endpointMethod[0])
+                                    .permitAll();
+                            break;
+                        case 2:
+                            http
+                                    .authorizeRequests()
+                                    .antMatchers(HttpMethod.valueOf(endpointMethod[1]), endpointMethod[0])
+                                    .permitAll();
+                            break;
+                        default:
+                            throw new RuntimeException("Value [" + endpointMethodPair + "] is not in the required format of [endpoint|HttpMethod] ex: [http://example.com|GET]");
                     }
-                    throw new RuntimeException("Value [" + endpointMethodPair + "] is not in the required format of [endpoint|HttpMethod] ex: [http://example.com|GET]");
                 }
             }
         }

@@ -14,7 +14,7 @@ import java.util.Set;
 @Component
 public class SqlDatabaseSnapshotStrategy implements SnapshotStrategy {
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(SqlDatabaseSnapshotStrategy.class);
+    private static final Logger logger = LoggerFactory.getLogger(SqlDatabaseSnapshotStrategy.class);
 
     @Autowired
     @Lazy
@@ -43,6 +43,8 @@ public class SqlDatabaseSnapshotStrategy implements SnapshotStrategy {
         Assert.notNull(sourceSchema, "sourceSchema is required");
         Assert.notNull(snapshotKey, "sandboxKey is required");
 
+        logger.info("restoreSnapshot called for: " + sourceSchema + ", " + snapshotKey);
+
         Set<String> snapshots = databaseManager.getSnapshotsForSchema(sourceSchema);
 
         if (!snapshots.contains(snapshotKey)) {
@@ -50,6 +52,8 @@ public class SqlDatabaseSnapshotStrategy implements SnapshotStrategy {
         }
 
         String snapshotSchema = sourceSchema + DatabaseProperties.SANDBOX_SCHEMA_SNAPSHOT_DELIMITER + snapshotKey;
+
+        logger.info("snapshotSchema: " + snapshotSchema);
 
         // make sure the snapshotSchema exists
         if (databaseManager.getSchemasLike(snapshotSchema).size() != 1) {
@@ -84,6 +88,8 @@ public class SqlDatabaseSnapshotStrategy implements SnapshotStrategy {
     private boolean cloneSchema(String sourceSchema, String targetSchema) {
         final int OFF = 0;
         final int ON = 1;
+
+        logger.info("cloneSchema: " + sourceSchema + ", " + targetSchema);
 
         // make sure the targetSchema doesn't exist
         if (!databaseManager.getSchemasLike(targetSchema).isEmpty()) {
@@ -121,16 +127,16 @@ public class SqlDatabaseSnapshotStrategy implements SnapshotStrategy {
             // insert all data
             for (String tableName : tables) {
                 try {
-                    createTableStatement = targetSchemaConnection.prepareStatement(
-                            "INSERT INTO `" + tableName + "` SELECT * FROM `" + sourceSchema + "`.`" + tableName + "`"
-                    );
+                    String stmt = "INSERT INTO `" + tableName + "` SELECT * FROM `" + sourceSchema + "`.`" + tableName + "`";
+                    logger.info(stmt);
+                    createTableStatement = targetSchemaConnection.prepareStatement(stmt);
                     createTableStatement.executeUpdate();
                     createTableStatement.close();
                 } catch (SQLException e) {
                     // special case this table because connecting to a sandbox can also cause this table to be
                     // created, causing a duplicate key exception
                     if (tableName.equalsIgnoreCase("hspc_tenant_info")) {
-                        LOGGER.warn("Ignoring SQLException for hspc_tenant_info", e);
+                        logger.warn("Ignoring SQLException for hspc_tenant_info", e);
                     } else {
                         throw e;
                     }
