@@ -9,15 +9,9 @@ spring:
     name: HSPC Reference API
   profiles:
     active: multitenant,stu3
-#    active: multitenant,stu3,globalexception
   datasource:
     initialSize: 1
     maxActive: 5
-  jpa:
-    hibernate:
-      ddl-auto: none
-      show_sql: false
-      format_sql: true
 
 hibernate:
   search:
@@ -34,9 +28,9 @@ hspc:
     api:
       security:
         # determines if security is applied at the contextPath
-        mode: secured
+#        mode: secured
 #        mode: mock
-#        mode: open
+        mode: open
       oauth2:
         clientId: hspc_resource_server
         clientSecret: secret
@@ -56,7 +50,7 @@ hspc:
             size: 40
         defaultTenantId: ${hspc.platform.api.sandbox.name}
         hibernate:
-          dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+          dialect: org.hibernate.dialect.MySQL5Dialect
         terminology:
           proxy:
             host: fhir3.healthintersections.com.au

@@ -38,6 +38,12 @@
         </dependency>
 
         <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-structures-r4</artifactId>
+            <version>${hapi.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.hspconsortium.reference</groupId>
             <artifactId>hspc-reference-api-smart-support</artifactId>
             <version>${project.version}</version>

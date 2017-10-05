@@ -51,6 +51,11 @@
             <artifactId>hapi-fhir-structures-dstu2</artifactId>
             <version>${hapi.version}</version>
         </dependency>
+        <dependency>
+            <groupId>ca.uhn.hapi.fhir</groupId>
+            <artifactId>hapi-fhir-structures-r4</artifactId>
+            <version>${hapi.version}</version>
+        </dependency>
 
         <!-- Needed for JEE/Servlet support -->
         <dependency>

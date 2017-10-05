@@ -4,8 +4,8 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("r4")
-public class ScopeBasedAuthorizationParamsStu3 implements ScopeBasedAuthorizationParams {
+@Profile("stu3")
+public class ScopeBasedAuthorizationParamsR4 implements ScopeBasedAuthorizationParams {
     @Override
     @SuppressWarnings("Duplicates")
     public String getParamForResource(String resourceTypeString) {

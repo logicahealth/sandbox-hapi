@@ -126,6 +126,7 @@ public class MySQLConfig {
         // defaults
         hibernateProps.put(Environment.SHOW_SQL, "false");
         hibernateProps.put(Environment.FORMAT_SQL, "true");
+        hibernateProps.put(Environment.HBM2DDL_AUTO, "none");
         hibernateProps.put(Environment.STATEMENT_BATCH_SIZE, "20");
         hibernateProps.put(Environment.USE_MINIMAL_PUTS, "false");
         hibernateProps.put(Environment.ORDER_INSERTS, "false");
@@ -138,8 +139,6 @@ public class MySQLConfig {
         hibernateProps.put("hibernate.search.default.indexBase", luceneBase);
         hibernateProps.put("hibernate.search.lucene_version", Version.LATEST);
         hibernateProps.put("hibernate.search.default.directory_provider", "filesystem");
-        // overrides
-        hibernateProps.putAll(jpaProperties.getHibernateProperties(dataSource));
         return hibernateProps;
     }
 

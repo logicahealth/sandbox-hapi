@@ -43,6 +43,7 @@ public class DatabaseProperties {
 		dataSourceProperties.setBeanClassLoader(db.getClassLoader());
 		dataSourceProperties.setDriverClassName(db.getDriverClassName());
 		dataSourceProperties.setPlatform(db.getPlatform());
+
 		return dataSourceProperties;
 	}
 }
