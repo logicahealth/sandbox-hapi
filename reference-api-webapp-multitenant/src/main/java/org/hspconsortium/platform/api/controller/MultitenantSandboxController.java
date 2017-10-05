@@ -7,6 +7,8 @@ import org.hspconsortium.platform.api.model.ResetSandboxCommand;
 import org.hspconsortium.platform.api.model.Sandbox;
 import org.hspconsortium.platform.api.model.SnapshotSandboxCommand;
 import org.hspconsortium.platform.api.service.SandboxService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,6 +18,8 @@ import java.util.Set;
 @RestController
 @RequestMapping("${hspc.platform.api.sandboxPath:/{teamId}/sandbox}")
 public class MultitenantSandboxController {
+
+    private static final Logger logger = LoggerFactory.getLogger(MultitenantSandboxController.class);
 
     private SandboxService sandboxService;
 
@@ -79,6 +83,7 @@ public class MultitenantSandboxController {
         Validate.notNull(snapshotSandboxCommand);
         Validate.notNull(snapshotSandboxCommand.getAction());
 
+        logger.info("Sandbox Snapshot action of [" + snapshotSandboxCommand.getAction() + "], requested for " + teamId + ", " + snapshotId);
         switch (snapshotSandboxCommand.getAction()) {
             case Take:
                 return sandboxService.takeSnapshot(teamId, snapshotId);

@@ -187,6 +187,7 @@ public class SandboxPersister {
 
     public String restoreSnapshot(Sandbox sandbox, String suffix) {
         String schemaName = toSchemaName.apply(sandbox);
+        logger.info("schemaName: " + schemaName);
         return databaseManager.restoreSnapshot(schemaName, suffix);
     }
 
