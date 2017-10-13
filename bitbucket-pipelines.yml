@@ -48,8 +48,6 @@ pipelines:
             - export PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
             - sed -i -e "s/{{CONTAINER_NAME}}/$CONTAINER_NAME/g" -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" container-definitions_test_stu3.json
             - sed -i -e "s/{{CONTAINER_NAME}}/$CONTAINER_NAME/g" -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" container-definitions_test_dstu2.json
-            - cat container-definitions_test_stu3.json
-            - cat container-definitions_test_dstu2.json
             # build docker image and push to nexus.hspconsortium.com:18083 for stu3 profile
             - export IMAGE_NAME=$(cat container-definitions_test_stu3.json | jq --raw-output '.[0].image')
             - docker login -u $NEXUS_USR -p $NEXUS_PWD nexus.hspconsortium.org:18083
@@ -67,12 +65,12 @@ pipelines:
             # register the ECS task definition and capture the version
             - export TASK_VERSION=$(aws ecs register-task-definition --family $CONTAINER_NAME --container-definitions $(cat container-definitions_test_stu3.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
             # update the service to use the latest task definition
-            - aws ecs update-service --cluster $TARGET_AWS_CLUSTER --service $TARGET_AWS_SERVICE --task-definition $CONTAINER_NAME:$TASK_VERSION
+            - aws ecs update-service --cluster $TARGET_AWS_CLUSTER --service $TARGET_AWS_SERVICE_STU3 --task-definition $CONTAINER_NAME:$TASK_VERSION
             # for dstu2 profile
             # register the ECS task definition and capture the version
             - export TASK_VERSION=$(aws ecs register-task-definition --family $CONTAINER_NAME --container-definitions $(cat container-definitions_test_dstu2.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
             # update the service to use the latest task definition
-            - aws ecs update-service --cluster $TARGET_AWS_CLUSTER --service $TARGET_AWS_SERVICE --task-definition $CONTAINER_NAME:$TASK_VERSION
+            - aws ecs update-service --cluster $TARGET_AWS_CLUSTER --service $TARGET_AWS_SERVICE_DSTU2 --task-definition $CONTAINER_NAME:$TASK_VERSION
     feature/*:
       - step:
           caches:
