@@ -1,0 +1,22 @@
+[
+  {
+    "name": "{{CONTAINER_NAME}}",
+    "image": "nexus.hspconsortium.org:18083/hspc/{{CONTAINER_NAME}}-stu3:{{PROJECT_VERSION}}",
+    "cpu": 0,
+    "portMappings": [
+      {
+        "containerPort": 8074,
+        "hostPort": 0,
+        "protocol": "tcp"
+      }
+    ],
+    "memory": 512,
+    "essential": true,
+    "environment": [
+      {
+        "name": "SPRING_PROFILES_ACTIVE",
+        "value": "stu3,multitenant"
+      }
+    ]
+  }
+]

@@ -27,13 +27,36 @@ pipelines:
             - export PATH=~/bin:$PATH
             - curl -o /usr/local/bin/jq -L https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && chmod +x /usr/local/bin/jq
             # clear out the other jar files
-            - rm reference-api-webapp-multitenant/target/*-sources.jar
-            - rm reference-api-webapp-multitenant/target/*-javadoc.jar
-            # build docker image and push to nexus.interopion.com:18083 (docker-interopion)
-            - export IMAGE_NAME=$(cat container-definitions_test.json | jq --raw-output '.[0].image')
+            - rm target/*-sources.jar
+            - rm target/*-javadoc.jar
+            # build dynamic container-definitions
+            - export CONTAINER_NAME=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.artifactId}' --non-recursive exec:exec)
+            - export PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
+            - sed -i -e "s/{{CONTAINER_NAME}}/$CONTAINER_NAME/g" -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" container-definitions_test_stu3.json
+            - sed -i -e "s/{{CONTAINER_NAME}}/$CONTAINER_NAME/g" -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" container-definitions_test_dstu2.json
+            # build docker image and push to nexus.hspconsortium.com:18083 for stu3 profile
+            - export IMAGE_NAME=$(cat container-definitions_test_stu3.json | jq --raw-output '.[0].image')
             - docker login -u $NEXUS_USR -p $NEXUS_PWD nexus.hspconsortium.org:18083
             - docker build -t $IMAGE_NAME .
             - docker push $IMAGE_NAME
+            # build docker image and push to nexus.hspconsortium.com:18083 for dstu2 profile
+            - export IMAGE_NAME=$(cat container-definitions_test_dstu2.json | jq --raw-output '.[0].image')
+            - docker login -u $NEXUS_USR -p $NEXUS_PWD nexus.hspconsortium.org:18083
+            - docker build -t $IMAGE_NAME .
+            - docker push $IMAGE_NAME
+            # Add jasypt pw to container definition
+            - jq '.[].environment += [{"name":"JASYPT_ENCRYPTOR_PASSWORD", "value":"'$ENC_PW_TEST'"}]' container-definitions_test_stu3.json > tmp.json && mv tmp.json container-definitions_test_stu3.json
+            - jq '.[].environment += [{"name":"JASYPT_ENCRYPTOR_PASSWORD", "value":"'$ENC_PW_TEST'"}]' container-definitions_test_dstu2.json > tmp.json && mv tmp.json container-definitions_test_dstu2.json
+            # For stu3 profile
+            # register the ECS task definition and capture the version
+            - export TASK_VERSION=$(aws ecs register-task-definition --family $CONTAINER_NAME --container-definitions $(cat container-definitions_test_stu3.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
+            # update the service to use the latest task definition
+            - aws ecs update-service --cluster $TARGET_AWS_CLUSTER --service $TARGET_AWS_SERVICE --task-definition $CONTAINER_NAME:$TASK_VERSION
+            # for dstu2 profile
+            # register the ECS task definition and capture the version
+            - export TASK_VERSION=$(aws ecs register-task-definition --family $CONTAINER_NAME --container-definitions $(cat container-definitions_test_dstu2.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
+            # update the service to use the latest task definition
+            - aws ecs update-service --cluster $TARGET_AWS_CLUSTER --service $TARGET_AWS_SERVICE --task-definition $CONTAINER_NAME:$TASK_VERSION
     feature/*:
       - step:
           caches:
@@ -71,7 +94,7 @@ pipelines:
             - rm reference-api-webapp-multitenant/target/*-sources.jar
             - rm reference-api-webapp-multitenant/target/*-javadoc.jar
             # build docker image and push to nexus.interopion.com:18083 (docker-interopion)
-            - export IMAGE_NAME=$(cat container-definitions_test.json | jq --raw-output '.[0].image')
+            - export IMAGE_NAME=$(cat container-definitions_test_stu3.json | jq --raw-output '.[0].image')
             - docker login -u $NEXUS_USR -p $NEXUS_PWD nexus.hspconsortium.org:18083
             - docker build -t $IMAGE_NAME .
             - docker push $IMAGE_NAME
