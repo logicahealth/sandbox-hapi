@@ -27,13 +27,29 @@ pipelines:
             - export PATH=~/bin:$PATH
             - curl -o /usr/local/bin/jq -L https://github.com/stedolan/jq/releases/download/jq-1.5/jq-linux64 && chmod +x /usr/local/bin/jq
             # clear out the other jar files
-            - rm target/*-sources.jar
-            - rm target/*-javadoc.jar
+            - rm reference-api-fhir/target/*-sources.jar
+            - rm reference-api-fhir/target/*-javadoc.jar
+            - rm reference-api-mysql/target/*-sources.jar
+            - rm reference-api-mysql/target/*-javadoc.jar
+            - rm reference-api-mysql-multitenant/target/*-sources.jar
+            - rm reference-api-mysql-multitenant/target/*-javadoc.jar
+            - rm reference-api-oauth2/target/*-sources.jar
+            - rm reference-api-oauth2/target/*-javadoc.jar
+            - rm reference-api-smart-support/target/*-sources.jar
+            - rm reference-api-smart-support/target/*-javadoc.jar
+            - rm reference-api-webapp/target/*-sources.jar
+            - rm reference-api-webapp/target/*-javadoc.jar
+            - rm reference-api-webapp-base/target/*-sources.jar
+            - rm reference-api-webapp-base/target/*-javadoc.jar
+            - rm reference-api-webapp-multitenant/target/*-sources.jar
+            - rm reference-api-webapp-multitenant/target/*-javadoc.jar
             # build dynamic container-definitions
             - export CONTAINER_NAME=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.artifactId}' --non-recursive exec:exec)
             - export PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
             - sed -i -e "s/{{CONTAINER_NAME}}/$CONTAINER_NAME/g" -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" container-definitions_test_stu3.json
             - sed -i -e "s/{{CONTAINER_NAME}}/$CONTAINER_NAME/g" -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" container-definitions_test_dstu2.json
+            - cat container-definitions_test_stu3.json
+            - cat container-definitions_test_dstu2.json
             # build docker image and push to nexus.hspconsortium.com:18083 for stu3 profile
             - export IMAGE_NAME=$(cat container-definitions_test_stu3.json | jq --raw-output '.[0].image')
             - docker login -u $NEXUS_USR -p $NEXUS_PWD nexus.hspconsortium.org:18083
