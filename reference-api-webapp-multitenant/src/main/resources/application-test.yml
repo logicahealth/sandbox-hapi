@@ -63,9 +63,6 @@ jasypt:
 spring:
   profiles: dstu2
 
-server:
-  port: 8071
-
 hspc:
   platform:
     api:
