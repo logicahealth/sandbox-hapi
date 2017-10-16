@@ -10,7 +10,7 @@ hspc:
         scopes: openid,launch,smart/orchestrate_launch
       fhir:
         db:
-          schema: hspc_4_${hspc.platform.api.sandbox.name}
+          schema: hspc_4_hspc4
           driver-class-name: com.mysql.jdbc.Driver
           host: jdbc:mysql://db-test.hspconsortium.org:3306
           url: ${hspc.platform.api.fhir.db.host}/${hspc.platform.api.fhir.db.schema}
