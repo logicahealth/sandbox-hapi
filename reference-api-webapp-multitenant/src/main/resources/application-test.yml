@@ -12,8 +12,8 @@ hspc:
         db:
           schema: hspc_4_${hspc.platform.api.sandbox.name}
           driver-class-name: com.mysql.jdbc.Driver
-          host: localhost
-          url: jdbc:mysql://${hspc.platform.api.fhir.db.host}:3306/${hspc.platform.api.fhir.db.schema}
+          host: jdbc:mysql://db-test.hspconsortium.org:3306
+          url: ${hspc.platform.api.fhir.db.host}:3306/${hspc.platform.api.fhir.db.schema}
           username: reference_api
           password: ENC(hpfPaZ0ddqxDu6gg1JgLv8tx3MhrNeyXB20nDIoFmag=)
         datasource:
