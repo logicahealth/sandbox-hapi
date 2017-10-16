@@ -15,7 +15,7 @@
     "environment": [
       {
         "name": "SPRING_PROFILES_ACTIVE",
-        "value": "dstu2,multitenant"
+        "value": "dstu2,test,multitenant"
       }
     ]
   }

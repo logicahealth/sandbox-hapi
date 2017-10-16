@@ -15,7 +15,7 @@
     "environment": [
       {
         "name": "SPRING_PROFILES_ACTIVE",
-        "value": "stu3,multitenant"
+        "value": "stu3,test,multitenant"
       }
     ]
   }

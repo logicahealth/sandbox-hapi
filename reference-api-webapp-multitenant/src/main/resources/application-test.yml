@@ -1,0 +1,81 @@
+# Platform Servers
+hspc:
+  platform:
+    api:
+      security:
+        mode: secured
+      oauth2:
+        clientId: hspc_resource_server
+        clientSecret: secret
+        scopes: openid,launch,smart/orchestrate_launch
+      fhir:
+        db:
+          schema: hspc_4_${hspc.platform.api.sandbox.name}
+          driver-class-name: com.mysql.jdbc.Driver
+          host: localhost
+          url: jdbc:mysql://${hspc.platform.api.fhir.db.host}:3306/${hspc.platform.api.fhir.db.schema}
+          username: reference_api
+          password: ENC(hpfPaZ0ddqxDu6gg1JgLv8tx3MhrNeyXB20nDIoFmag=)
+        datasource:
+          cache:
+            size: 5
+        defaultTenantId: ${hspc.platform.api.sandbox.name}
+        hibernate:
+          dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+        terminology:
+          proxy:
+            host: fhir3.healthintersections.com.au
+            contextPath: /open
+        federatedEndpointURL: dataphoria.org/datafhir
+        contextPath: data
+        # remove openContextPath to disable the open endpoint
+        openContextPath: open
+    authorization:
+      url: https://auth-test.hspconsortium.org
+#      url: https://auth.hspconsortium.org/
+      authorizeUrl: ${hspc.platform.authorization.url}/authorize
+      tokenUrl: ${hspc.platform.authorization.url}/token
+#      authorizeUrl: ${hspc.platform.authorization.url}/mock/authorize
+#      tokenUrl: ${hspc.platform.authorization.url}/mock/token
+      tokenCheckUrl: ${hspc.platform.authorization.url}/introspect
+      userinfoUrl: ${hspc.platform.authorization.url}/userinfo
+      smart:
+        launchUrl: ${hspc.platform.authorization.url}/Launch
+        registrationEndpointUrl: ${hspc.platform.authorization.url}/register
+        urisEndpointExtensionUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
+    messaging:
+      protocol: http
+      host: localhost
+      port: 8091
+      context: /
+      url: ${hspc.platform.messaging.protocol}://${hspc.platform.messaging.host}:${hspc.platform.messaging.port}${hspc.platform.messaging.context}
+      subscriptionSupport:
+        enabled: false
+        subscriptionEndpoint: ${hspc.platform.messaging.url}/subscription
+        resourceEndpoint: ${hspc.platform.messaging.url}/resource
+
+jasypt:
+  encryptor:
+    algorithm: PBEWithMD5AndTripleDES
+
+---
+
+spring:
+  profiles: dstu2
+
+hspc:
+  platform:
+    api:
+      sandbox:
+        name: dstu2
+
+---
+
+spring:
+  profiles: stu3
+
+hspc:
+  platform:
+    api:
+      sandbox:
+        name: stu3
