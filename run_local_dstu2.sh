@@ -2,7 +2,7 @@
 
 echo "running..."
 java \
-  -Dspring.profiles.active=dstu2,multitenant \
+  -Dspring.profiles.active=test,dstu2,multitenant \
   -Xms256M \
   -Xmx512M \
   -Dserver.port=8071 \

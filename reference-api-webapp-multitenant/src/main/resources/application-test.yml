@@ -15,7 +15,7 @@ hspc:
           host: jdbc:mysql://db-test.hspconsortium.org:3306
           url: ${hspc.platform.api.fhir.db.host}/${hspc.platform.api.fhir.db.schema}
           username: reference_api
-          password: aMT9ZahHW6CDkoHs
+          password: ENC(PGbAqA2yTasSehiLRk60NpQLMQ1btRtID+8hvhWf9AI=)
         datasource:
           cache:
             size: 5
