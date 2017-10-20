@@ -1,35 +1,19 @@
-/*
- * #%L
- * Healthcare Services Consortium Platform FHIR Server
- * %%
- * Copyright (C) 2014 - 2015 Healthcare Services Platform Consortium
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
-
 package org.hspconsortium.platform.api.fhir.repository;
 
-import org.hl7.fhir.dstu3.model.*;
+import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Extension;
+import org.hl7.fhir.r4.model.UriType;
+import org.hl7.fhir.r4.model.CapabilityStatement;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Lazy
 @Component
-public class MetadataRepositoryStu3Impl implements MetadataRepositoryStu3 {
+@Lazy
+public class MetadataRepositoryR4Impl implements MetadataRepositoryR4 {
 
     static private String SECURE_MODE = "secured";
     static private String SECURE_MODE_MOCK = "mock";
@@ -49,8 +33,8 @@ public class MetadataRepositoryStu3Impl implements MetadataRepositoryStu3 {
     @Value("${hspc.platform.authorization.smart.urisEndpointExtensionUrl}")
     private String urisEndpointExtensionUrl;
 
-    @SuppressWarnings("Duplicates")
     @Override
+    @SuppressWarnings("Duplicates")
     public CapabilityStatement addCapabilityStatement(CapabilityStatement capabilityStatement) {
         if (SECURE_MODE.equalsIgnoreCase(securityMode) || SECURE_MODE_MOCK.equalsIgnoreCase(securityMode)) {
             List<CapabilityStatement.CapabilityStatementRestComponent> restList = capabilityStatement.getRest();
@@ -72,5 +56,6 @@ public class MetadataRepositoryStu3Impl implements MetadataRepositoryStu3 {
         }
 
         return capabilityStatement;
+
     }
 }

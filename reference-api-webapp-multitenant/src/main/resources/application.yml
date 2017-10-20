@@ -1,5 +1,5 @@
 server:
-  port: 8074
+  port: 8075
   tomcat:
     remote_ip_header: x-forwarded-for
     protocol_header: x-forwarded-proto
@@ -9,15 +9,9 @@ spring:
     name: HSPC Reference API
   profiles:
     active: multitenant,stu3
-#    active: multitenant,stu3,globalexception
   datasource:
     initialSize: 1
     maxActive: 5
-  jpa:
-    hibernate:
-      ddl-auto: none
-      show_sql: false
-      format_sql: true
 
 hibernate:
   search:
@@ -34,18 +28,18 @@ hspc:
     api:
       security:
         # determines if security is applied at the contextPath
-        mode: secured
+#        mode: secured
 #        mode: mock
-#        mode: open
+        mode: open
       oauth2:
         clientId: hspc_resource_server
         clientSecret: secret
         scopes: openid,launch,smart/orchestrate_launch
       sandbox:
-        name: hspc4
+        name: hspc5
       fhir:
         db:
-          schema: hspc_4_${hspc.platform.api.sandbox.name}
+          schema: hspc_5_${hspc.platform.api.sandbox.name}
           driver-class-name: com.mysql.jdbc.Driver
           host: localhost
           url: jdbc:mysql://${hspc.platform.api.fhir.db.host}:3306/${hspc.platform.api.fhir.db.schema}
@@ -53,10 +47,10 @@ hspc:
           password: password
         datasource:
           cache:
-            size: 5
+            size: 40
         defaultTenantId: ${hspc.platform.api.sandbox.name}
         hibernate:
-          dialect: org.hibernate.dialect.MySQL5InnoDBDialect
+          dialect: org.hibernate.dialect.MySQL5Dialect
         terminology:
           proxy:
             host: fhir3.healthintersections.com.au

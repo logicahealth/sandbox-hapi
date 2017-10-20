@@ -315,8 +315,7 @@ public class DatabaseManager {
         return executeUpdateWithSchema(null, updateSql);
     }
 
-    boolean
-    executeUpdateWithSchema(String schema, String updateSql) {
+    boolean executeUpdateWithSchema(String schema, String updateSql) {
         Connection connection = null;
         Statement createTableStatement = null;
         try {
