@@ -26,7 +26,6 @@ public class MultitenantHapiFhirController extends ServletWrappingController {
     @Autowired
     private WebApplicationContext myAppCtx;
 
-
     @Autowired
     private LaunchOrchestrationSendEndpoint launchOrchestrationEndpoint;
 

@@ -1,5 +1,6 @@
 package org.hspconsortium.platform.api.persister;
 
+import org.hspconsortium.platform.api.controller.HapiFhirController;
 import org.hspconsortium.platform.api.fhir.DatabaseManager;
 import org.hspconsortium.platform.api.fhir.DatabaseProperties;
 import org.hspconsortium.platform.api.fhir.model.TenantInfo;
@@ -10,7 +11,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
@@ -208,7 +208,7 @@ public class SandboxPersister {
         final String dataFileName = String.format(
                 dataFileNameTemplate,
                 sandbox.getSchemaVersion(),
-                profile.contains("stu3") ? "stu3" : "dstu2",
+                returnActiveFhirVersion(),
                 loadingDataSet.toString().toLowerCase());
         try {
             ClassPathResource classPathResource = new ClassPathResource(dataFileName);
@@ -220,9 +220,20 @@ public class SandboxPersister {
         }
     }
 
-    @CacheEvict(cacheNames = "dataSource", key = "#p1 + '~' + #p0")
     public boolean removeSandbox(String schemaVersion, String teamId) {
         return databaseManager.dropSchema(toSchemaName.apply(new Sandbox(teamId, schemaVersion, false)));
+    }
+
+    private String returnActiveFhirVersion() {
+        if (profile.contains(HapiFhirController.DSTU2_PROFILE_NAME)) {
+            return HapiFhirController.DSTU2_PROFILE_NAME;
+        } else if (profile.contains(HapiFhirController.STU3_PROFILE_NAME)) {
+            return HapiFhirController.STU3_PROFILE_NAME;
+        } else if (profile.contains(HapiFhirController.R4_PROFILE_NAME)) {
+            return HapiFhirController.R4_PROFILE_NAME;
+        }
+
+        throw new IllegalArgumentException("No valid FHIR version profile is set.");
     }
 
 }

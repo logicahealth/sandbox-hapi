@@ -14,13 +14,13 @@ import java.util.Collections;
 @Qualifier("MultitenantDatabaseProperties")
 public class MultitenantDatabaseProperties extends DatabaseProperties {
 
-	@Value("${hspc.platform.api.fhir.datasource.cache.size:10}")
-	private String dataSourceCacheSize;
+	@Value("${hspc.platform.api.fhir.datasource.cache.size:40}")
+	private int dataSourceCacheSize;
 
 	@Value("${hspc.platform.api.fhir.defaultTenantId}")
 	private String defaultTenantId;
 
-	public String getDataSourceCacheSize() {
+	public int getDataSourceCacheSize() {
 		return dataSourceCacheSize;
 	}
 

@@ -1,5 +1,6 @@
 package org.hspconsortium.platform.api.fhir;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -10,12 +11,19 @@ public class DatabaseProperties {
 	public static final String SANDBOX_SCHEMA_SNAPSHOT_DELIMITER = "$";
 	public static final String SANDBOX_SCHEMA_NAMING = "%s" + SANDBOX_SCHEMA_DELIMITER + "%s" + SANDBOX_SCHEMA_DELIMITER + "%s";
 	public static final String SANDBOX_SCHEMA_PREFIX = "hspc";
-	public static final String DEFAULT_HSPC_SCHEMA_VERSION = "4";
+	public static final String DEFAULT_HSPC_SCHEMA_VERSION = "5";
 	public static final String CURRENT_TENANT_IDENTIFIER = "current_tenant_identifier";
 	public static final String HSPC_SCHEMA_VERSION = "current_schema_version";
 
 	@NestedConfigurationProperty
 	private DataSourceProperties db;
+
+	@Value("${flyway.locations}")
+	private String flywayLocations;
+
+	public String getFlywayLocations() {
+		return flywayLocations;
+	}
 
 	public DataSourceProperties getDb() {
 		return db;
@@ -35,6 +43,7 @@ public class DatabaseProperties {
 		dataSourceProperties.setBeanClassLoader(db.getClassLoader());
 		dataSourceProperties.setDriverClassName(db.getDriverClassName());
 		dataSourceProperties.setPlatform(db.getPlatform());
+
 		return dataSourceProperties;
 	}
 }

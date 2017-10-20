@@ -6,19 +6,22 @@ import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.JpaSystemProviderDstu2;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
+import ca.uhn.fhir.jpa.provider.r4.JpaSystemProviderR4;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.model.dstu2.composite.MetaDt;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
+import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.ETagSupportEnum;
-import ca.uhn.fhir.rest.server.EncodingEnum;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hspconsortium.platform.api.conformance.HspcConformanceProviderDstu2;
+import org.hspconsortium.platform.api.conformance.HspcConformanceProviderR4;
 import org.hspconsortium.platform.api.conformance.HspcConformanceProviderStu3;
 import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryDstu2Impl;
+import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryR4;
 import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryStu3;
 import org.springframework.web.context.WebApplicationContext;
 
@@ -64,6 +67,8 @@ public class HapiFhirServlet extends RestfulServer {
             resourceProviderBeanName = "myResourceProvidersDstu2";
         } else if (fhirVersionEnum == FhirVersionEnum.DSTU3) {
             resourceProviderBeanName = "myResourceProvidersDstu3";
+        } else if (fhirVersionEnum == FhirVersionEnum.R4) {
+            resourceProviderBeanName = "myResourceProvidersR4";
         } else {
             throw new IllegalStateException("Not a supported FHIR Version: " + fhirVersionEnum);
         }
@@ -81,6 +86,8 @@ public class HapiFhirServlet extends RestfulServer {
             systemProvider = myAppCtx.getBean("mySystemProviderDstu2", JpaSystemProviderDstu2.class);
         } else if (fhirVersionEnum == FhirVersionEnum.DSTU3) {
             systemProvider = myAppCtx.getBean("mySystemProviderDstu3", JpaSystemProviderDstu3.class);
+        } else if (fhirVersionEnum == FhirVersionEnum.R4) {
+            systemProvider = myAppCtx.getBean("mySystemProviderR4", JpaSystemProviderR4.class);
         } else {
             throw new IllegalStateException();
         }
@@ -92,7 +99,7 @@ public class HapiFhirServlet extends RestfulServer {
             HspcConformanceProviderDstu2 confProvider = new HspcConformanceProviderDstu2(this, systemDao,
                     myAppCtx.getBean(DaoConfig.class),
                     myAppCtx.getBean(MetadataRepositoryDstu2Impl.class));
-            confProvider.setImplementationDescription("HSPC Reference API Server");
+            confProvider.setImplementationDescription("HSPC Reference API Server - DSTU2");
             setServerConformanceProvider(confProvider);
         } else if (fhirVersionEnum == FhirVersionEnum.DSTU3) {
             IFhirSystemDao<org.hl7.fhir.dstu3.model.Bundle, Meta> systemDao = myAppCtx.getBean("mySystemDaoDstu3", IFhirSystemDao.class);
@@ -101,7 +108,16 @@ public class HapiFhirServlet extends RestfulServer {
                     systemDao,
                     myAppCtx.getBean(DaoConfig.class),
                     myAppCtx.getBean(MetadataRepositoryStu3.class));
-            confProvider.setImplementationDescription("HSPC Reference API Server");
+            confProvider.setImplementationDescription("HSPC Reference API Server - STU3");
+            setServerConformanceProvider(confProvider);
+        } else if (fhirVersionEnum == FhirVersionEnum.R4) {
+            IFhirSystemDao<org.hl7.fhir.r4.model.Bundle, org.hl7.fhir.r4.model.Meta> systemDao = myAppCtx.getBean("mySystemDaoR4", IFhirSystemDao.class);
+            HspcConformanceProviderR4 confProvider = new HspcConformanceProviderR4(
+                    this,
+                    systemDao,
+                    myAppCtx.getBean(DaoConfig.class),
+                    myAppCtx.getBean(MetadataRepositoryR4.class));
+            confProvider.setImplementationDescription("HSPC Reference API Server - R4");
             setServerConformanceProvider(confProvider);
         } else {
             throw new IllegalStateException();
@@ -151,7 +167,7 @@ public class HapiFhirServlet extends RestfulServer {
         //setServerAddressStrategy(new HardcodedServerAddressStrategy("http://mydomain.com/fhir/baseDstu3"));
 
 		/*
-		 * If you are using DSTU3+, you may want to add a terminology uploader, which allows
+         * If you are using DSTU3+, you may want to add a terminology uploader, which allows
 		 * uploading of external terminologies such as Snomed CT. Note that this uploader
 		 * does not have any security attached (any anonymous user may use it by default)
 		 * so it is a potential security vulnerability. Consider using an AuthorizationInterceptor
