@@ -86,3 +86,25 @@ hspc:
         enabled: false
         subscriptionEndpoint: ${hspc.platform.messaging.url}/subscription
         resourceEndpoint: ${hspc.platform.messaging.url}/resource
+
+---
+
+spring:
+  profiles: dstu2
+
+hspc:
+  platform:
+    api:
+      sandbox:
+        name: dstu2
+
+---
+
+spring:
+  profiles: stu3
+
+hspc:
+  platform:
+    api:
+      sandbox:
+        name: stu3

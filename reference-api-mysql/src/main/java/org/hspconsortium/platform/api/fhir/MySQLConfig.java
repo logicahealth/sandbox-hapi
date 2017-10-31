@@ -77,6 +77,7 @@ public class MySQLConfig {
         DaoConfig retVal = new DaoConfig();
         retVal.setAllowMultipleDelete(true);
         retVal.setAllowExternalReferences(allowExternalReferences);
+        retVal.setReuseCachedSearchResultsForMillis(null);
         return retVal;
     }
 

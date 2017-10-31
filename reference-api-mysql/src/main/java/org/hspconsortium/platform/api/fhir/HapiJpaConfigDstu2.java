@@ -1,8 +1,10 @@
 package org.hspconsortium.platform.api.fhir;
 
 import ca.uhn.fhir.jpa.config.BaseJavaConfigDstu2;
+import ca.uhn.fhir.jpa.search.ISearchCoordinatorSvc;
 import ca.uhn.fhir.jpa.util.SubscriptionsRequireManualActivationInterceptorDstu2;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
+import org.hspconsortium.platform.api.fhir.multitenant.search.MultiTenantSearchCoordinatorSvcImpl;
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -14,5 +16,11 @@ public class HapiJpaConfigDstu2 extends BaseJavaConfigDstu2 {
     @Bean(autowire = Autowire.BY_TYPE)
     public IServerInterceptor subscriptionSecurityInterceptor() {
         return new SubscriptionsRequireManualActivationInterceptorDstu2();
+    }
+
+    @Bean(autowire = Autowire.BY_TYPE)
+    @Override
+    public ISearchCoordinatorSvc searchCoordinatorSvc() {
+        return new MultiTenantSearchCoordinatorSvcImpl();
     }
 }

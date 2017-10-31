@@ -26,6 +26,11 @@
       <artifactId>hspc-reference-api-mysql</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.hspconsortium.reference</groupId>
+      <artifactId>hspc-reference-api-webapp-base</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
   </dependencies>
 
