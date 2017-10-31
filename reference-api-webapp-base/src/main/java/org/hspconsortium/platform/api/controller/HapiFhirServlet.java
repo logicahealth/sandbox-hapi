@@ -6,6 +6,7 @@ import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.JpaSystemProviderDstu2;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
+import ca.uhn.fhir.jpa.provider.dstu3.TerminologyUploaderProviderDstu3;
 import ca.uhn.fhir.jpa.provider.r4.JpaSystemProviderR4;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.model.dstu2.composite.MetaDt;
@@ -173,9 +174,9 @@ public class HapiFhirServlet extends RestfulServer {
 		 * so it is a potential security vulnerability. Consider using an AuthorizationInterceptor
 		 * with this feature.
 		 */
-        //if (fhirVersion == FhirVersionEnum.DSTU3) {
-        //	 registerProvider(myAppCtx.getBean(TerminologyUploaderProviderDstu3.class));
-        //}
+        if (fhirVersionEnum == FhirVersionEnum.DSTU3) {
+        	 registerProvider(myAppCtx.getBean(TerminologyUploaderProviderDstu3.class));
+        }
     }
 
     /**

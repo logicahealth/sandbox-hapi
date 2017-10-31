@@ -1,4 +1,4 @@
-package org.hspconsortium.platform.api.fhir.multitenant;
+package org.hspconsortium.platform.api.fhir.multitenant.config;
 
 import org.hibernate.MultiTenancyStrategy;
 import org.hibernate.cfg.Environment;
@@ -6,6 +6,7 @@ import org.hibernate.context.spi.CurrentTenantIdentifierResolver;
 import org.hibernate.engine.jdbc.connections.spi.MultiTenantConnectionProvider;
 import org.hspconsortium.platform.api.fhir.DatabaseProperties;
 import org.hspconsortium.platform.api.fhir.MySQLConfig;
+import org.hspconsortium.platform.api.fhir.multitenant.MultitenantDatabaseProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
