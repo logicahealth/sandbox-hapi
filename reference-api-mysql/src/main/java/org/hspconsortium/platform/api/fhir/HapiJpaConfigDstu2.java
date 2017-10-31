@@ -13,10 +13,11 @@ import org.springframework.context.annotation.Profile;
 @Configuration
 @Profile("dstu2")
 public class HapiJpaConfigDstu2 extends BaseJavaConfigDstu2 {
-    @Bean(autowire = Autowire.BY_TYPE)
-    public IServerInterceptor subscriptionSecurityInterceptor() {
-        return new SubscriptionsRequireManualActivationInterceptorDstu2();
-    }
+    // this is broken in the current release of HAPI.
+//    @Bean(autowire = Autowire.BY_TYPE)
+//    public IServerInterceptor subscriptionSecurityInterceptor() {
+//        return new SubscriptionsRequireManualActivationInterceptorDstu2();
+//    }
 
     @Bean(autowire = Autowire.BY_TYPE)
     @Override

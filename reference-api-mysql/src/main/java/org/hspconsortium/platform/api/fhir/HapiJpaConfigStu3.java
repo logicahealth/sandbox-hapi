@@ -12,8 +12,7 @@ import org.springframework.context.annotation.Profile;
 
 @Profile("stu3")
 @Configuration
-public class
-HapiJpaConfigStu3 extends BaseJavaConfigDstu3 {
+public class HapiJpaConfigStu3 extends BaseJavaConfigDstu3 {
     @Bean(autowire = Autowire.BY_TYPE)
     public IServerInterceptor subscriptionSecurityInterceptor() {
         return new SubscriptionsRequireManualActivationInterceptorDstu3();
