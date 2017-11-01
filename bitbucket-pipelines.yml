@@ -15,8 +15,8 @@ pipelines:
             - maven
           script:
             # Deploy to maven central
-            - openssl aes-256-cbc -pass pass:$OPENSSL_PWD -in private-key.gpg.enc -out private-key.gpg -d
-            - gpg --batch --import private-key.gpg
+#            - openssl aes-256-cbc -pass pass:$OPENSSL_PWD -in private-key.gpg.enc -out private-key.gpg -d
+#            - gpg --batch --import private-key.gpg
 #            - mvn -V -B -s settings.xml deploy -P DEPLOY,ossrh
             # Deploy to hspc-nexus
             - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
@@ -48,11 +48,6 @@ pipelines:
             - export PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
             - sed -i -e "s/{{CONTAINER_NAME}}/$CONTAINER_NAME/g" -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" container-definitions_test_stu3.json
             - sed -i -e "s/{{CONTAINER_NAME}}/$CONTAINER_NAME/g" -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" container-definitions_test_dstu2.json
-            # build docker image and push to nexus.hspconsortium.com:18083 for stu3 profile
-            - export IMAGE_NAME=$(cat container-definitions_test_stu3.json | jq --raw-output '.[0].image')
-            - docker login -u $NEXUS_USR -p $NEXUS_PWD nexus.hspconsortium.org:18083
-            - docker build -t $IMAGE_NAME .
-            - docker push $IMAGE_NAME
             # build docker image and push to nexus.hspconsortium.com:18083 for dstu2 profile
             - export IMAGE_NAME=$(cat container-definitions_test_dstu2.json | jq --raw-output '.[0].image')
             - docker login -u $NEXUS_USR -p $NEXUS_PWD nexus.hspconsortium.org:18083
@@ -72,7 +67,7 @@ pipelines:
             - export NEW_CONTAINER_NAME=$(cat container-definitions_test_dstu2.json | jq --raw-output '.[0].name')
             - export TASK_VERSION=$(aws ecs register-task-definition --family $NEW_CONTAINER_NAME --container-definitions $(cat container-definitions_test_dstu2.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
             # update the service to use the latest task definition
-            - aws ecs update-service --cluster $TARGET_AWS_CLUSTER --service $TARGET_AWS_SERVICE_DSTU2 --task-definition $NEW_CONTAINER_NAME:$TASK_VERSION
+            - aws ecs update-service --cluster hspc-test --service $TARGET_AWS_SERVICE_DSTU2 --task-definition $NEW_CONTAINER_NAME:$TASK_VERSION
     feature/*:
       - step:
           caches:
