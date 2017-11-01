@@ -1,7 +1,7 @@
 [
   {
     "name": "{{CONTAINER_NAME}}-dstu2",
-    "image": "nexus.hspconsortium.org:18083/hspc/{{CONTAINER_NAME}}-dstu2:{{PROJECT_VERSION}}",
+    "image": "nexus.hspconsortium.org:18083/hspc/{{CONTAINER_NAME}}:{{PROJECT_VERSION}}",
     "cpu": 0,
     "portMappings": [
       {
