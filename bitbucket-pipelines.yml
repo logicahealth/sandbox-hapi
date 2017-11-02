@@ -1,6 +1,6 @@
 # This project uses the GitFlow Workflow as defined here:
 #   https://www.atlassian.com/git/tutorials/comparing-workflows#GitFlow-workflow
-image: ericlineback/hspc-base
+image: hspconsortium/hspc-ubuntu-base
 
 pipelines:
   default:
