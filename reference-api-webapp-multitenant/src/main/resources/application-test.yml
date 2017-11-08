@@ -48,7 +48,7 @@ hspc:
         urisEndpointExtensionUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
     messaging:
       protocol: http
-      host: localhost
+      host: messaging-test.hspconsortium.org
       port: 8091
       context: /
       url: ${hspc.platform.messaging.protocol}://${hspc.platform.messaging.host}:${hspc.platform.messaging.port}${hspc.platform.messaging.context}
