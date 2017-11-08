@@ -28,9 +28,9 @@ hspc:
     api:
       security:
         # determines if security is applied at the contextPath
-        mode: secured
+#        mode: secured
 #        mode: mock
-#        mode: open
+        mode: open
       oauth2:
         clientId: hspc_resource_server
         clientSecret: secret
