@@ -1,7 +1,7 @@
 package org.hspconsortium.platform.api.interceptor;
 
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
-import ca.uhn.fhir.rest.method.RequestDetails;
+import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import ca.uhn.fhir.rest.server.interceptor.InterceptorAdapter;
 import org.hspconsortium.platform.api.authorization.ScopeBasedAuthorizationParams;

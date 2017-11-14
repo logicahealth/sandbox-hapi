@@ -108,7 +108,7 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
 
     @Bean
     @Order(Ordered.HIGHEST_PRECEDENCE + 1)
-    public CorsFilter corsFilter() {
+    public CorsFilter customCorsFilter() {
         return new CorsFilter();
     }
 
@@ -117,7 +117,7 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
         Validate.isTrue(fhirContextPath != null, "Fhir context path not specified");
 
         // add the corsFilter before the ChannelProcessingFilter
-        CorsFilter corsFilter = corsFilter();
+        CorsFilter corsFilter = customCorsFilter();
         http.addFilterBefore(corsFilter, ChannelProcessingFilter.class);
 
         // add the invalidMediaTypeFilter before the CorsFilter

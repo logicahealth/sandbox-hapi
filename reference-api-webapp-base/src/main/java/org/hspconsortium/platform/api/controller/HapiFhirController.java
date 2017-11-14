@@ -24,6 +24,7 @@ public class HapiFhirController extends ServletWrappingController {
 
     public static final String DSTU2_PROFILE_NAME = "dstu2";
     public static final String STU3_PROFILE_NAME = "stu3";
+    public static final String R4_PROFILE_NAME = "r4";
 
     @Autowired
     private WebApplicationContext myAppCtx;
@@ -88,9 +89,11 @@ public class HapiFhirController extends ServletWrappingController {
                 return FhirVersionEnum.DSTU2;
             } else if (curProfile.equals(HapiFhirController.STU3_PROFILE_NAME)) {
                 return FhirVersionEnum.DSTU3;
+            } else if(curProfile.equals(HapiFhirController.R4_PROFILE_NAME)){
+                return FhirVersionEnum.R4;
             }
         }
 
-        throw new IllegalStateException("One of the following profiles must be set: [dstu2, stu3]");
+        throw new IllegalStateException("One of the following profiles must be set: [dstu2, stu3, rf]");
     }
 }

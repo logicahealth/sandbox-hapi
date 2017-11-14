@@ -1,5 +1,6 @@
-package org.hspconsortium.platform.api.fhir.multitenant;
+package org.hspconsortium.platform.api.fhir.multitenant.config;
 
+import org.hspconsortium.platform.api.fhir.multitenant.tenantid.TenantInterceptor;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
