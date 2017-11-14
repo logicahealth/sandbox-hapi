@@ -27,7 +27,7 @@ hspc:
           dialect: org.hibernate.dialect.MySQL5InnoDBDialect
         terminology:
           proxy:
-            host: fhir3.healthintersections.com.au
+            host: api-v5-stu3.hspconsortium.org/term01
             contextPath: /open
         federatedEndpointURL: dataphoria.org/datafhir
         contextPath: data
