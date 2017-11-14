@@ -28,9 +28,9 @@ hspc:
     api:
       security:
         # determines if security is applied at the contextPath
-#        mode: secured
+        mode: secured
 #        mode: mock
-        mode: open
+#        mode: open
       oauth2:
         clientId: hspc_resource_server
         clientSecret: secret
@@ -53,7 +53,7 @@ hspc:
           dialect: org.hibernate.dialect.MySQL5Dialect
         terminology:
           proxy:
-            host: fhir3.healthintersections.com.au
+            host: api-v5-stu3.hspconsortium.org/term01
             contextPath: /open
         federatedEndpointURL: dataphoria.org/datafhir
         contextPath: data
