@@ -49,6 +49,8 @@ public class MetadataRepositoryStu3Impl implements MetadataRepositoryStu3 {
     @Value("${hspc.platform.authorization.smart.urisEndpointExtensionUrl}")
     private String urisEndpointExtensionUrl;
 
+    @SuppressWarnings("Duplicates")
+    @Override
     public CapabilityStatement addCapabilityStatement(CapabilityStatement capabilityStatement) {
         if (SECURE_MODE.equalsIgnoreCase(securityMode) || SECURE_MODE_MOCK.equalsIgnoreCase(securityMode)) {
             List<CapabilityStatement.CapabilityStatementRestComponent> restList = capabilityStatement.getRest();

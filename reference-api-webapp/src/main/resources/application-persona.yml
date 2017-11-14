@@ -58,7 +58,7 @@ hspc:
         # remove openContextPath to disable the open endpoint
         openContextPath: open
     authorization:
-      url: http://localhost:8174
+      url: http://localhost:8175
       urlContext: ${hspc.platform.authorization.url}/
       authorizeUrl: ${hspc.platform.authorization.urlContext}authorize
       tokenUrl: ${hspc.platform.authorization.urlContext}token

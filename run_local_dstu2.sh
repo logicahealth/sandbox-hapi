@@ -5,6 +5,6 @@ java \
   -Dspring.profiles.active=dstu2,multitenant \
   -Xms256M \
   -Xmx512M \
-  -Dserver.port=8071 \
-  -Dhspc.platform.api.sandbox.name=hspc \
+  -Dserver.port=8075 \
+  -Dhspc.platform.api.sandbox.name=hspc5 \
   -jar reference-api-webapp-multitenant/target/hspc-reference-api-webapp-multitenant-*.jar

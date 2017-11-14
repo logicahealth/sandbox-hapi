@@ -21,9 +21,7 @@
 package org.hspconsortium.platform.api.fhir.repository;
 
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
-import org.springframework.stereotype.Component;
 
-@Component
 public interface MetadataRepositoryStu3 {
     CapabilityStatement addCapabilityStatement(CapabilityStatement capabilityStatement);
 }
