@@ -18,7 +18,7 @@ hspc:
           host: jdbc:mysql://sandboxdb.hspconsortium.org:3306
           url: ${hspc.platform.api.fhir.db.host}/${hspc.platform.api.fhir.db.schema}
           username: system
-          password: ENC(7bNUkZ7Xnm8thcHRlE2VOKpX5RWmCuYr)
+          password: ENC(lA/Ifn1Cm6pYGGydIXNQIa6n7ryn5A1+)
         datasource:
           cache:
             size: 5
