@@ -117,11 +117,11 @@ pipelines:
             - jq '.[].environment += [{"name":"JASYPT_ENCRYPTOR_PASSWORD", "value":"'$ENC_PW_PROD'"}]' container-definitions_prod_dstu2.json > tmp.json && mv tmp.json container-definitions_prod_dstu2.json
             # For stu3 profile
             # register the ECS task definition and capture the version
-            - export NEW_CONTAINER_NAME=$(cat container-definitions_test_stu3.json | jq --raw-output '.[0].name')
+            - export NEW_CONTAINER_NAME=$(cat container-definitions_prod_stu3.json | jq --raw-output '.[0].name')
             - export TASK_VERSION=$(aws ecs register-task-definition --family $NEW_CONTAINER_NAME --container-definitions $(cat container-definitions_prod_stu3.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
             # for dstu2 profile
             # register the ECS task definition and capture the version
-            - export NEW_CONTAINER_NAME=$(cat container-definitions_test_dstu2.json | jq --raw-output '.[0].name')
+            - export NEW_CONTAINER_NAME=$(cat container-definitions_prod_dstu2.json | jq --raw-output '.[0].name')
             - export TASK_VERSION=$(aws ecs register-task-definition --family $NEW_CONTAINER_NAME --container-definitions $(cat container-definitions_prod_dstu2.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
 options:
   docker: true
