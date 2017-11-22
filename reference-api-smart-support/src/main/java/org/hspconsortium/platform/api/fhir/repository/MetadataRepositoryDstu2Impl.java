@@ -32,6 +32,9 @@ public class MetadataRepositoryDstu2Impl implements MetadataRepositoryDstu2 {
     @Value("${hspc.platform.authorization.smart.urisEndpointExtensionUrl}")
     private String urisEndpointExtensionUrl;
 
+    @Value("${hspc.platform.authorization.smart.launchRegistrationUrl}")
+    private String launchRegistrationUrl;
+
     @Override
     public Conformance addConformance(Conformance conformance){
 
@@ -44,6 +47,7 @@ public class MetadataRepositoryDstu2Impl implements MetadataRepositoryDstu2 {
             conformanceExtension.addUndeclaredExtension(new ExtensionDt(false, "authorize", new UriDt(this.authorizationEndpointUri)));
             conformanceExtension.addUndeclaredExtension(new ExtensionDt(false, "token", new UriDt(this.tokenEndpointUri)));
             conformanceExtension.addUndeclaredExtension(new ExtensionDt(false, "register", new UriDt(this.registrationEndpointUri)));
+            conformanceExtension.addUndeclaredExtension(new ExtensionDt(false, "launch-registration", new UriDt(this.launchRegistrationUrl)));
 
             restSecurity.addUndeclaredExtension(conformanceExtension);
 
