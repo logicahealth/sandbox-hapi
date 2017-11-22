@@ -2,8 +2,7 @@ package org.hspconsortium.platform.api.fhir.multitenant;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
-import org.hspconsortium.platform.api.model.DataSet;
-import org.hspconsortium.platform.api.model.Sandbox;
+import org.flywaydb.core.Flyway;
 import org.hspconsortium.platform.api.service.SandboxService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +81,13 @@ public class DataSourceRepository {
             //verify for a valid datasource
             conn = dataSource.getConnection();
             conn.isValid(2);
+
+            // migrate the database manually because of a circular bean problem
+            // with multi-tenant datasources
+            Flyway flyway = new Flyway();
+            flyway.setLocations(multitenancyProperties.getFlywayLocations());
+            flyway.setDataSource(dataSource);
+            flyway.migrate();
 
         } catch (SQLException e) {
             // if we are trying to retrieve the default tenant, but the schema doesn't exist
