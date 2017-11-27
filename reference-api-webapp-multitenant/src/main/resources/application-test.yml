@@ -1,3 +1,6 @@
+server:
+  port: 8074
+
 # Platform Servers
 hspc:
   platform:

@@ -98,6 +98,8 @@ hspc:
     api:
       sandbox:
         name: dstu2
+server:
+  port: 8075
 
 ---
 
@@ -109,3 +111,5 @@ hspc:
     api:
       sandbox:
         name: stu3
+server:
+  port: 8076
