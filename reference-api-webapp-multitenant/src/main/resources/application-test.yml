@@ -7,6 +7,7 @@ hspc:
       fhir:
         db:
           host: db-test.hspconsortium.org
+          username: system
           password: ENC(PGbAqA2yTasSehiLRk60NpQLMQ1btRtID+8hvhWf9AI=)
         datasource:
           cache:
