@@ -53,7 +53,7 @@ hspc:
           dialect: org.hibernate.dialect.MySQL5Dialect
         terminology:
           proxy:
-            host: api-v5-stu3.hspconsortium.org/term01
+            host: api-v5-stu3.hspconsortium.org/${hspc.platform.api.sandbox.name}
             contextPath: /open
         federatedEndpointURL: dataphoria.org/datafhir
         contextPath: data

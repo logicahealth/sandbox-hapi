@@ -6,12 +6,12 @@ hspc:
         clientSecret: secret
       fhir:
         db:
-          host: jdbc:mysql://sandboxdb.hspconsortium.org:3306
+          host: sandboxdb.hspconsortium.org
           username: system
           password: ENC(lA/Ifn1Cm6pYGGydIXNQIa6n7ryn5A1+)
         terminology:
           proxy:
-            host: api-v5-stu3.hspconsortium.org/term01
+            host: api-v5-stu3.hspconsortium.org/${hspc.platform.api.sandbox.name}
             contextPath: /open
     authorization:
       url: https://auth.hspconsortium.org

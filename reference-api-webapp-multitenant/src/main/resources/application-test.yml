@@ -6,14 +6,14 @@ hspc:
         clientSecret: secret
       fhir:
         db:
-          host: jdbc:mysql://db-test.hspconsortium.org:3306
+          host: db-test.hspconsortium.org
           password: ENC(PGbAqA2yTasSehiLRk60NpQLMQ1btRtID+8hvhWf9AI=)
         datasource:
           cache:
             size: 5
         terminology:
           proxy:
-            host: api-v5-stu3.hspconsortium.org/term01
+            host: api-v5-stu3.hspconsortium.org/${hspc.platform.api.sandbox.name}
             contextPath: /open
     authorization:
       url: https://auth-test.hspconsortium.org
