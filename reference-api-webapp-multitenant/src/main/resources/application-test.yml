@@ -1,11 +1,6 @@
 server:
   port: 8074
 
-hibernate:
-  search:
-    default:
-      indexBase: /var/indexes/@artifact.name@
-
 # Platform Servers
 hspc:
   platform:
@@ -35,3 +30,12 @@ hspc:
 jasypt:
   encryptor:
     algorithm: PBEWithMD5AndTripleDES
+
+---
+
+spring:
+  profiles: stu3
+hibernate:
+  search:
+    default:
+      indexBase: /var/indexes/@artifact.name@
