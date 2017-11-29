@@ -51,13 +51,13 @@ pipelines:
             # For stu3 profile
             # register the ECS task definition and capture the version
             - export NEW_CONTAINER_NAME=$(cat container-definitions_test_stu3.json | jq --raw-output '.[0].name')
-            - export TASK_VERSION=$(aws ecs register-task-definition --family $NEW_CONTAINER_NAME --container-definitions $(cat container-definitions_test_stu3.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
+            - export TASK_VERSION=$(aws ecs register-task-definition --family $NEW_CONTAINER_NAME --volumes name=indexes,host={sourcePath=/var/ecs/indexes} --container-definitions $(cat container-definitions_test_stu3.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
             # update the service to use the latest task definition
             - aws ecs update-service --cluster $TARGET_AWS_CLUSTER --service $TARGET_AWS_SERVICE_STU3 --task-definition $NEW_CONTAINER_NAME:$TASK_VERSION
             # for dstu2 profile
             # register the ECS task definition and capture the version
             - export NEW_CONTAINER_NAME=$(cat container-definitions_test_dstu2.json | jq --raw-output '.[0].name')
-            - export TASK_VERSION=$(aws ecs register-task-definition --family $NEW_CONTAINER_NAME --container-definitions $(cat container-definitions_test_dstu2.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
+            - export TASK_VERSION=$(aws ecs register-task-definition --family $NEW_CONTAINER_NAME --volumes name=indexes,host={sourcePath=/var/ecs/indexes} --container-definitions $(cat container-definitions_test_dstu2.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
             # update the service to use the latest task definition
             - aws ecs update-service --cluster hspc-test --service $TARGET_AWS_SERVICE_DSTU2 --task-definition $NEW_CONTAINER_NAME:$TASK_VERSION
     feature/*:
