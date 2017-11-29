@@ -1,6 +1,11 @@
 server:
   port: 8074
 
+hibernate:
+  search:
+    default:
+      indexBase: /var/indexes/@artifact.name@
+
 # Platform Servers
 hspc:
   platform:
