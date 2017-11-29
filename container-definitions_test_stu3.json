@@ -18,6 +18,12 @@
         "name": "SPRING_PROFILES_ACTIVE",
         "value": "stu3,test,multitenant"
       }
+    ],
+    "mountPoints": [
+      {
+        "sourceVolume": "indexes",
+        "containerPath": "/var/indexes"
+      }
     ]
   }
 ]
