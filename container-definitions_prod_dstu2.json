@@ -18,6 +18,13 @@
         "name": "SPRING_PROFILES_ACTIVE",
         "value": "dstu2,prod,multitenant"
       }
+    ],
+    "mountPoints": [
+      {
+        "readOnly": false,
+        "containerPath": "/var/indexes",
+        "sourceVolume": "indexes"
+      }
     ]
   }
 ]
