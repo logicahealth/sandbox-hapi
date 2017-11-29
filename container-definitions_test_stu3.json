@@ -21,7 +21,7 @@
     ],
     "mountPoints": [
       {
-        "readOnly": null,
+        "readOnly": false,
         "containerPath": "/var/indexes",
         "sourceVolume": "indexes"
       }
