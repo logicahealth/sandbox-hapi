@@ -33,6 +33,9 @@ public class MetadataRepositoryR4Impl implements MetadataRepositoryR4 {
     @Value("${hspc.platform.authorization.smart.urisEndpointExtensionUrl}")
     private String urisEndpointExtensionUrl;
 
+    @Value("${hspc.platform.authorization.smart.launchRegistrationUrl}")
+    private String launchRegistrationUrl;
+
     @Override
     @SuppressWarnings("Duplicates")
     public CapabilityStatement addCapabilityStatement(CapabilityStatement capabilityStatement) {
@@ -46,6 +49,7 @@ public class MetadataRepositoryR4Impl implements MetadataRepositoryR4 {
             conformanceExtension.addExtension(new Extension("authorize", new UriType(this.authorizationEndpointUri)));
             conformanceExtension.addExtension(new Extension("token", new UriType(this.tokenEndpointUri)));
             conformanceExtension.addExtension(new Extension("register", new UriType(this.registrationEndpointUri)));
+            conformanceExtension.addExtension(new Extension("launch-registration", new UriType(this.launchRegistrationUrl)));
 
             restSecurity.addExtension(conformanceExtension);
             CodeableConcept codeableConcept = new CodeableConcept();
@@ -56,6 +60,5 @@ public class MetadataRepositoryR4Impl implements MetadataRepositoryR4 {
         }
 
         return capabilityStatement;
-
     }
 }

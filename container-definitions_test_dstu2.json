@@ -10,12 +10,20 @@
         "protocol": "tcp"
       }
     ],
-    "memory": 1000,
+    "memory": 1200,
+    "memoryReservation": 800,
     "essential": true,
     "environment": [
       {
         "name": "SPRING_PROFILES_ACTIVE",
         "value": "dstu2,test,multitenant"
+      }
+    ],
+    "mountPoints": [
+      {
+        "readOnly": false,
+        "containerPath": "/var/indexes",
+        "sourceVolume": "indexes"
       }
     ]
   }

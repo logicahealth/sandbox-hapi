@@ -53,7 +53,7 @@ hspc:
           dialect: org.hibernate.dialect.MySQL5Dialect
         terminology:
           proxy:
-            host: api-v5-stu3.hspconsortium.org/term01
+            host: api-v5-stu3.hspconsortium.org/${hspc.platform.api.sandbox.name}
             contextPath: /open
         federatedEndpointURL: dataphoria.org/datafhir
         contextPath: data
@@ -76,6 +76,7 @@ hspc:
         launchUrl: ${hspc.platform.authorization.url}/Launch
         registrationEndpointUrl: ${hspc.platform.authorization.url}/register
         urisEndpointExtensionUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
+        launchRegistrationUrl: /${hspc.platform.api.fhir.contextPath}/_services/smart/Launch
     messaging:
       protocol: http
       host: localhost
@@ -97,6 +98,8 @@ hspc:
     api:
       sandbox:
         name: dstu2
+server:
+  port: 8075
 
 ---
 
@@ -108,3 +111,5 @@ hspc:
     api:
       sandbox:
         name: stu3
+server:
+  port: 8076

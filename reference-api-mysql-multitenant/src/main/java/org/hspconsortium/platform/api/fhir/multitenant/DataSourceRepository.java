@@ -2,6 +2,7 @@ package org.hspconsortium.platform.api.fhir.multitenant;
 
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
+import org.flywaydb.core.Flyway;
 import org.hspconsortium.platform.api.model.DataSet;
 import org.hspconsortium.platform.api.model.Sandbox;
 import org.hspconsortium.platform.api.service.SandboxService;
@@ -85,10 +86,10 @@ public class DataSourceRepository {
 
         } catch (SQLException e) {
             // if we are trying to retrieve the default tenant, but the schema doesn't exist
-//            if (tenant.equals(multitenancyProperties.getDefaultTenantId())) {
-//                sandboxService.save(new Sandbox(tenant, hspcSchemaVersion, true), DataSet.NONE);
-//                return createDataSource(hspcSchemaVersion, tenant);
-//            }
+            if (tenant.equals(multitenancyProperties.getDefaultTenantId())) {
+                sandboxService.save(new Sandbox(tenant, hspcSchemaVersion, true), DataSet.NONE);
+                return createDataSource(hspcSchemaVersion, tenant);
+            }
 
             LOGGER.error(String.format("Connection couldn't be established for tenant '%s' with '%s' database url."
                     , tenant

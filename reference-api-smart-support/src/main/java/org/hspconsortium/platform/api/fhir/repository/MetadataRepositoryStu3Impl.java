@@ -49,6 +49,9 @@ public class MetadataRepositoryStu3Impl implements MetadataRepositoryStu3 {
     @Value("${hspc.platform.authorization.smart.urisEndpointExtensionUrl}")
     private String urisEndpointExtensionUrl;
 
+    @Value("${hspc.platform.authorization.smart.launchRegistrationUrl}")
+    private String launchRegistrationUrl;
+
     @SuppressWarnings("Duplicates")
     @Override
     public CapabilityStatement addCapabilityStatement(CapabilityStatement capabilityStatement) {
@@ -62,6 +65,7 @@ public class MetadataRepositoryStu3Impl implements MetadataRepositoryStu3 {
             conformanceExtension.addExtension(new Extension("authorize", new UriType(this.authorizationEndpointUri)));
             conformanceExtension.addExtension(new Extension("token", new UriType(this.tokenEndpointUri)));
             conformanceExtension.addExtension(new Extension("register", new UriType(this.registrationEndpointUri)));
+            conformanceExtension.addExtension(new Extension("launch-registration", new UriType(this.launchRegistrationUrl)));
 
             restSecurity.addExtension(conformanceExtension);
             CodeableConcept codeableConcept = new CodeableConcept();
