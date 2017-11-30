@@ -118,10 +118,10 @@ pipelines:
             # For stu3 profile
             # register the ECS task definition and capture the version
             - export NEW_CONTAINER_NAME=$(cat container-definitions_prod_stu3.json | jq --raw-output '.[0].name')
-            - export TASK_VERSION=$(aws ecs register-task-definition --family $NEW_CONTAINER_NAME  --volumes name=indexes,host={sourcePath=/var/ecs/indexes} --container-definitions $(cat container-definitions_prod_stu3.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
+            - export TASK_VERSION=$(aws ecs register-task-definition --family $NEW_CONTAINER_NAME --volumes name=indexes,host={sourcePath=/var/ecs/indexes} --container-definitions $(cat container-definitions_prod_stu3.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
             # for dstu2 profile
             # register the ECS task definition and capture the version
             - export NEW_CONTAINER_NAME=$(cat container-definitions_prod_dstu2.json | jq --raw-output '.[0].name')
-            - export TASK_VERSION=$(aws ecs register-task-definition --family $NEW_CONTAINER_NAME name=indexes,host={sourcePath=/var/ecs/indexes_dstu2} --container-definitions $(cat container-definitions_prod_dstu2.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
+            - export TASK_VERSION=$(aws ecs register-task-definition --family $NEW_CONTAINER_NAME --volumes name=indexes,host={sourcePath=/var/ecs/indexes_dstu2} --container-definitions $(cat container-definitions_prod_dstu2.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
 options:
   docker: true
