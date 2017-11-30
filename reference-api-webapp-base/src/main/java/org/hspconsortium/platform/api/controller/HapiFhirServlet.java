@@ -24,6 +24,7 @@ import org.hspconsortium.platform.api.conformance.HspcConformanceProviderStu3;
 import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryDstu2Impl;
 import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryR4;
 import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryStu3;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletException;
@@ -54,8 +55,9 @@ public class HapiFhirServlet extends RestfulServer {
         openMappingPath = HapiFhirServletContextHolder.getInstance().getOpenMappingPath();
         FhirVersionEnum fhirVersionEnum = HapiFhirServletContextHolder.getInstance().getFhirVersionEnum();
 
-        setFhirContext(new FhirContext(fhirVersionEnum));
-
+        // The FhirContext is created in the "BaseJavaConfig<fhirVersion>" class. So for STU3, it is "BaseJavaConfigDstu3"
+        FhirContext fhirContext = myAppCtx.getBean(FhirContext.class);
+        setFhirContext(fhirContext);
 
         /*
          * The BaseJavaConfigDstu3.java class is a spring configuration
