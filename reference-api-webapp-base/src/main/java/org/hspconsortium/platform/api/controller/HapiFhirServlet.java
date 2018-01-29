@@ -220,7 +220,7 @@ public class HapiFhirServlet extends RestfulServer {
     /**
      * Returns the server base URL (with no trailing '/') for a given request
      */
-    @Override
+
     public String getServerBaseForRequest(HttpServletRequest theRequest) {
         String fhirServerBase = getServerAddressStrategy().determineServerBase(getServletContext(), theRequest);
 

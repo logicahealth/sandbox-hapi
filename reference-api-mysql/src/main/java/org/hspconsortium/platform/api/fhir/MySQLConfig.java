@@ -1,6 +1,7 @@
 package org.hspconsortium.platform.api.fhir;
 
 import ca.uhn.fhir.jpa.dao.DaoConfig;
+import ca.uhn.fhir.jpa.search.LuceneSearchMappingFactory;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
@@ -137,6 +138,7 @@ public class MySQLConfig {
         hibernateProps.put(Environment.USE_STRUCTURED_CACHE, "false");
         hibernateProps.put(Environment.DIALECT, hibernateDialect);
         hibernateProps.put(Environment.USE_MINIMAL_PUTS, "false");
+        hibernateProps.put("hibernate.search.model_mapping", LuceneSearchMappingFactory.class.getName());
         hibernateProps.put("hibernate.search.default.indexBase", luceneBase);
         hibernateProps.put("hibernate.search.lucene_version", Version.LATEST);
         hibernateProps.put("hibernate.search.default.directory_provider", "filesystem");
