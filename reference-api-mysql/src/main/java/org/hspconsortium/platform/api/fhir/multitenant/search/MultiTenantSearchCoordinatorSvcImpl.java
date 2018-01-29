@@ -15,6 +15,7 @@ import ca.uhn.fhir.jpa.search.PersistedJpaBundleProvider;
 import ca.uhn.fhir.jpa.search.SearchCoordinatorSvcImpl;
 import ca.uhn.fhir.jpa.util.StopWatch;
 import ca.uhn.fhir.model.api.Include;
+import ca.uhn.fhir.rest.api.CacheControlDirective;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.server.SimpleBundleProvider;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
@@ -167,7 +168,7 @@ public class MultiTenantSearchCoordinatorSvcImpl implements ISearchCoordinatorSv
         theRetVal.setSearchCoordinatorSvc(this);
     }
 
-    public IBundleProvider registerSearch(final IDao theCallingDao, final SearchParameterMap theParams, final String theResourceType) {
+    public IBundleProvider registerSearch(final IDao theCallingDao, final SearchParameterMap theParams, final String theResourceType, CacheControlDirective var4) {
         StopWatch w = new StopWatch();
         final String searchUuid = UUID.randomUUID().toString();
         Class<? extends IBaseResource> resourceTypeClass = this.myContext.getResourceDefinition(theResourceType).getImplementingClass();
