@@ -26,6 +26,8 @@ pipelines:
             - reference-api-webapp-multitenant/target/*.jar
       - step:
           name: create docker image
+          caches:
+            - maven
           script:
             - export CONTAINER_NAME=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.artifactId}' --non-recursive exec:exec -f reference-api-webapp-multitenant/pom.xml)
             - echo ${CONTAINER_NAME}
