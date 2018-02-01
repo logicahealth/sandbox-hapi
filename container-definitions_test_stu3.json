@@ -1,7 +1,7 @@
 [
   {
     "name": "{{CONTAINER_NAME}}-stu3",
-    "image": "nexus.hspconsortium.org:18083/hspc/{{CONTAINER_NAME}}:{{PROJECT_VERSION}}",
+    "image": "hspconsortium/{{CONTAINER_NAME}}:{{PROJECT_VERSION}}",
     "cpu": 0,
     "portMappings": [
       {

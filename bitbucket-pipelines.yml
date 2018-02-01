@@ -40,9 +40,9 @@ pipelines:
             - export PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
             - sed -i -e "s/{{CONTAINER_NAME}}/$CONTAINER_NAME/g" -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" container-definitions_test_stu3.json
             - sed -i -e "s/{{CONTAINER_NAME}}/$CONTAINER_NAME/g" -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" container-definitions_test_dstu2.json
-            # build docker image and push to nexus.hspconsortium.com:18083 for dstu2 profile
+            # build docker image and push to docker hub for dstu2 profile
             - export IMAGE_NAME=$(cat container-definitions_test_dstu2.json | jq --raw-output '.[0].image')
-            - docker login -u $NEXUS_USR -p $NEXUS_PWD nexus.hspconsortium.org:18083
+            - docker login -u $DOCKER_ID -p $DOCKER_PASSWORD
             - docker build -t $IMAGE_NAME .
             - docker push $IMAGE_NAME
             # Add jasypt pw to container definition
@@ -107,9 +107,9 @@ pipelines:
             - export PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
             - sed -i -e "s/{{CONTAINER_NAME}}/$CONTAINER_NAME/g" -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" container-definitions_prod_stu3.json
             - sed -i -e "s/{{CONTAINER_NAME}}/$CONTAINER_NAME/g" -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" container-definitions_prod_dstu2.json
-            # build docker image and push to nexus.hspconsortium.com:18083 for dstu2 profile
+            # build docker image and push to docker hub for dstu2 profile
             - export IMAGE_NAME=$(cat container-definitions_prod_dstu2.json | jq --raw-output '.[0].image')
-            - docker login -u $NEXUS_USR -p $NEXUS_PWD nexus.hspconsortium.org:18083
+            - docker login -u $DOCKER_ID -p $DOCKER_PASSWORD
             - docker build -t $IMAGE_NAME .
             - docker push $IMAGE_NAME
             # Add jasypt pw to container definition
