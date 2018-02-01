@@ -28,6 +28,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.annotation.Resource;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Properties;
 
 @Configuration
@@ -107,6 +109,46 @@ public class MySQLConfig {
         flyway.setDataSource(dataSource);
         flyway.migrate();
 
+        return dataSource;
+    }
+
+    @Bean(name = {"noSchemaDataSource"})
+    public DataSource noSchemaDataSource() {
+        // create a datasource that doesn't have a schema in the url
+        DataSourceProperties db = getDatabaseProperties().getDb();
+
+        String urlNoSchema = null;
+        for (String schema : db.getSchema()) {
+            if (db.getUrl().contains(schema.toLowerCase())) {
+                urlNoSchema = db.getUrl().substring(0, db.getUrl().indexOf(schema.toLowerCase()));
+                break;
+            }
+        }
+
+        if (urlNoSchema == null) {
+            throw new RuntimeException("Unable to create noSchemaDataSource for " + db.getUrl());
+        }
+
+        DataSourceBuilder factory = DataSourceBuilder
+                .create(db.getClassLoader())
+                .driverClassName(db.getDriverClassName())
+                .username(db.getUsername())
+                .password(db.getPassword())
+                .url(urlNoSchema);
+        DataSource dataSource = factory.build();
+
+        if (dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource) {
+            ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getPoolProperties().setTestOnBorrow(true);
+            ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getPoolProperties().setValidationQuery("SELECT 1");
+        }
+
+        // try it out
+        try {
+            Connection connection = dataSource.getConnection();
+        } catch (SQLException e) {
+            LOGGER.error("Error creating noSchemaDataSource", e);
+            throw new RuntimeException(e);
+        }
         return dataSource;
     }
 

@@ -19,14 +19,16 @@ A example of a deployable web application that includes configuration of a FHIR 
 # Default Ports
 The following default port assignments exist
 
-| Port        | Version             | Schema Version |
-|------------:| ------------------- | -------------- |
-| 8070        | Current Dev Version | ?              |
-| 8071        | DSTU2 1.0.2         | HSPC_1         |
-| 8072        | STU3 1.6            | HSPC_2         |
-| 8073        | STU3 1.8            | HSPC_3         |
-| 8074        | STU3 3.0.1          | HSPC_4         |
-| 8075        | STU3 3.0.1          | HSPC_5         |
+| Port        | Version             | Schema Version | Status |
+|------------:| ------------------- | -------------- | ------ |
+| 8070        | Current Dev Version | ?              | legacy |
+| 8071        | DSTU2 1.0.2         | HSPC_1         | legacy |
+| 8072        | STU3 1.6            | HSPC_2         | legacy |
+| 8073        | STU3 1.8            | HSPC_3         | legacy |
+| 8074        | STU3 3.0.1          | HSPC_4         | legacy |
+| 8075        | DSTU2               | HSPC_5         | active |
+| 8076        | STU3                | HSPC_5         | active |
+| 8077        | R4                  | HSPC_5         | active |
 
 # Libraries
 
@@ -58,15 +60,15 @@ The reference-api-fhir-library is an extension of [HAPI FHIR](http://jamesagnew.
 
 ### Verify ###
 * Check the application.yml file for what port is being used. It is at the top under server.port
-* http://localhost:8074/hspc4/data/metadata
+* http://localhost:8075/dstu2/data/metadata
 
 ## Open Mode ##
 When the HSPC Reference API server is run in open mode, no security is applied.  This is very convenient for development, allowing resources to be read and written without authentication.  See reference-api-webapp/src/main/resources/application.yml.
 * hsp.platform.api.security.mode=open
 
 ### Sample Operations ###
-* http://localhost:8074/hspc4/open/Patient
-* http://localhost:8074/hspc4/open/Observation
+* http://localhost:8075/dstu2/open/Patient
+* http://localhost:8075/dstu2/open/Observation
 
 ## Secured Mode ##
 When the HSPC Reference API server is run in secured mode, authentication is required for most endpoints with the exception of the conformance statement.  See reference-api-webapp/src/main/resources/application.yml.
