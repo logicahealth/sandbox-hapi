@@ -13,23 +13,30 @@ pipelines:
   branches:
     develop:
       - step:
-          name: build and test
+          name: build, test, deploy, docker package, aws deploy
           caches:
             - maven
           script:
             # Deploy to hspc-nexus
-#            - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
-            - mvn -V -B -s settings.xml clean package
-            # clear out unnecessary jar files
+            - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
+            # clear out the other jar files
+            - rm reference-api-fhir/target/*-sources.jar
+            - rm reference-api-fhir/target/*-javadoc.jar
+            - rm reference-api-mysql/target/*-sources.jar
+            - rm reference-api-mysql/target/*-javadoc.jar
+            - rm reference-api-mysql-multitenant/target/*-sources.jar
+            - rm reference-api-mysql-multitenant/target/*-javadoc.jar
+            - rm reference-api-oauth2/target/*-sources.jar
+            - rm reference-api-oauth2/target/*-javadoc.jar
+            - rm reference-api-smart-support/target/*-sources.jar
+            - rm reference-api-smart-support/target/*-javadoc.jar
+            - rm reference-api-webapp/target/*-sources.jar
+            - rm reference-api-webapp/target/*-javadoc.jar
+            - rm reference-api-webapp-base/target/*-sources.jar
+            - rm reference-api-webapp-base/target/*-javadoc.jar
             - rm reference-api-webapp-multitenant/target/*-sources.jar
             - rm reference-api-webapp-multitenant/target/*-javadoc.jar
-#          artifacts:
-#            - reference-api-webapp-multitenant/target/*.jar
-#      - step:
-#          name: create docker image
-#          caches:
-#            - maven
-#          script:
+            # build docker image and push to docker hub for dstu2 profile
             - export CONTAINER_NAME=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.artifactId}' --non-recursive exec:exec -f reference-api-webapp-multitenant/pom.xml)
             - echo ${CONTAINER_NAME}
             - export PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec -f reference-api-webapp-multitenant/pom.xml)
@@ -39,16 +46,6 @@ pipelines:
             - docker login -u $DOCKER_ID -p $DOCKER_PASSWORD
             - docker build -t $IMAGE_NAME .
             - docker push $IMAGE_NAME
-#      - step:
-#          name: deploy to AWS
-#          script:
-            # build docker image and push to docker hub for dstu2 profile
-#            - export CONTAINER_NAME=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.artifactId}' --non-recursive exec:exec -f reference-api-webapp-multitenant/pom.xml)
-#            - echo ${CONTAINER_NAME}
-#            - export PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec -f reference-api-webapp-multitenant/pom.xml)
-#            - echo ${PROJECT_VERSION}
-#            - export IMAGE_NAME="hspconsortium/${CONTAINER_NAME}:${PROJECT_VERSION}"
-#            - echo ${IMAGE_NAME}
             # Todo environment should be provided at runtime and not build time
             - export ENVIRONMENT=test
             # build dynamic dstu2 container-definitions
