@@ -1,5 +1,5 @@
 server:
-  port: 8074
+  port: 8076
 
 hibernate:
   search:
