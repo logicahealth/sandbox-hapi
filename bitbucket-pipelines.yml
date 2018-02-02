@@ -18,7 +18,6 @@ pipelines:
             - maven
             - resources
           script:
-            - ls -a
             # Deploy to hspc-nexus
             - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
             # clear out the other jar files
@@ -131,4 +130,4 @@ options:
 
 definitions:
   caches:
-    resources: /reference-api/reference-api-webapp-base/src/main/resources/db
+    resources: reference-api-webapp-base/src/main/resources/db
