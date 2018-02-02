@@ -13,6 +13,7 @@ pipelines:
   branches:
     develop:
       - step:
+          name: build, test, deploy, docker package, aws deploy
           caches:
             - maven
           script:

@@ -7,11 +7,11 @@
         <groupId>org.hspconsortium.reference</groupId>
         <artifactId>hspc-reference-api-parent</artifactId>
         <relativePath>../pom.xml</relativePath>
-        <version>1.10.5</version>
+        <version>1.10.6</version>
     </parent>
 
-    <artifactId>hspc-reference-api</artifactId>
-    <packaging>war</packaging>
+    <artifactId>hspc-reference-api-webapp</artifactId>
+    <packaging>jar</packaging>
 
     <properties>
         <artifact.name>hspc-reference-api</artifact.name>
@@ -37,7 +37,7 @@
         <!-- Enable MySQL implementation -->
         <dependency>
             <groupId>org.hspconsortium.reference</groupId>
-            <artifactId>hspc-reference-api-mysql-multitenant</artifactId>
+            <artifactId>hspc-reference-api-mysql</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -62,17 +62,20 @@
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.44</version>
         </dependency>
 
         <!-- Only required for narrative generator support -->
         <dependency>
             <groupId>org.thymeleaf</groupId>
             <artifactId>thymeleaf</artifactId>
+            <version>3.0.7.RELEASE</version>
         </dependency>
 
         <dependency>
             <groupId>org.thymeleaf</groupId>
             <artifactId>thymeleaf-spring4</artifactId>
+            <version>3.0.7.RELEASE</version>
         </dependency>
 
         <dependency>
@@ -125,7 +128,6 @@
 
     </dependencies>
 
-
     <build>
         <plugins>
             <plugin>
@@ -137,5 +139,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
