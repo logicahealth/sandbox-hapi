@@ -36,45 +36,31 @@ pipelines:
             - rm reference-api-webapp-base/target/*-javadoc.jar
             - rm reference-api-webapp-multitenant/target/*-sources.jar
             - rm reference-api-webapp-multitenant/target/*-javadoc.jar
-            # build docker image and push to docker hub for dstu2 profile
-            - export CONTAINER_NAME=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.artifactId}' --non-recursive exec:exec -f reference-api-webapp-multitenant/pom.xml)
-            - echo ${CONTAINER_NAME}
-            - export PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec -f reference-api-webapp-multitenant/pom.xml)
-            - echo ${PROJECT_VERSION}
-            - export IMAGE_NAME="hspconsortium/${CONTAINER_NAME}:${PROJECT_VERSION}"
-            - echo ${IMAGE_NAME}
-            - docker login -u $DOCKER_ID -p $DOCKER_PASSWORD
+            # build dynamic container-definitions
+            - export CONTAINER_NAME=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.artifactId}' --non-recursive exec:exec)
+            - export PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
+            - sed -i -e "s/{{CONTAINER_NAME}}/$CONTAINER_NAME/g" -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" container-definitions_test_stu3.json
+            - sed -i -e "s/{{CONTAINER_NAME}}/$CONTAINER_NAME/g" -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" container-definitions_test_dstu2.json
+            # build docker image and push to nexus.hspconsortium.com:18083 for dstu2 profile
+            - export IMAGE_NAME=$(cat container-definitions_test_dstu2.json | jq --raw-output '.[0].image')
+            - docker login -u $NEXUS_USR -p $NEXUS_PWD nexus.hspconsortium.org:18083
             - docker build -t $IMAGE_NAME .
             - docker push $IMAGE_NAME
-            # Todo environment should be provided at runtime and not build time
-            - export ENVIRONMENT=test
-            # build dynamic dstu2 container-definitions
-            - export FHIR_VERSION=dstu2
-            - export CONTAINER_PORT=8075
-            - cp container-definitions.json container-definitions_test_dstu2.json
-            - sed -i -e "s/{{CONTAINER_NAME}}/$CONTAINER_NAME/g" -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" -e "s/{{FHIR_VERSION}}/$FHIR_VERSION/g" -e "s/{{CONTAINER_PORT}}/$CONTAINER_PORT/g" -e "s/{{ENVIRONMENT}}/$ENVIRONMENT/g" container-definitions_test_dstu2.json
-            - cat container-definitions_test_dstu2.json
-            # build dynamic stu3 container-definitions
-            - export FHIR_VERSION=stu3
-            - export CONTAINER_PORT=8076
-            - cp container-definitions.json container-definitions_test_stu3.json
-            - sed -i -e "s/{{CONTAINER_NAME}}/$CONTAINER_NAME/g" -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" -e "s/{{FHIR_VERSION}}/$FHIR_VERSION/g" -e "s/{{CONTAINER_PORT}}/$CONTAINER_PORT/g" -e "s/{{ENVIRONMENT}}/$ENVIRONMENT/g" container-definitions_test_stu3.json
-            - cat container-definitions_test_stu3.json
             # Add jasypt pw to container definition
             - jq '.[].environment += [{"name":"JASYPT_ENCRYPTOR_PASSWORD", "value":"'$ENC_PW_TEST'"}]' container-definitions_test_stu3.json > tmp.json && mv tmp.json container-definitions_test_stu3.json
             - jq '.[].environment += [{"name":"JASYPT_ENCRYPTOR_PASSWORD", "value":"'$ENC_PW_TEST'"}]' container-definitions_test_dstu2.json > tmp.json && mv tmp.json container-definitions_test_dstu2.json
-            # for dstu2 profile
-            # register the ECS task definition and capture the version
-            - export NEW_CONTAINER_NAME=$(cat container-definitions_test_dstu2.json | jq --raw-output '.[0].name')
-            - export TASK_VERSION=$(aws ecs register-task-definition --family $NEW_CONTAINER_NAME --volumes name=indexes,host={sourcePath=/var/ecs/indexes_dstu2} --container-definitions $(cat container-definitions_test_dstu2.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
-            # update the service to use the latest task definition
-            - aws ecs update-service --cluster hspc-test --service $TARGET_AWS_SERVICE_DSTU2 --task-definition $NEW_CONTAINER_NAME:$TASK_VERSION
             # For stu3 profile
             # register the ECS task definition and capture the version
             - export NEW_CONTAINER_NAME=$(cat container-definitions_test_stu3.json | jq --raw-output '.[0].name')
             - export TASK_VERSION=$(aws ecs register-task-definition --family $NEW_CONTAINER_NAME --volumes name=indexes,host={sourcePath=/var/ecs/indexes} --container-definitions $(cat container-definitions_test_stu3.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
             # update the service to use the latest task definition
             - aws ecs update-service --cluster $TARGET_AWS_CLUSTER --service $TARGET_AWS_SERVICE_STU3 --task-definition $NEW_CONTAINER_NAME:$TASK_VERSION
+            # for dstu2 profile
+            # register the ECS task definition and capture the version
+            - export NEW_CONTAINER_NAME=$(cat container-definitions_test_dstu2.json | jq --raw-output '.[0].name')
+            - export TASK_VERSION=$(aws ecs register-task-definition --family $NEW_CONTAINER_NAME --volumes name=indexes,host={sourcePath=/var/ecs/indexes_dstu2} --container-definitions $(cat container-definitions_test_dstu2.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
+            # update the service to use the latest task definition
+            - aws ecs update-service --cluster hspc-test --service $TARGET_AWS_SERVICE_DSTU2 --task-definition $NEW_CONTAINER_NAME:$TASK_VERSION
     feature/*:
       - step:
           caches:
@@ -118,13 +104,13 @@ pipelines:
             - rm reference-api-webapp-multitenant/target/*-sources.jar
             - rm reference-api-webapp-multitenant/target/*-javadoc.jar
             # build dynamic container-definitions
-            - export CONTAINER_NAME=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.artifactId}' --non-recursive exec:exec -f reference-api-webapp-multitenant/pom.xml)
-            - export PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec -f reference-api-webapp-multitenant/pom.xml)
+            - export CONTAINER_NAME=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.artifactId}' --non-recursive exec:exec)
+            - export PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
             - sed -i -e "s/{{CONTAINER_NAME}}/$CONTAINER_NAME/g" -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" container-definitions_prod_stu3.json
             - sed -i -e "s/{{CONTAINER_NAME}}/$CONTAINER_NAME/g" -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" container-definitions_prod_dstu2.json
-            # build docker image and push to docker hub for dstu2 profile
+            # build docker image and push to nexus.hspconsortium.com:18083 for dstu2 profile
             - export IMAGE_NAME=$(cat container-definitions_prod_dstu2.json | jq --raw-output '.[0].image')
-            - docker login -u $DOCKER_ID -p $DOCKER_PASSWORD
+            - docker login -u $NEXUS_USR -p $NEXUS_PWD nexus.hspconsortium.org:18083
             - docker build -t $IMAGE_NAME .
             - docker push $IMAGE_NAME
             # Add jasypt pw to container definition
