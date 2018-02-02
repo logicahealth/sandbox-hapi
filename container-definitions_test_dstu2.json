@@ -1,11 +1,11 @@
 [
   {
     "name": "{{CONTAINER_NAME}}-dstu2",
-    "image": "hspconsortium/{{CONTAINER_NAME}}:{{PROJECT_VERSION}}",
+    "image": "nexus.hspconsortium.org:18083/hspc/{{CONTAINER_NAME}}:{{PROJECT_VERSION}}",
     "cpu": 0,
     "portMappings": [
       {
-        "containerPort": 8075,
+        "containerPort": 8074,
         "hostPort": 0,
         "protocol": "tcp"
       }
