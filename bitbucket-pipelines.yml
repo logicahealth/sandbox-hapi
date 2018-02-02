@@ -16,7 +16,6 @@ pipelines:
           name: build, test, deploy, docker package, aws deploy
           caches:
             - maven
-            - resources
           script:
             # Deploy to hspc-nexus
             - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
@@ -127,7 +126,3 @@ pipelines:
             - export TASK_VERSION=$(aws ecs register-task-definition --family $NEW_CONTAINER_NAME --volumes name=indexes,host={sourcePath=/var/ecs/indexes_dstu2} --container-definitions $(cat container-definitions_prod_dstu2.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
 options:
   docker: true
-
-definitions:
-  caches:
-    resources: reference-api-webapp-base/src/main/resources/db
