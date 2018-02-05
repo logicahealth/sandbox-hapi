@@ -70,10 +70,3 @@ hspc:
         launchUrl: ${hspc.platform.authorization.urlContext}Launch
         registrationEndpointUrl: ${hspc.platform.authorization.urlContext}register
         urisEndpointExtensionUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
-    messaging:
-      url: http://localhost:8091
-      urlContext: ${hspc.platform.messaging.url}/
-      subscriptionSupport:
-        enabled: true
-        subscriptionEndpoint: ${hspc.platform.messaging.urlContext}subscription
-        resourceEndpoint: ${hspc.platform.messaging.urlContext}resource

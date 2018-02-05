@@ -37,19 +37,19 @@ public class MetadataRepositoryStu3Impl implements MetadataRepositoryStu3 {
     @Value("${hspc.platform.api.security.mode}")
     private String securityMode;
 
-    @Value("${hspc.platform.authorization.tokenUrl}")
+    @Value("${hspc.platform.manifest.tokenUrl}")
     private String tokenEndpointUri;
 
-    @Value("${hspc.platform.authorization.authorizeUrl}")
+    @Value("${hspc.platform.manifest.authorizeUrl}")
     private String authorizationEndpointUri;
 
-    @Value("${hspc.platform.authorization.smart.registrationEndpointUrl}")
+    @Value("${hspc.platform.manifest.smart.registrationEndpointUrl}")
     private String registrationEndpointUri;
 
-    @Value("${hspc.platform.authorization.smart.urisEndpointExtensionUrl}")
+    @Value("${hspc.platform.manifest.smart.urisEndpointExtensionUrl}")
     private String urisEndpointExtensionUrl;
 
-    @Value("${hspc.platform.authorization.smart.launchRegistrationUrl}")
+    @Value("${hspc.platform.manifest.smart.launchRegistrationUrl}")
     private String launchRegistrationUrl;
 
     @SuppressWarnings("Duplicates")
