@@ -20,17 +20,8 @@ hspc:
         datasource:
           cache:
             size: 5
-        terminology:
-          proxy:
-            host: api-v5-stu3.hspconsortium.org/${hspc.platform.api.sandbox.name}
-            contextPath: /open
     authorization:
       url: https://auth-test.hspconsortium.org
-    messaging:
-      protocol: http
-      host: messaging-test.hspconsortium.org
-      subscriptionSupport:
-        enabled: false
 
 jasypt:
   encryptor:

@@ -1,5 +1,5 @@
 server:
-  port: 8075
+  port: ${API_PORT:8075}
   tomcat:
     remote_ip_header: x-forwarded-for
     protocol_header: x-forwarded-proto
@@ -8,7 +8,7 @@ spring:
   application:
     name: HSPC Reference API
   profiles:
-    active: multitenant,stu3
+    active: multitenant,dstu2
   datasource:
     initialSize: 1
     maxActive: 5
@@ -36,15 +36,15 @@ hspc:
         clientSecret: secret
         scopes: openid,launch,smart/orchestrate_launch
       sandbox:
-        name: hspc5
+        name: ${SANDBOX_NAME:hspc5}
       fhir:
         db:
           schema: hspc_5_${hspc.platform.api.sandbox.name}
           driver-class-name: com.mysql.jdbc.Driver
-          host: localhost
-          url: jdbc:mysql://${hspc.platform.api.fhir.db.host}:3306/${hspc.platform.api.fhir.db.schema}
-          username: root
-          password: password
+          host: ${DB_HOST:localhost}
+          url: jdbc:mysql://${hspc.platform.api.fhir.db.host}:${DB_PORT:3306}/${hspc.platform.api.fhir.db.schema}
+          username: ${DB_USER:root}
+          password: ${DB_PASSWORD:password}
         datasource:
           cache:
             size: 40
@@ -59,17 +59,15 @@ hspc:
         contextPath: data
         # remove openContextPath to disable the open endpoint
         openContextPath: open
+    # these values are used for internal calls to the auth server
     authorization:
       protocol: http
-      host: localhost
-      port: 8060
+      host: ${AUTH_HOST:localhost}
+      port: ${AUTH_PORT:8060}
       context: ~
       url: ${hspc.platform.authorization.protocol}://${hspc.platform.authorization.host}:${hspc.platform.authorization.port}${hspc.platform.authorization.context}
-#      url: https://auth.hspconsortium.org/
       authorizeUrl: ${hspc.platform.authorization.url}/authorize
       tokenUrl: ${hspc.platform.authorization.url}/token
-#      authorizeUrl: ${hspc.platform.authorization.url}/mock/authorize
-#      tokenUrl: ${hspc.platform.authorization.url}/mock/token
       tokenCheckUrl: ${hspc.platform.authorization.url}/introspect
       userinfoUrl: ${hspc.platform.authorization.url}/userinfo
       smart:
@@ -77,16 +75,26 @@ hspc:
         registrationEndpointUrl: ${hspc.platform.authorization.url}/register
         urisEndpointExtensionUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
         launchRegistrationUrl: /${hspc.platform.api.fhir.contextPath}/_services/smart/Launch
-    messaging:
+    # the manifest output should contain these values
+    manifest:
       protocol: http
-      host: localhost
-      port: 8091
-      context: /
-      url: ${hspc.platform.messaging.protocol}://${hspc.platform.messaging.host}:${hspc.platform.messaging.port}${hspc.platform.messaging.context}
-      subscriptionSupport:
-        enabled: false
-        subscriptionEndpoint: ${hspc.platform.messaging.url}/subscription
-        resourceEndpoint: ${hspc.platform.messaging.url}/resource
+      default_host: ${hspc.platform.authorization.host}
+      host: ${PUBLISHED_AUTH_HOST:}
+      port: ${PUBLISHED_PORT:8060}
+      context: ~
+      url: ${hspc.platform.manifest.protocol}://${hspc.platform.manifest.host}:${hspc.platform.manifest.port}${hspc.platform.manifest.context}
+      authorizeUrl: ${hspc.platform.manifest.url}/authorize
+      tokenUrl: ${hspc.platform.manifest.url}/token
+      smart:
+        launchUrl: ${hspc.platform.manifest.url}/Launch
+        registrationEndpointUrl: ${hspc.platform.manifest.url}/register
+        urisEndpointExtensionUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
+        launchRegistrationUrl: /${hspc.platform.api.fhir.contextPath}/_services/smart/Launch
+      security:
+        authorize: ${hspc.platform.manifest.authorizeUrl}
+        token: ${hspc.platform.manifest.tokenUrl}
+        register: ${hspc.platform.manifest.smart.registrationEndpointUrl}
+        launch-registration: ${hspc.platform.manifest.smart.launchRegistrationUrl}
 
 ---
 
@@ -97,9 +105,9 @@ hspc:
   platform:
     api:
       sandbox:
-        name: dstu2
+        name: ${SANDBOX_NAME:hspc5}
 server:
-  port: 8075
+  port: ${API_PORT:8075}
 
 ---
 
@@ -110,6 +118,19 @@ hspc:
   platform:
     api:
       sandbox:
-        name: stu3
+        name: ${SANDBOX_NAME:hspc6}
 server:
-  port: 8076
+  port: ${API_PORT:8076}
+
+---
+
+spring:
+  profiles: r4
+
+hspc:
+  platform:
+    api:
+      sandbox:
+        name: ${SANDBOX_NAME:hspc7}
+server:
+  port: ${API_PORT:8077}
