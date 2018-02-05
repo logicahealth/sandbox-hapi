@@ -126,30 +126,6 @@
             <artifactId>commons-codec</artifactId>
         </dependency>
 
-
-        <!-- for error reporting -->
-        <dependency>
-            <groupId>org.hspconsortium.reference</groupId>
-            <artifactId>hspc-reference-messaging-common</artifactId>
-            <version>${reference-messaging.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>com.github.ulisesbocchio</groupId>
-            <artifactId>jasypt-spring-boot-starter</artifactId>
-            <version>1.16</version>
-        </dependency>
-
     </dependencies>
 
     <build>

@@ -172,9 +172,8 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
                         new AntPathRequestMatcher("/terminology*", "GET"),
                         new AntPathRequestMatcher("/terminology/**", "GET"),
                         // federated query (used for a HIMMS demo)
-                        new AntPathRequestMatcher("/federated*", "GET"),
-                        // server test operations
-                        new AntPathRequestMatcher("/test/.**", "GET"))
+                        new AntPathRequestMatcher("/federated*", "GET")
+                        )
                 .permitAll();
         if (additionalPermittedEndpointPairs != null && additionalPermittedEndpointPairs.length > 0) {
             if (!NO_ENDPOINT.equals(additionalPermittedEndpointPairs[0])) {
