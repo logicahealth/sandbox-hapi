@@ -20,15 +20,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
 
 @Component
 public class SandboxPersister {
 
     private static final Logger logger = LoggerFactory.getLogger(SandboxPersister.class);
 
-    private static final String EMPTY_SCHEMA_PATH = "db/hspc_%s_schema_empty.sql";
+    private static final String EMPTY_SCHEMA_PATH = "db/hspc_%s_schema_empty.sql.zip";
 
-    private static final String STARTER_SCHEMA_PATH = "db/hspc_%s_%s_%s_dataset.sql";
+    private static final String STARTER_SCHEMA_PATH = "db/hspc_%s_%s_%s_dataset.sql.zip";
 
     private static String DEFAULT_OPEN_CONTEXT_PATH = OAuth2ResourceConfig.NO_ENDPOINT;
 
@@ -210,11 +212,16 @@ public class SandboxPersister {
                 sandbox.getSchemaVersion(),
                 returnActiveFhirVersion(),
                 loadingDataSet.toString().toLowerCase());
-        try {
-            ClassPathResource classPathResource = new ClassPathResource(dataFileName);
-            InputStream inputStream = classPathResource.getInputStream();
-            Reader reader = new BufferedReader(new InputStreamReader(inputStream));
-            return databaseManager.loadInitialDataset(toSchemaName.apply(sandbox), reader);
+        ClassPathResource classPathResource = new ClassPathResource(dataFileName);
+        try (InputStream inputStream = classPathResource.getInputStream();
+             ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
+            ZipEntry zipEntry = zipInputStream.getNextEntry();
+            if (zipEntry == null) {
+                throw new RuntimeException("Unable to find script inside of " + dataFileName);
+            }
+            try (Reader reader = new BufferedReader(new InputStreamReader(zipInputStream))) {
+                return databaseManager.loadInitialDataset(toSchemaName.apply(sandbox), reader);
+            }
         } catch (IOException e) {
             throw new RuntimeException(String.format("Error creating initial dataset. Data file reference '%s'", dataFileName), e);
         }

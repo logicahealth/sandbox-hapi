@@ -1,7 +1,9 @@
 package org.hspconsortium.platform.api.oauth2;
 
 import org.apache.commons.lang3.Validate;
+import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryConfig;
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.context.annotation.Bean;
@@ -35,6 +37,9 @@ import java.util.List;
 @EnableResourceServer
 @Profile("default")
 public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
+
+    @Autowired
+    private MetadataRepositoryConfig metadataRepositoryConfig;
 
     public static final String SECURITY_MODE_OPEN = "open";
 
@@ -80,7 +85,6 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
 
     @Bean
     public ResourceServerTokenServices remoteTokenServices(
-            final @Value("${hspc.platform.authorization.tokenCheckUrl}") String tokenCheckUrl,
             final @Value("${hspc.platform.api.oauth2.clientId}") String clientId,
             final @Value("${hspc.platform.api.oauth2.clientSecret}") String clientSecret) {
 
@@ -88,7 +92,7 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
             return null;
         }
         final RemoteTokenServices remoteTokenServices = new RemoteTokenServices();
-        remoteTokenServices.setCheckTokenEndpointUrl(tokenCheckUrl);
+        remoteTokenServices.setCheckTokenEndpointUrl(metadataRepositoryConfig.getTokenCheckUrl());
         remoteTokenServices.setClientId(clientId);
         remoteTokenServices.setClientSecret(clientSecret);
         remoteTokenServices.setAccessTokenConverter(accessTokenConverter());

@@ -8,7 +8,7 @@ spring:
   application:
     name: HSPC Reference API
   profiles:
-    active: multitenant,dstu2
+    active: default,dstu2
   datasource:
     initialSize: 1
     maxActive: 5
@@ -59,39 +59,30 @@ hspc:
         contextPath: data
         # remove openContextPath to disable the open endpoint
         openContextPath: open
+    # these values are used for internal calls to the auth server
     authorization:
       protocol: http
       host: ${AUTH_HOST:localhost}
       port: ${AUTH_PORT:8060}
       context: ~
       url: ${hspc.platform.authorization.protocol}://${hspc.platform.authorization.host}:${hspc.platform.authorization.port}${hspc.platform.authorization.context}
-      authorizeUrl: ${hspc.platform.authorization.url}/authorize
-      tokenUrl: ${hspc.platform.authorization.url}/token
-      tokenCheckUrl: ${hspc.platform.authorization.url}/introspect
-      userinfoUrl: ${hspc.platform.authorization.url}/userinfo
+      authorizeUrlPath: /authorize
+      tokenUrlPath: /token
+      tokenCheckUrlPath: /introspect
+      userinfoUrlPath: /userinfo
       smart:
-        launchUrl: ${hspc.platform.authorization.url}/Launch
-        registrationEndpointUrl: ${hspc.platform.authorization.url}/register
+        launchUrlPath: /Launch
+        registrationEndpointUrlPath: /register
         urisEndpointExtensionUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
         launchRegistrationUrl: /${hspc.platform.api.fhir.contextPath}/_services/smart/Launch
+    # the manifest output should contain these values
     manifest:
+      override: false
       protocol: http
-      host: ${PUBLISHED_AUTH_HOST:localhost}
-      port: ${PUBLISHED_PORT:8060}
+      host: ${PUBLISHED_AUTH_HOST:}
+      port: ${PUBLISHED_PORT:}
       context: ~
       url: ${hspc.platform.manifest.protocol}://${hspc.platform.manifest.host}:${hspc.platform.manifest.port}${hspc.platform.manifest.context}
-      authorizeUrl: ${hspc.platform.manifest.url}/authorize
-      tokenUrl: ${hspc.platform.manifest.url}/token
-      smart:
-        launchUrl: ${hspc.platform.manifest.url}/Launch
-        registrationEndpointUrl: ${hspc.platform.manifest.url}/register
-        urisEndpointExtensionUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
-        launchRegistrationUrl: /${hspc.platform.api.fhir.contextPath}/_services/smart/Launch
-      security:
-        authorize: ${hspc.platform.manifest.authorizeUrl}
-        token: ${hspc.platform.manifest.tokenUrl}
-        register: ${hspc.platform.manifest.smart.registrationEndpointUrl}
-        launch-registration: ${hspc.platform.manifest.smart.launchRegistrationUrl}
 
 ---
 

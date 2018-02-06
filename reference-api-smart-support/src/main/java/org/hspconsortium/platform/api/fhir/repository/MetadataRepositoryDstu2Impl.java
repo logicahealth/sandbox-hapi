@@ -5,50 +5,33 @@ import ca.uhn.fhir.model.dstu2.composite.BoundCodeableConceptDt;
 import ca.uhn.fhir.model.dstu2.resource.Conformance;
 import ca.uhn.fhir.model.dstu2.valueset.RestfulSecurityServiceEnum;
 import ca.uhn.fhir.model.primitive.UriDt;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
 
-@Component
 @Lazy
+@Component
 public class MetadataRepositoryDstu2Impl implements MetadataRepositoryDstu2 {
-    static private String SECURE_MODE = "secured";
-    static private String SECURE_MODE_MOCK = "mock";
 
-    @Value("${hspc.platform.api.security.mode}")
-    private String securityMode;
+    @Autowired
+    private MetadataRepositoryConfig metadataRepositoryConfig;
 
-    @Value("${hspc.platform.manifest.tokenUrl}")
-    private String tokenEndpointUri;
-
-    @Value("${hspc.platform.manifest.authorizeUrl}")
-    private String authorizationEndpointUri;
-
-    @Value("${hspc.platform.manifest.smart.registrationEndpointUrl}")
-    private String registrationEndpointUri;
-
-    @Value("${hspc.platform.manifest.smart.urisEndpointExtensionUrl}")
-    private String urisEndpointExtensionUrl;
-
-    @Value("${hspc.platform.manifest.smart.launchRegistrationUrl}")
-    private String launchRegistrationUrl;
-
+    @SuppressWarnings("Duplicates")
     @Override
     public Conformance addConformance(Conformance conformance){
 
-        if (SECURE_MODE.equalsIgnoreCase(securityMode) || SECURE_MODE_MOCK.equalsIgnoreCase(securityMode)) {
+        if (metadataRepositoryConfig.isSecured()) {
             List<Conformance.Rest> restList = conformance.getRest();
             Conformance.Rest rest = restList.get(0);
             Conformance.RestSecurity restSecurity = rest.getSecurity();
 
-            ExtensionDt conformanceExtension = new ExtensionDt(false, this.urisEndpointExtensionUrl);
-            conformanceExtension.addUndeclaredExtension(new ExtensionDt(false, "authorize", new UriDt(this.authorizationEndpointUri)));
-            conformanceExtension.addUndeclaredExtension(new ExtensionDt(false, "token", new UriDt(this.tokenEndpointUri)));
-            conformanceExtension.addUndeclaredExtension(new ExtensionDt(false, "register", new UriDt(this.registrationEndpointUri)));
-            conformanceExtension.addUndeclaredExtension(new ExtensionDt(false, "launch-registration", new UriDt(this.launchRegistrationUrl)));
-
+            ExtensionDt conformanceExtension = new ExtensionDt(false, metadataRepositoryConfig.getUrisEndpointExtensionUrl());
+            conformanceExtension.addUndeclaredExtension(new ExtensionDt(false, "authorize", new UriDt(metadataRepositoryConfig.getAuthorizeUrl())));
+            conformanceExtension.addUndeclaredExtension(new ExtensionDt(false, "token", new UriDt(metadataRepositoryConfig.getTokenUrl())));
+            conformanceExtension.addUndeclaredExtension(new ExtensionDt(false, "register", new UriDt(metadataRepositoryConfig.getRegistrationEndpointUrl())));
+            conformanceExtension.addUndeclaredExtension(new ExtensionDt(false, "launch-registration", new UriDt(metadataRepositoryConfig.getLaunchRegistrationUrl())));
             restSecurity.addUndeclaredExtension(conformanceExtension);
 
             BoundCodeableConceptDt<RestfulSecurityServiceEnum> boundCodeableConceptDt =

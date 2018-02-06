@@ -66,35 +66,23 @@ hspc:
       port: ${AUTH_PORT:8060}
       context: ~
       url: ${hspc.platform.authorization.protocol}://${hspc.platform.authorization.host}:${hspc.platform.authorization.port}${hspc.platform.authorization.context}
-      authorizeUrl: ${hspc.platform.authorization.url}/authorize
-      tokenUrl: ${hspc.platform.authorization.url}/token
-      tokenCheckUrl: ${hspc.platform.authorization.url}/introspect
-      userinfoUrl: ${hspc.platform.authorization.url}/userinfo
+      authorizeUrlPath: /authorize
+      tokenUrlPath: /token
+      tokenCheckUrlPath: /introspect
+      userinfoUrlPath: /userinfo
       smart:
-        launchUrl: ${hspc.platform.authorization.url}/Launch
-        registrationEndpointUrl: ${hspc.platform.authorization.url}/register
+        launchUrlPath: /Launch
+        registrationEndpointUrlPath: /register
         urisEndpointExtensionUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
         launchRegistrationUrl: /${hspc.platform.api.fhir.contextPath}/_services/smart/Launch
-    # the manifest output should contain these values
+    # the manifest output should contain these values (used to allow the API to publish different auth URL than it resolves locally, ie, Docker container)
     manifest:
+      override: false
       protocol: http
-      default_host: ${hspc.platform.authorization.host}
       host: ${PUBLISHED_AUTH_HOST:}
-      port: ${PUBLISHED_PORT:8060}
+      port: ${PUBLISHED_PORT:}
       context: ~
       url: ${hspc.platform.manifest.protocol}://${hspc.platform.manifest.host}:${hspc.platform.manifest.port}${hspc.platform.manifest.context}
-      authorizeUrl: ${hspc.platform.manifest.url}/authorize
-      tokenUrl: ${hspc.platform.manifest.url}/token
-      smart:
-        launchUrl: ${hspc.platform.manifest.url}/Launch
-        registrationEndpointUrl: ${hspc.platform.manifest.url}/register
-        urisEndpointExtensionUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
-        launchRegistrationUrl: /${hspc.platform.api.fhir.contextPath}/_services/smart/Launch
-      security:
-        authorize: ${hspc.platform.manifest.authorizeUrl}
-        token: ${hspc.platform.manifest.tokenUrl}
-        register: ${hspc.platform.manifest.smart.registrationEndpointUrl}
-        launch-registration: ${hspc.platform.manifest.smart.launchRegistrationUrl}
 
 ---
 

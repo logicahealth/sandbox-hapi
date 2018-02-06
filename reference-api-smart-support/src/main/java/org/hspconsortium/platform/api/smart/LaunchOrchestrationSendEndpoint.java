@@ -29,6 +29,8 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryConfig;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -42,8 +44,8 @@ import java.nio.charset.StandardCharsets;
 @Component
 public class LaunchOrchestrationSendEndpoint {
 
-    @Value("${hspc.platform.authorization.smart.launchUrl}")
-    private String authorizationServerLaunchEndpointURL;
+    @Autowired
+    private MetadataRepositoryConfig metadataRepositoryConfig;
 
     @Value("${hspc.platform.api.oauth2.clientId}")
     private String apiServerClientId;
@@ -56,7 +58,7 @@ public class LaunchOrchestrationSendEndpoint {
     }
 
     public void handleLaunchRequest(HttpServletRequest request, HttpServletResponse response, @RequestBody String jsonString) {
-        HttpPost postRequest = new HttpPost(this.authorizationServerLaunchEndpointURL);
+        HttpPost postRequest = new HttpPost(metadataRepositoryConfig.getLaunchUrl());
         postRequest.addHeader("Content-Type", "application/json");
         StringEntity entity = null;
         try {
