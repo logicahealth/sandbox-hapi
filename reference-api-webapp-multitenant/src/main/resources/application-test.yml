@@ -16,7 +16,7 @@ hspc:
         db:
           host: db-test.hspconsortium.org
           username: reference_api
-          password: ENC(PGbAqA2yTasSehiLRk60NpQLMQ1btRtID+8hvhWf9AI=)
+          password: ENC(VlyuolSSom0UHkxBTlmTl76QM4W7mn87zjTAvqYIrZQ=)
         datasource:
           cache:
             size: 5
