@@ -23,6 +23,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.*;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.annotation.Resource;
@@ -158,7 +159,7 @@ public class MySQLConfig {
         LocalContainerEntityManagerFactoryBean retVal = new LocalContainerEntityManagerFactoryBean();
         retVal.setDataSource(dataSource);
         retVal.setPackagesToScan("ca.uhn.fhir.jpa.entity");
-        retVal.setPersistenceProvider(new HibernatePersistenceProvider());
+        retVal.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         retVal.setJpaProperties(jpaProperties(dataSource));
         retVal.afterPropertiesSet();
         return retVal;
