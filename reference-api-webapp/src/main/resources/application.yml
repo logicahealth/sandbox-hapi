@@ -75,12 +75,12 @@ hspc:
         registrationEndpointUrlPath: /register
         urisEndpointExtensionUrl: http://fhir-registry.smarthealthit.org/StructureDefinition/oauth-uris
         launchRegistrationUrl: /${hspc.platform.api.fhir.contextPath}/_services/smart/Launch
-    # the manifest output should contain these values
+    # the manifest output should contain these values (used to allow the API to publish different auth URL than it resolves locally, ie, Docker container)
     manifest:
-      override: false
+      override: ${MANIFEST_OVERRIDE:false}
       protocol: http
       host: ${PUBLISHED_AUTH_HOST:}
-      port: ${PUBLISHED_PORT:}
+      port: ${PUBLISHED_AUTH_PORT:}
       context: ~
       url: ${hspc.platform.manifest.protocol}://${hspc.platform.manifest.host}:${hspc.platform.manifest.port}${hspc.platform.manifest.context}
 

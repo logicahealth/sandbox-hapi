@@ -101,6 +101,7 @@ public class MetadataRepositoryConfig {
     }
 
     public String getTokenCheckUrl() {
+        // always use the authorization url
         return authorizationUrl + getTokenCheckUrlPath();
     }
 
@@ -109,6 +110,7 @@ public class MetadataRepositoryConfig {
     }
 
     public String getLaunchUrl() {
-        return getBasePath() + getLaunchUrlPath();
+        // always use the authorization url
+        return authorizationUrl + getLaunchUrlPath();
     }
 }
