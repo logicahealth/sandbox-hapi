@@ -6,7 +6,7 @@
     <groupId>org.hspconsortium.reference</groupId>
     <artifactId>hspc-reference-api-parent</artifactId>
     <relativePath>../pom.xml</relativePath>
-    <version>1.10.6</version>
+    <version>1.10.8</version>
   </parent>
 
   <artifactId>hspc-reference-api-oauth2</artifactId>
@@ -30,6 +30,12 @@
     <dependency>
       <groupId>org.springframework.security.oauth</groupId>
       <artifactId>spring-security-oauth2</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.hspconsortium.reference</groupId>
+      <artifactId>hspc-reference-api-smart-support</artifactId>
+      <version>1.10.8</version>
     </dependency>
 
     <!-- Needed for JEE/Servlet support -->

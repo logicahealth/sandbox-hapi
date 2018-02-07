@@ -9,7 +9,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 
-@EnableWebSecurity
+@EnableWebSecurity(debug = false)
 @SpringBootApplication
 public class HSPCReferenceApiMultitenantApplication extends SpringBootServletInitializer {
 
