@@ -1,5 +1,5 @@
 server:
-  port: 8076
+  port: 8074
 
 hibernate:
   search:
@@ -16,21 +16,12 @@ hspc:
         db:
           host: db-test.hspconsortium.org
           username: reference_api
-          password: ENC(PGbAqA2yTasSehiLRk60NpQLMQ1btRtID+8hvhWf9AI=)
+          password: ENC(VlyuolSSom0UHkxBTlmTl76QM4W7mn87zjTAvqYIrZQ=)
         datasource:
           cache:
             size: 5
-        terminology:
-          proxy:
-            host: api-v5-stu3.hspconsortium.org/${hspc.platform.api.sandbox.name}
-            contextPath: /open
     authorization:
       url: https://auth-test.hspconsortium.org
-    messaging:
-      protocol: http
-      host: messaging-test.hspconsortium.org
-      subscriptionSupport:
-        enabled: false
 
 jasypt:
   encryptor:
