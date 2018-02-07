@@ -1,5 +1,5 @@
 server:
-  port: 8076
+  port: 8074
 
 hibernate:
   search:
@@ -17,16 +17,8 @@ hspc:
           host: sandboxdb.hspconsortium.org
           username: system
           password: ENC(lA/Ifn1Cm6pYGGydIXNQIa6n7ryn5A1+)
-        terminology:
-          proxy:
-            host: api-v5-stu3.hspconsortium.org/${hspc.platform.api.sandbox.name}
-            contextPath: /open
     authorization:
       url: https://auth.hspconsortium.org
-    messaging:
-      protocol: http
-      subscriptionSupport:
-        enabled: false
 
 jasypt:
   encryptor:
