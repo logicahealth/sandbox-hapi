@@ -24,7 +24,7 @@ pipelines:
             # get the ci scripts
             - git clone https://bitbucket.org/hspconsortium/sandbox-ci.git
             # build the set-env.sh script
-            - . sandbox-ci/bitbucket-pipeline-scripts/build-set-env-for-maven.sh test 8075 1000 reference-api-webapp-multitenant
+            - . sandbox-ci/bitbucket-pipeline-scripts/build-set-env-for-maven.sh test 8070 1000 reference-api-webapp-multitenant
           artifacts:
             - set-env.sh
             - reference-api-webapp-multitenant/target/*.jar
@@ -44,12 +44,19 @@ pipelines:
             # get the ci scripts
             - git clone https://bitbucket.org/hspconsortium/sandbox-ci.git
             # build the container-definition.json
-            - . sandbox-ci/bitbucket-pipeline-scripts/build_container_definition.sh $ENC_PW_TEST
+            - . sandbox-ci/bitbucket-pipeline-scripts/build-container-definition.sh $ENC_PW_TEST
+            # DSTU2
             # register the ECS task definition and capture the version
-            - export TASK_VERSION=$(aws ecs register-task-definition --family "$AWS_CONTAINER_NAME" --container-definitions $(cat ci/container-definitions.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
+            - export TASK_VERSION=$(aws ecs register-task-definition --family "$AWS_CONTAINER_NAME-dstu2" --container-definitions $(cat sandbox-ci/bitbucket-pipeline-scripts/container-definitions.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
             - echo "Registered ECS Task Definition - $AWS_CONTAINER_NAME:$TASK_VERSION"
             # update the service to use the latest task definition
-            - aws ecs update-service --cluster hspc-test --service "$AWS_SERVICE_NAME" --task-definition $AWS_CONTAINER_NAME:$TASK_VERSION
+            - aws ecs update-service --cluster hspc-test --service "$AWS_SERVICE_NAME-dstu2" --task-definition $AWS_CONTAINER_NAME:$TASK_VERSION
+            # STU3
+            # register the ECS task definition and capture the version
+            - export TASK_VERSION=$(aws ecs register-task-definition --family "$AWS_CONTAINER_NAME-stu3" --container-definitions $(cat sandbox-ci/bitbucket-pipeline-scripts/container-definitions.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
+            - echo "Registered ECS Task Definition - $AWS_CONTAINER_NAME:$TASK_VERSION"
+            # update the service to use the latest task definition
+            - aws ecs update-service --cluster hspc-test --service "$AWS_SERVICE_NAME-stu3" --task-definition $AWS_CONTAINER_NAME:$TASK_VERSION
     master:
       - step:
           name: build jar and upload to nexus
@@ -66,7 +73,7 @@ pipelines:
             # get the ci scripts
             - git clone https://bitbucket.org/hspconsortium/sandbox-ci.git
             # build the set-env.sh script
-            - . sandbox-ci/bitbucket-pipeline-scripts/build-set-env-for-maven.sh prod 8075 1000 reference-api-webapp-multitenant
+            - . sandbox-ci/bitbucket-pipeline-scripts/build-set-env-for-maven.sh prod 8070 1000 reference-api-webapp-multitenant
           artifacts:
             - set-env.sh
             - reference-api-webapp-multitenant/target/*.jar
@@ -87,12 +94,19 @@ pipelines:
             # get the ci scripts
             - git clone https://bitbucket.org/hspconsortium/sandbox-ci.git
             # build the container-definition.json
-            - . ci/build_container_definition.sh $ENC_PW_PROD
+            - . sandbox-ci/bitbucket-pipeline-scripts/build-container-definition.sh $ENC_PW_PROD
+            # DSTU2
             # register the ECS task definition and capture the version
-            - export TASK_VERSION=$(aws ecs register-task-definition --family "$AWS_CONTAINER_NAME" --container-definitions $(cat ci/container-definitions.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
+            - export TASK_VERSION=$(aws ecs register-task-definition --family "$AWS_CONTAINER_NAME-dstu2" --container-definitions $(cat sandbox-ci/bitbucket-pipeline-scripts/container-definitions.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
             - echo "Registered ECS Task Definition - $AWS_CONTAINER_NAME:$TASK_VERSION"
             # update the service to use the latest task definition
-            - aws ecs update-service --cluster hspc-prod --service "$AWS_SERVICE_NAME" --task-definition $AWS_CONTAINER_NAME:$TASK_VERSION
+            - aws ecs update-service --cluster hspc-prod --service "$AWS_SERVICE_NAME-dstu2" --task-definition $AWS_CONTAINER_NAME:$TASK_VERSION
+            # STU3
+            # register the ECS task definition and capture the version
+            - export TASK_VERSION=$(aws ecs register-task-definition --family "$AWS_CONTAINER_NAME-stu3" --container-definitions $(cat sandbox-ci/bitbucket-pipeline-scripts/container-definitions.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
+            - echo "Registered ECS Task Definition - $AWS_CONTAINER_NAME:$TASK_VERSION"
+            # update the service to use the latest task definition
+            - aws ecs update-service --cluster hspc-prod --service "$AWS_SERVICE_NAME-stu3" --task-definition $AWS_CONTAINER_NAME:$TASK_VERSION
     feature/*:
       - step:
           caches:
