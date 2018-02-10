@@ -21,14 +21,17 @@ pipelines:
             # clear out the other jar files
             - rm reference-api-webapp-multitenant/target/*-sources.jar
             - rm reference-api-webapp-multitenant/target/*-javadoc.jar
-            - . ci/build_set_env.sh test 8075 1000 reference-api-webapp-multitenant
+            # get the ci scripts
+            - git clone https://bitbucket.org/hspconsortium/sandbox-ci.git
+            # build the set-env.sh script
+            - . sandbox-ci/bitbucket-pipeline-scripts/build-set-env-for-maven.sh test 8075 1000 reference-api-webapp-multitenant
           artifacts:
-            - set_env.sh
+            - set-env.sh
             - reference-api-webapp-multitenant/target/*.jar
       - step:
           name: build docker and upload to docker hub
           script:
-            - . set_env.sh
+            - . set-env.sh
             - echo $IMAGE_COORDINATES
             # build docker image and push
             - docker login -u $DOCKER_ID -p $DOCKER_PASSWORD
@@ -37,16 +40,16 @@ pipelines:
       - step:
           name: AUTOMATICALLY update the aws test service
           script:
-            - . set_env.sh
-            - . ci/build_container_definition.sh $ENC_PW_TEST
+            - . set-env.sh
+            # get the ci scripts
+            - git clone https://bitbucket.org/hspconsortium/sandbox-ci.git
+            # build the container-definition.json
+            - . sandbox-ci/bitbucket-pipeline-scripts/build_container_definition.sh $ENC_PW_TEST
             # register the ECS task definition and capture the version
-            - export TASK_VERSION=$(aws ecs register-task-definition --family "$AWS_CONTAINER_NAME-dstu2" --container-definitions $(cat ci/container-definitions.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
-            - echo "Registered ECS Task Definition - $AWS_CONTAINER_NAME-dstu2:$TASK_VERSION"
-            - export TASK_VERSION=$(aws ecs register-task-definition --family "$AWS_CONTAINER_NAME-stu3" --container-definitions $(cat ci/container-definitions.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
-            - echo "Registered ECS Task Definition - $AWS_CONTAINER_NAME-stu3:$TASK_VERSION"
+            - export TASK_VERSION=$(aws ecs register-task-definition --family "$AWS_CONTAINER_NAME" --container-definitions $(cat ci/container-definitions.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
+            - echo "Registered ECS Task Definition - $AWS_CONTAINER_NAME:$TASK_VERSION"
             # update the service to use the latest task definition
-            - aws ecs update-service --cluster hspc-test --service $AWS_SERVICE_NAME-dstu2 --task-definition $AWS_CONTAINER_NAME:$TASK_VERSION
-            - aws ecs update-service --cluster hspc-test --service $AWS_SERVICE_NAME-stu3 --task-definition $AWS_CONTAINER_NAME:$TASK_VERSION
+            - aws ecs update-service --cluster hspc-test --service "$AWS_SERVICE_NAME" --task-definition $AWS_CONTAINER_NAME:$TASK_VERSION
     master:
       - step:
           name: build jar and upload to nexus
@@ -60,32 +63,36 @@ pipelines:
             # clear out the other jar files
             - rm reference-api-webapp-multitenant/target/*-sources.jar
             - rm reference-api-webapp-multitenant/target/*-javadoc.jar
-            - . ci/build_set_env.sh prod 8075 1000 reference-api-webapp-multitenant
+            # get the ci scripts
+            - git clone https://bitbucket.org/hspconsortium/sandbox-ci.git
+            # build the set-env.sh script
+            - . sandbox-ci/bitbucket-pipeline-scripts/build-set-env-for-maven.sh prod 8075 1000 reference-api-webapp-multitenant
           artifacts:
-            - set_env.sh
+            - set-env.sh
             - reference-api-webapp-multitenant/target/*.jar
       - step:
           name: build docker and upload to docker hub
           script:
-            - . set_env.sh
+            - . set-env.sh
             - echo $IMAGE_COORDINATES
             # build docker image and push
             - docker login -u $DOCKER_ID -p $DOCKER_PASSWORD
             - docker build -t $IMAGE_COORDINATES .
             - docker push $IMAGE_COORDINATES
       - step:
-          name: AUTOMATICALLY update the aws test service
+          name: MANUALLY update the aws prod service
+          trigger: manual
           script:
-            - . set_env.sh
-            - . ci/build_container_definition.sh $ENC_PW_TEST
+            - . set-env.sh
+            # get the ci scripts
+            - git clone https://bitbucket.org/hspconsortium/sandbox-ci.git
+            # build the container-definition.json
+            - . ci/build_container_definition.sh $ENC_PW_PROD
             # register the ECS task definition and capture the version
-            - export TASK_VERSION=$(aws ecs register-task-definition --family "$AWS_CONTAINER_NAME-dstu2" --container-definitions $(cat ci/container-definitions.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
-            - echo "Registered ECS Task Definition - $AWS_CONTAINER_NAME-dstu2:$TASK_VERSION"
-            - export TASK_VERSION=$(aws ecs register-task-definition --family "$AWS_CONTAINER_NAME-stu3" --container-definitions $(cat ci/container-definitions.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
-            - echo "Registered ECS Task Definition - $AWS_CONTAINER_NAME-stu3:$TASK_VERSION"
+            - export TASK_VERSION=$(aws ecs register-task-definition --family "$AWS_CONTAINER_NAME" --container-definitions $(cat ci/container-definitions.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
+            - echo "Registered ECS Task Definition - $AWS_CONTAINER_NAME:$TASK_VERSION"
             # update the service to use the latest task definition
-            - aws ecs update-service --cluster hspc-test --service $AWS_SERVICE_NAME-dstu2 --task-definition $AWS_CONTAINER_NAME:$TASK_VERSION
-            - aws ecs update-service --cluster hspc-test --service $AWS_SERVICE_NAME-stu3 --task-definition $AWS_CONTAINER_NAME:$TASK_VERSION
+            - aws ecs update-service --cluster hspc-prod --service "$AWS_SERVICE_NAME" --task-definition $AWS_CONTAINER_NAME:$TASK_VERSION
     feature/*:
       - step:
           caches:
