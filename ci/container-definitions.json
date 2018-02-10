@@ -1,0 +1,22 @@
+[
+  {
+    "name": "{{AWS_CONTAINER_NAME}}",
+    "image": "{{DOCKER_REPO}}/{{IMAGE_NAME}}:{{PROJECT_VERSION}}",
+    "cpu": 0,
+    "portMappings": [
+      {
+        "containerPort": {{IMAGE_PORT}},
+        "hostPort": 0,
+        "protocol": "tcp"
+      }
+    ],
+    "memoryReservation": {{IMAGE_MEMORY_RESERVATION}},
+    "essential": true,
+    "environment": [
+      {
+        "name": "SPRING_PROFILES_ACTIVE",
+        "value": "{{SPRING_PROFILES_ACTIVE}}"
+      }
+    ]
+  }
+]
