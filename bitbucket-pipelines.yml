@@ -24,8 +24,7 @@ pipelines:
             - . ci/build_set_env.sh test 8075 1000 reference-api-webapp-multitenant
           artifacts:
             - set_env.sh
-            - reference-auth-server-webapp/target/hspc-reference-auth-server-webapp-*.war
-            - reference-auth-server-webapp/target/dependency/jetty-runner.jar
+            - reference-api-webapp-multitenant/target/*.jar
       - step:
           name: build docker and upload to docker hub
           script:
@@ -64,8 +63,7 @@ pipelines:
             - . ci/build_set_env.sh prod 8075 1000 reference-api-webapp-multitenant
           artifacts:
             - set_env.sh
-            - reference-auth-server-webapp/target/hspc-reference-auth-server-webapp-*.war
-            - reference-auth-server-webapp/target/dependency/jetty-runner.jar
+            - reference-api-webapp-multitenant/target/*.jar
       - step:
           name: build docker and upload to docker hub
           script:
