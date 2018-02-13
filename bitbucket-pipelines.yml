@@ -24,7 +24,7 @@ pipelines:
             # get the ci scripts
             - git clone https://bitbucket.org/hspconsortium/sandbox-ci.git
             # build the set-env.sh script
-            - . sandbox-ci/bitbucket-pipeline-scripts/build-set-env-for-maven.sh test 8070 1000 reference-api-webapp-multitenant
+            - . sandbox-ci/bitbucket-pipeline-scripts/build-set-env-for-maven.sh test 8075 1000 reference-api-webapp-multitenant
           artifacts:
             - set-env.sh
             - reference-api-webapp-multitenant/target/*.jar
@@ -46,8 +46,8 @@ pipelines:
             - # DSTU2
             # override the container name
             - export AWS_CONTAINER_NAME=hspc-reference-api-parent-dstu2
-            # override the service name
             - export AWS_SERVICE_NAME=hspc-reference-api-dstu2-service
+            - export IMAGE_PORT=8075
             # build the container-definition.json
             - . sandbox-ci/bitbucket-pipeline-scripts/build-container-definition.sh $ENC_PW_TEST
             # register the ECS task definition and capture the version
@@ -58,8 +58,8 @@ pipelines:
             # STU3
             # override the container name
             - export AWS_CONTAINER_NAME=hspc-reference-api-parent-stu3
-            # override the service name
             - export AWS_SERVICE_NAME=hspc-reference-api-stu3-service
+            - export IMAGE_PORT=8076
             # build the container-definition.json
             - . sandbox-ci/bitbucket-pipeline-scripts/build-container-definition.sh $ENC_PW_TEST
             # register the ECS task definition and capture the version
@@ -83,7 +83,7 @@ pipelines:
             # get the ci scripts
             - git clone https://bitbucket.org/hspconsortium/sandbox-ci.git
             # build the set-env.sh script
-            - . sandbox-ci/bitbucket-pipeline-scripts/build-set-env-for-maven.sh prod 8070 1000 reference-api-webapp-multitenant
+            - . sandbox-ci/bitbucket-pipeline-scripts/build-set-env-for-maven.sh prod 8075 1000 reference-api-webapp-multitenant
           artifacts:
             - set-env.sh
             - reference-api-webapp-multitenant/target/*.jar
@@ -106,8 +106,8 @@ pipelines:
             - # DSTU2
             # override the container name
             - export AWS_CONTAINER_NAME=hhspc-reference-api-parent-dstu2-prod
-            # override the service name
             - export AWS_SERVICE_NAME=hspc-reference-api-parent-dstu2-prod-service
+            - export IMAGE_PORT=8075
             # build the container-definition.json
             - . sandbox-ci/bitbucket-pipeline-scripts/build-container-definition.sh $ENC_PW_PROD
             # register the ECS task definition and capture the version
@@ -118,8 +118,8 @@ pipelines:
             # STU3
             # override the container name
             - export AWS_CONTAINER_NAME=hspc-reference-api-parent-stu3-prod
-            # override the service name
             - export AWS_SERVICE_NAME=hspc-reference-api-parent-stu3-prod-service
+            - export IMAGE_PORT=8076
             # build the container-definition.json
             - . sandbox-ci/bitbucket-pipeline-scripts/build-container-definition.sh $ENC_PW_PROD
             # register the ECS task definition and capture the version
