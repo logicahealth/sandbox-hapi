@@ -17,10 +17,9 @@ pipelines:
           caches:
             - maven
           script:
-#            - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
-            - mvn -B package
-#            - rm target/*-sources.jar
-#            - rm target/*-javadoc.jar
+            - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
+            - rm target/*-sources.jar
+            - rm target/*-javadoc.jar
           artifacts:
             - reference-api-webapp-multitenant/target/*.jar
       - step:
