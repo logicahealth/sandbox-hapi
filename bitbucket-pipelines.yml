@@ -18,8 +18,8 @@ pipelines:
             - maven
           script:
             - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
-            - rm target/*-sources.jar
-            - rm target/*-javadoc.jar
+            - rm reference-api-webapp-multitenant/target/*-sources.jar
+            - rm reference-api-webapp-multitenant/target/*-javadoc.jar
           artifacts:
             - reference-api-webapp-multitenant/target/*.jar
       - step:
