@@ -5,10 +5,13 @@ import ca.uhn.fhir.jpa.search.LuceneSearchMappingFactory;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.util.Version;
 import org.flywaydb.core.Flyway;
 import org.hibernate.cfg.Environment;
-import org.hibernate.jpa.HibernatePersistenceProvider;
+import org.hspconsortium.platform.api.fhir.util.TAR;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowire;
@@ -29,6 +32,10 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import javax.annotation.Resource;
 import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
+import java.io.*;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Properties;
@@ -50,6 +57,9 @@ public class MySQLConfig {
 
     @Value("${hibernate.search.default.indexBase}")
     private String luceneBase;
+
+    @Value("${hspc.platform.api.fhir.hibernate.indexSourceUrl:}")
+    private String indexSourceUrl;
 
     @Value("${hspc.platform.api.fhir.allowExternalReferences:true}")
     private boolean allowExternalReferences;
@@ -96,7 +106,7 @@ public class MySQLConfig {
                 .username(db.getUsername())
                 .password(db.getPassword())
                 .url(db.getUrl());
-        DataSource dataSource =  factory.build();
+        DataSource dataSource = factory.build();
 
         if (dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource) {
             ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getPoolProperties().setTestOnBorrow(true);
@@ -185,7 +195,57 @@ public class MySQLConfig {
         hibernateProps.put("hibernate.search.default.indexBase", luceneBase);
         hibernateProps.put("hibernate.search.lucene_version", Version.LATEST);
         hibernateProps.put("hibernate.search.default.directory_provider", "filesystem");
+
+        loadIndexFiles();
+
         return hibernateProps;
+    }
+
+    private void loadIndexFiles() {
+        LOGGER.info("loadIndexFiles()");
+        // download the index files if they don't exist already
+        if (StringUtils.isNotEmpty(luceneBase) && StringUtils.isNotEmpty(indexSourceUrl)) {
+            String fromFile = indexSourceUrl;
+            String[] parts = indexSourceUrl.split("/");
+            String fromFileName = parts[parts.length-1];
+            String toFile = luceneBase + "/" + fromFileName;
+            String tarFile = luceneBase + "/indexes.tar";
+            // download the index files if they don't exist already
+            File previousFile = new File(toFile);
+            if (!previousFile.exists()) {
+                // fetch
+                try {
+                    LOGGER.warn(toFile + " has not been loaded, proceeding with load");
+                    //connectionTimeout, readTimeout = 120 seconds
+                    int timeout = 120 * 10000;
+                    LOGGER.warn("Downloading " + fromFile);
+                    FileUtils.copyURLToFile(new URL(fromFile), new File(toFile), timeout, timeout);
+                    LOGGER.warn("Downloading " + fromFile + " complete");
+
+                    LOGGER.warn("Unzipping " + toFile );
+                    InputStream fin = Files.newInputStream(Paths.get(toFile));
+                    BufferedInputStream in = new BufferedInputStream(fin);
+                    OutputStream out = Files.newOutputStream(Paths.get(tarFile));
+                    GzipCompressorInputStream gzIn = new GzipCompressorInputStream(in);
+                    final byte[] buffer = new byte[1024];
+                    int n = 0;
+                    while (-1 != (n = gzIn.read(buffer))) {
+                        out.write(buffer, 0, n);
+                    }
+                    out.close();
+                    gzIn.close();
+                    LOGGER.warn("Unzipping " + toFile + " complete");
+
+                    LOGGER.warn("Untarring " + tarFile + " to " + luceneBase);
+                    TAR.decompress(tarFile, new File(luceneBase));
+                    LOGGER.warn("Untarring " + tarFile + " complete");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            } else {
+                LOGGER.warn(toFile + " has already been loaded, aborting load");
+            }
+        }
     }
 
     /**

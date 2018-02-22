@@ -1,0 +1,50 @@
+{
+  "executionRoleArn": "arn:aws:iam::657600230790:role/ecsTaskExecutionRole",
+  "family": "api-prod",
+  "networkMode": "awsvpc",
+  "containerDefinitions": [
+    {
+      "name": "api-prod",
+      "image": "TBD",
+      "cpu": 1024,
+      "memoryReservation": 1000,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/api-prod",
+          "awslogs-region": "us-east-1",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "portMappings": [
+        {
+          "hostPort": 8076,
+          "protocol": "tcp",
+          "containerPort": 8076
+        }
+      ],
+      "environment": [
+      ],
+      "essential": true,
+      "mountPoints": [
+        {
+          "sourceVolume": "indexes",
+          "containerPath": "/var/indexes"
+        }
+      ]
+    }
+  ],
+  "requiresCompatibilities": [
+    "FARGATE"
+  ],
+  "cpu": "1024",
+  "memory": "1900",
+  "volumes": [
+    {
+      "name": "indexes",
+      "host": {
+        "sourcePath": null
+      }
+    }
+  ]
+}
