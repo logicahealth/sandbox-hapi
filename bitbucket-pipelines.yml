@@ -101,7 +101,7 @@ pipelines:
             - jq '.containerDefinitions[0].environment += [{"name":"JASYPT_ENCRYPTOR_PASSWORD", "value":"'$ENC_PW_PROD'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
             - jq '.containerDefinitions[0].environment += [{"name":"SPRING_PROFILES_ACTIVE", "value":"'prod,multitenant,dstu2'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
             - cat $(echo "$TEMPLATE_FILE")
-            - TASK_RESPONSE=$(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
+            - export TASK_RESPONSE=$(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
             - echo $TASK_RESPONSE
             - if [[ $TASK_RESPONSE =~ ^{ ]]; then echo "Successful registration"; else echo "Registation failed"; exit 1; fi
             # stu3
@@ -112,7 +112,7 @@ pipelines:
             - jq '.containerDefinitions[0].environment += [{"name":"JASYPT_ENCRYPTOR_PASSWORD", "value":"'$ENC_PW_PROD'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
             - jq '.containerDefinitions[0].environment += [{"name":"SPRING_PROFILES_ACTIVE", "value":"'prod,multitenant,stu3'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
             - cat $(echo "$TEMPLATE_FILE")
-            - TASK_RESPONSE=$(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
+            - export TASK_RESPONSE=$(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
             - echo $TASK_RESPONSE
             - if [[ $TASK_RESPONSE =~ ^{ ]]; then echo "Successful registration"; else echo "Registation failed"; exit 1; fi
       - step:
