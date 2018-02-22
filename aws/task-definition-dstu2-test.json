@@ -1,17 +1,17 @@
 {
   "executionRoleArn": "arn:aws:iam::657600230790:role/ecsTaskExecutionRole",
-  "family": "api-test",
+  "family": "api-dstu2-test",
   "networkMode": "awsvpc",
   "containerDefinitions": [
     {
-      "name": "api-test",
+      "name": "api-dstu2-test",
       "image": "TBD",
       "cpu": 1024,
       "memoryReservation": 1000,
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/api-test",
+          "awslogs-group": "/ecs/api-dstu2-test",
           "awslogs-region": "us-east-1",
           "awslogs-stream-prefix": "ecs"
         }
@@ -38,7 +38,7 @@
     "FARGATE"
   ],
   "cpu": "1024",
-  "memory": "1900",
+  "memory": "2048",
   "volumes": [
     {
       "name": "indexes"
