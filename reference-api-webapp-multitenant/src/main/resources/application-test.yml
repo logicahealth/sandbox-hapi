@@ -6,9 +6,9 @@ hspc:
         clientSecret: secret
       fhir:
         db:
-          host: sandboxdb-test.hspconsortium.org
+          host: sandbox-db-test.hspconsortium.org
           username: hspctest
-          password: ENC(TkeffqsI5xQbAWEjlP8iVkHYvYyfJ9WD)
+          password: ENC(fOF8pk2G41nXX1YtvqQFi0up46SrLFiY)
         datasource:
           cache:
             size: 5
