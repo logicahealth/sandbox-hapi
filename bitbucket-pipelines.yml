@@ -25,97 +25,98 @@ pipelines:
       - step:
           name: build docker and upload to docker hub
           script:
-            - . bitbucket-pipelines-env.sh api test
+            - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
+            - echo $DOCKER_PROJECT_VERSION
+            - export DOCKER_IMAGE_COORDINATES="hspconsortium/api:${DOCKER_PROJECT_VERSION}"
+            - echo $DOCKER_IMAGE_COORDINATES
             - docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
-            - docker build -t $IMAGE_COORDINATES .
-            - docker push $IMAGE_COORDINATES
+            - docker build -t $DOCKER_IMAGE_COORDINATES .
+            - docker push $DOCKER_IMAGE_COORDINATES
       - step:
           name: update the aws task definition
           script:
-            - git clone https://bitbucket.org/hspconsortium/sandbox-ci.git
             # dstu2
-            - . bitbucket-pipelines-env.sh api-dstu2 test
-            - export SPRING_PROFILES_ACTIVE=test,dstu2,multitenant
-            - cp sandbox-ci/aws/templates/task-definition-template.json ./task-definition-template-dstu2.json
-            - export TEMPLATE_FILE="task-definition-template-dstu2.json"
-            - ./sandbox-ci/aws/scripts/env-substitution.sh $TEMPLATE_FILE
-            - cat $(echo "$TEMPLATE_FILE")
+            - cp aws/task-definition-dstu2-test.json aws/task-definition-dstu2-test.json
+            - export TEMPLATE_FILE="aws/task-definition-dstu2-test.json"
+            - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
+            - export DOCKER_IMAGE_COORDINATES="hspconsortium/api:${DOCKER_PROJECT_VERSION}"
+            - jq ".containerDefinitions[0].image = \"$DOCKER_IMAGE_COORDINATES\"" ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
             - jq '.containerDefinitions[0].environment += [{"name":"JASYPT_ENCRYPTOR_PASSWORD", "value":"'$ENC_PW_TEST'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
+            - jq '.containerDefinitions[0].environment += [{"name":"SPRING_PROFILES_ACTIVE", "value":"'test,multitenant,dstu2'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
             - cat $(echo "$TEMPLATE_FILE")
-            - export TASK_RESPONSE=$(aws ecs register-task-definition --region $AWS_REGION --cli-input-json file://$TEMPLATE_FILE)
-            - echo $TASK_RESPONSE
+            - echo $(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
             # stu3
-            - . bitbucket-pipelines-env.sh api-stu3 test
-            - export SPRING_PROFILES_ACTIVE=test,stu3,multitenant
-            - export AWS_CONTAINER_PORT=8076
-            - cp sandbox-ci/aws/templates/task-definition-template.json ./task-definition-template-stu3.json
-            - export TEMPLATE_FILE="task-definition-template-stu3.json"
-            - ./sandbox-ci/aws/scripts/env-substitution.sh $TEMPLATE_FILE
-            - cat $(echo "$TEMPLATE_FILE")
+            - export TEMPLATE_FILE="aws/task-definition-stu3-test.json"
+            - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
+            - export DOCKER_IMAGE_COORDINATES="hspconsortium/api:${DOCKER_PROJECT_VERSION}"
+            - jq ".containerDefinitions[0].image = \"$DOCKER_IMAGE_COORDINATES\"" ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
             - jq '.containerDefinitions[0].environment += [{"name":"JASYPT_ENCRYPTOR_PASSWORD", "value":"'$ENC_PW_TEST'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
+            - jq '.containerDefinitions[0].environment += [{"name":"SPRING_PROFILES_ACTIVE", "value":"'test,multitenant,stu3'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
             - cat $(echo "$TEMPLATE_FILE")
-            - export TASK_RESPONSE=$(aws ecs register-task-definition --region $AWS_REGION --cli-input-json file://$TEMPLATE_FILE)
-            - echo $TASK_RESPONSE
+            - echo $(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
+      - step:
+          name: Update the aws service
+          deployment: test
+          script:
+            - export AWS_TASK_DEFINITION=$(aws ecs describe-task-definition --region us-east-1 --task-definition api-dstu2-test)
+            - echo $AWS_TASK_DEFINITION
+            - export AWS_TASK_VERSION=$(echo $AWS_TASK_DEFINITION | jq --raw-output '.taskDefinition.revision')
+            - echo $AWS_TASK_VERSION
+            - echo $(aws ecs update-service --region us-east-1 --cluster sandbox-test --service api-dstu2-test --task-definition api-dstu2-test:${AWS_TASK_VERSION})
+
     master:
       - step:
-          name: build jar and upload to nexus
+          name: build the source code
           caches:
             - maven
           script:
-            # Deploy to maven central
-            - openssl aes-256-cbc -pass pass:$OPENSSL_PWD -in private-key.gpg.enc -out private-key.gpg -d
-            - gpg --batch --import private-key.gpg
-            - mvn -V -B -s settings.xml deploy -P DEPLOY,ossrh
-            # clear out the other jar files
+            - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
             - rm reference-api-webapp-multitenant/target/*-sources.jar
             - rm reference-api-webapp-multitenant/target/*-javadoc.jar
-            # get the ci scripts
-            - git clone https://bitbucket.org/hspconsortium/sandbox-ci.git
-            # build the set-env.sh script
-            - . sandbox-ci/bitbucket-pipeline-scripts/build-set-env-for-maven.sh prod 8075 1000 reference-api-webapp-multitenant
           artifacts:
-            - set-env.sh
             - reference-api-webapp-multitenant/target/*.jar
       - step:
           name: build docker and upload to docker hub
           script:
-            - . set-env.sh
-            - echo $IMAGE_COORDINATES
-            # build docker image and push
-            - docker login -u $DOCKER_ID -p $DOCKER_PASSWORD
-            - docker build -t $IMAGE_COORDINATES .
-            - docker push $IMAGE_COORDINATES
+            - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
+            - echo $DOCKER_PROJECT_VERSION
+            - export DOCKER_IMAGE_COORDINATES="hspconsortium/api:${DOCKER_PROJECT_VERSION}"
+            - echo $DOCKER_IMAGE_COORDINATES
+            - docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
+            - docker build -t $DOCKER_IMAGE_COORDINATES .
+            - docker push $DOCKER_IMAGE_COORDINATES
       - step:
-          name: MANUALLY update the aws prod service
+          name: update the aws task definition
+          script:
+            # dstu2
+            - cp aws/task-definition-stu3-prod.json aws/task-definition-dstu2-prod.json
+            - export TEMPLATE_FILE="aws/task-definition-dstu2-prod.json"
+            - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
+            - export DOCKER_IMAGE_COORDINATES="hspconsortium/api:${DOCKER_PROJECT_VERSION}"
+            - jq ".containerDefinitions[0].image = \"$DOCKER_IMAGE_COORDINATES\"" ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
+            - jq '.containerDefinitions[0].environment += [{"name":"JASYPT_ENCRYPTOR_PASSWORD", "value":"'$ENC_PW_PROD'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
+            - jq '.containerDefinitions[0].environment += [{"name":"SPRING_PROFILES_ACTIVE", "value":"'prod,multitenant,dstu2'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
+            - cat $(echo "$TEMPLATE_FILE")
+            - echo $(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
+            # stu3
+            - export TEMPLATE_FILE="aws/task-definition-stu3-prod.json"
+            - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
+            - export DOCKER_IMAGE_COORDINATES="hspconsortium/api:${DOCKER_PROJECT_VERSION}"
+            - jq ".containerDefinitions[0].image = \"$DOCKER_IMAGE_COORDINATES\"" ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
+            - jq '.containerDefinitions[0].environment += [{"name":"JASYPT_ENCRYPTOR_PASSWORD", "value":"'$ENC_PW_PROD'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
+            - jq '.containerDefinitions[0].environment += [{"name":"SPRING_PROFILES_ACTIVE", "value":"'prod,multitenant,stu3'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
+            - cat $(echo "$TEMPLATE_FILE")
+            - echo $(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
+      - step:
+          name: Update the aws service
+          deployment: production
           trigger: manual
           script:
-            - . set-env.sh
-            # get the ci scripts
-            - git clone https://bitbucket.org/hspconsortium/sandbox-ci.git
-            - # DSTU2
-            # override the container name
-            - export AWS_CONTAINER_NAME=hhspc-reference-api-parent-dstu2-prod
-            - export AWS_SERVICE_NAME=hspc-reference-api-parent-dstu2-prod-service
-            - export IMAGE_PORT=8075
-            # build the container-definition.json
-            - . sandbox-ci/bitbucket-pipeline-scripts/build-container-definition.sh $ENC_PW_PROD
-            # register the ECS task definition and capture the version
-            - export TASK_VERSION=$(aws ecs register-task-definition --family "$AWS_CONTAINER_NAME" --container-definitions $(cat sandbox-ci/bitbucket-pipeline-scripts/container-definitions.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
-            - echo "Registered ECS Task Definition - $AWS_CONTAINER_NAME:$TASK_VERSION"
-            # update the service to use the latest task definition
-            - aws ecs update-service --cluster hspc-prod --service "$AWS_SERVICE_NAME" --task-definition $AWS_CONTAINER_NAME:$TASK_VERSION
-            # STU3
-            # override the container name
-            - export AWS_CONTAINER_NAME=hspc-reference-api-parent-stu3-prod
-            - export AWS_SERVICE_NAME=hspc-reference-api-parent-stu3-prod-service
-            - export IMAGE_PORT=8076
-            # build the container-definition.json
-            - . sandbox-ci/bitbucket-pipeline-scripts/build-container-definition.sh $ENC_PW_PROD
-            # register the ECS task definition and capture the version
-            - export TASK_VERSION=$(aws ecs register-task-definition --family "$AWS_CONTAINER_NAME" --container-definitions $(cat sandbox-ci/bitbucket-pipeline-scripts/container-definitions.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
-            - echo "Registered ECS Task Definition - $AWS_CONTAINER_NAME:$TASK_VERSION"
-            # update the service to use the latest task definition
-            - aws ecs update-service --cluster hspc-prod --service "$AWS_SERVICE_NAME" --task-definition $AWS_CONTAINER_NAME:$TASK_VERSION
+            - export AWS_TASK_DEFINITION=$(aws ecs describe-task-definition --region us-east-1 --task-definition api-dstu2-prod)
+            - echo $AWS_TASK_DEFINITION
+            - export AWS_TASK_VERSION=$(echo $AWS_TASK_DEFINITION | jq --raw-output '.taskDefinition.revision')
+            - echo $AWS_TASK_VERSION
+            - echo $(aws ecs update-service --region us-east-1 --cluster sandbox-prod --service api-dstu2-prod --task-definition api-dstu2-prod:${AWS_TASK_VERSION})
     feature/*:
       - step:
           caches:
