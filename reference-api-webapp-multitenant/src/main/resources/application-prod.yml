@@ -1,11 +1,3 @@
-server:
-  port: 8074
-
-hibernate:
-  search:
-    default:
-      indexBase: /var/indexes/@artifact.name@
-
 # Platform Servers
 hspc:
   platform:
@@ -16,10 +8,44 @@ hspc:
         db:
           host: sandboxdb.hspconsortium.org
           username: system
-          password: ENC(lA/Ifn1Cm6pYGGydIXNQIa6n7ryn5A1+)
+          password: ENC(TPWuY/KkTn/kO1wMjZj2usyLbnB8ylkn)
     authorization:
       url: https://auth.hspconsortium.org
 
 jasypt:
   encryptor:
     algorithm: PBEWithMD5AndTripleDES
+
+---
+
+spring:
+  profiles: dstu2
+
+hspc:
+  platform:
+    api:
+      fhir:
+        hibernate:
+          indexSourceUrl: https://content.hspconsortium.org/datasets/reference-api/hspc_5/indexes_hspc_5_dstu2.tar.gz
+
+hibernate:
+  search:
+    default:
+      indexBase: /var/indexes/@artifact.name@/dstu2
+
+---
+
+spring:
+  profiles: stu3
+
+hspc:
+  platform:
+    api:
+      fhir:
+        hibernate:
+          indexSourceUrl: https://content.hspconsortium.org/datasets/reference-api/hspc_5/indexes_hspc_5_stu3.tar.gz
+
+hibernate:
+  search:
+    default:
+      indexBase: /var/indexes/@artifact.name@/stu3
