@@ -44,9 +44,7 @@ pipelines:
             - jq '.containerDefinitions[0].environment += [{"name":"JASYPT_ENCRYPTOR_PASSWORD", "value":"'$ENC_PW_TEST'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
             - jq '.containerDefinitions[0].environment += [{"name":"SPRING_PROFILES_ACTIVE", "value":"'test,multitenant,dstu2'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
             - cat $(echo "$TEMPLATE_FILE")
-            - export TASK_RESPONSE=$(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
-            - echo $TASK_RESPONSE
-            - if [[ $TASK_RESPONSE =~ ^{ ]]; then echo "Successful registration"; else echo "Registation failed"; exit 1; fi
+            - echo $(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
             # stu3
             - export TEMPLATE_FILE="aws/task-definition-stu3-test.json"
             - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
@@ -55,9 +53,7 @@ pipelines:
             - jq '.containerDefinitions[0].environment += [{"name":"JASYPT_ENCRYPTOR_PASSWORD", "value":"'$ENC_PW_TEST'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
             - jq '.containerDefinitions[0].environment += [{"name":"SPRING_PROFILES_ACTIVE", "value":"'test,multitenant,stu3'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
             - cat $(echo "$TEMPLATE_FILE")
-            - export TASK_RESPONSE=$(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
-            - echo $TASK_RESPONSE
-            - if [[ $TASK_RESPONSE =~ ^{ ]]; then echo "Successful registration"; else echo "Registation failed"; exit 1; fi
+            - echo $(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
       - step:
           name: Update the aws service
           deployment: test
@@ -101,9 +97,7 @@ pipelines:
             - jq '.containerDefinitions[0].environment += [{"name":"JASYPT_ENCRYPTOR_PASSWORD", "value":"'$ENC_PW_PROD'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
             - jq '.containerDefinitions[0].environment += [{"name":"SPRING_PROFILES_ACTIVE", "value":"'prod,multitenant,dstu2'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
             - cat $(echo "$TEMPLATE_FILE")
-            - export TASK_RESPONSE=$(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
-            - echo $TASK_RESPONSE
-            - if [[ $TASK_RESPONSE =~ ^{ ]]; then echo "Successful registration"; else echo "Registation failed"; exit 1; fi
+            - echo $(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
             # stu3
             - export TEMPLATE_FILE="aws/task-definition-stu3-prod.json"
             - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
@@ -112,9 +106,7 @@ pipelines:
             - jq '.containerDefinitions[0].environment += [{"name":"JASYPT_ENCRYPTOR_PASSWORD", "value":"'$ENC_PW_PROD'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
             - jq '.containerDefinitions[0].environment += [{"name":"SPRING_PROFILES_ACTIVE", "value":"'prod,multitenant,stu3'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
             - cat $(echo "$TEMPLATE_FILE")
-            - export TASK_RESPONSE=$(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
-            - echo $TASK_RESPONSE
-            - if [[ $TASK_RESPONSE =~ ^{ ]]; then echo "Successful registration"; else echo "Registation failed"; exit 1; fi
+            - echo $(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
       - step:
           name: Update the aws service
           deployment: production

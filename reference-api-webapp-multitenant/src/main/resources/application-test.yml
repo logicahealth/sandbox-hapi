@@ -8,7 +8,7 @@ hspc:
         db:
           host: sandboxdb-test.hspconsortium.org
           username: hspctest
-          password: ENC(kYqZKAjsHHSeqTtyGKzNsrrIUWdjXiXl)
+          password: ENC(TkeffqsI5xQbAWEjlP8iVkHYvYyfJ9WD)
         datasource:
           cache:
             size: 5
