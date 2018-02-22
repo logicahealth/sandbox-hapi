@@ -17,7 +17,8 @@ pipelines:
           caches:
             - maven
           script:
-            - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
+            - mvn -V -B package
+#            - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
             - rm reference-api-webapp-multitenant/target/*-sources.jar
             - rm reference-api-webapp-multitenant/target/*-javadoc.jar
           artifacts:
@@ -36,7 +37,6 @@ pipelines:
           name: update the aws task definition
           script:
             # dstu2
-            - cp aws/task-definition-dstu2-test.json aws/task-definition-dstu2-test.json
             - export TEMPLATE_FILE="aws/task-definition-dstu2-test.json"
             - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
             - export DOCKER_IMAGE_COORDINATES="hspconsortium/api:${DOCKER_PROJECT_VERSION}"
@@ -89,7 +89,6 @@ pipelines:
           name: update the aws task definition
           script:
             # dstu2
-            - cp aws/task-definition-stu3-prod.json aws/task-definition-dstu2-prod.json
             - export TEMPLATE_FILE="aws/task-definition-dstu2-prod.json"
             - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
             - export DOCKER_IMAGE_COORDINATES="hspconsortium/api:${DOCKER_PROJECT_VERSION}"
