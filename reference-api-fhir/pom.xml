@@ -7,7 +7,7 @@
         <groupId>org.hspconsortium.reference</groupId>
         <artifactId>hspc-reference-api-parent</artifactId>
         <relativePath>../pom.xml</relativePath>
-        <version>1.10.9</version>
+        <version>1.11.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>hspc-reference-api-fhir</artifactId>
