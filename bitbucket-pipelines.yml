@@ -17,10 +17,9 @@ pipelines:
           caches:
             - maven
           script:
-            - mvn -V -B package
-#            - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
-#            - rm reference-api-webapp-multitenant/target/*-sources.jar
-#            - rm reference-api-webapp-multitenant/target/*-javadoc.jar
+            - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
+            - rm reference-api-webapp-multitenant/target/*-sources.jar
+            - rm reference-api-webapp-multitenant/target/*-javadoc.jar
           artifacts:
             - reference-api-webapp-multitenant/target/*.jar
       - step:
@@ -59,17 +58,17 @@ pipelines:
           deployment: test
           script:
             # dstu2
-            - export AWS_TASK_DEFINITION=$(aws ecs describe-task-definition --region us-east-1 --task-definition api-dstu2-test)
+            - export AWS_TASK_DEFINITION=$(aws ecs describe-task-definition --region us-east-1 --task-definition api-v5-dstu2-test)
             - echo $AWS_TASK_DEFINITION
             - export AWS_TASK_VERSION=$(echo $AWS_TASK_DEFINITION | jq --raw-output '.taskDefinition.revision')
             - echo $AWS_TASK_VERSION
-            - echo $(aws ecs update-service --region us-east-1 --cluster sandbox-test --service api-dstu2-test --task-definition api-dstu2-test:${AWS_TASK_VERSION})
+            - echo $(aws ecs update-service --region us-east-1 --cluster sandbox-test --service api-v5-dstu2-test --task-definition api-v5-dstu2-test:${AWS_TASK_VERSION})
             # stu3
-            - export AWS_TASK_DEFINITION=$(aws ecs describe-task-definition --region us-east-1 --task-definition api-stu3-test)
+            - export AWS_TASK_DEFINITION=$(aws ecs describe-task-definition --region us-east-1 --task-definition api-v5-stu3-test)
             - echo $AWS_TASK_DEFINITION
             - export AWS_TASK_VERSION=$(echo $AWS_TASK_DEFINITION | jq --raw-output '.taskDefinition.revision')
             - echo $AWS_TASK_VERSION
-            - echo $(aws ecs update-service --region us-east-1 --cluster sandbox-test --service api-stu3-test --task-definition api-stu3-test:${AWS_TASK_VERSION})
+            - echo $(aws ecs update-service --region us-east-1 --cluster sandbox-test --service api-v5-stu3-test --task-definition api-v5-stu3-test:${AWS_TASK_VERSION})
     master:
       - step:
           name: build the source code
@@ -118,17 +117,17 @@ pipelines:
           trigger: manual
           script:
             # dstu2
-            - export AWS_TASK_DEFINITION=$(aws ecs describe-task-definition --region us-east-1 --task-definition api-dstu2-prod)
+            - export AWS_TASK_DEFINITION=$(aws ecs describe-task-definition --region us-east-1 --task-definition api-v5-dstu2-prod)
             - echo $AWS_TASK_DEFINITION
             - export AWS_TASK_VERSION=$(echo $AWS_TASK_DEFINITION | jq --raw-output '.taskDefinition.revision')
             - echo $AWS_TASK_VERSION
-            - echo $(aws ecs update-service --region us-east-1 --cluster sandbox-prod --service api-dstu2-prod --task-definition api-dstu2-prod:${AWS_TASK_VERSION})
+            - echo $(aws ecs update-service --region us-east-1 --cluster sandbox-prod --service api-v5-dstu2-prod --task-definition api-v5-dstu2-prod:${AWS_TASK_VERSION})
             # stu3
-            - export AWS_TASK_DEFINITION=$(aws ecs describe-task-definition --region us-east-1 --task-definition api-stu3-prod)
+            - export AWS_TASK_DEFINITION=$(aws ecs describe-task-definition --region us-east-1 --task-definition api-v5-stu3-prod)
             - echo $AWS_TASK_DEFINITION
             - export AWS_TASK_VERSION=$(echo $AWS_TASK_DEFINITION | jq --raw-output '.taskDefinition.revision')
             - echo $AWS_TASK_VERSION
-            - echo $(aws ecs update-service --region us-east-1 --cluster sandbox-prod --service api-stu3-prod --task-definition api-stu3-prod:${AWS_TASK_VERSION})
+            - echo $(aws ecs update-service --region us-east-1 --cluster sandbox-prod --service api-v5-stu3-prod --task-definition api-v5-stu3-prod:${AWS_TASK_VERSION})
     feature/*:
       - step:
           caches:
