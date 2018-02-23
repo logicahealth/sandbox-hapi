@@ -1,17 +1,17 @@
 {
   "executionRoleArn": "arn:aws:iam::657600230790:role/ecsTaskExecutionRole",
-  "family": "api-stu3-prod",
+  "family": "api-v5-stu3-prod",
   "networkMode": "awsvpc",
   "containerDefinitions": [
     {
-      "name": "api-stu3-prod",
+      "name": "api-v5-stu3-prod",
       "image": "TBD",
       "cpu": 1024,
       "memoryReservation": 1000,
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/api-stu3-prod",
+          "awslogs-group": "/ecs/api-v5-stu3-prod",
           "awslogs-region": "us-east-1",
           "awslogs-stream-prefix": "ecs"
         }
