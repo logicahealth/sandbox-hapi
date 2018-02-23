@@ -6,11 +6,11 @@ hspc:
         clientSecret: secret
       fhir:
         db:
-          host: sandboxdb.hspconsortium.org
+          host: sandbox-db-prod2.hspconsortium.org
           username: system
-          password: ENC(TPWuY/KkTn/kO1wMjZj2usyLbnB8ylkn)
+          password: ENC(rTXsi4FKX55cPv6RBcVl6bcSxoUmECl+)
     authorization:
-      url: https://auth.hspconsortium.org
+      url: https://auth2.hspconsortium.org
 
 jasypt:
   encryptor:
