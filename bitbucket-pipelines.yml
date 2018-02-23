@@ -17,10 +17,9 @@ pipelines:
           caches:
             - maven
           script:
-            - mvn -V -B clean package
-#            - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
-#            - rm reference-api-webapp-multitenant/target/*-sources.jar
-#            - rm reference-api-webapp-multitenant/target/*-javadoc.jar
+            - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
+            - rm reference-api-webapp-multitenant/target/*-sources.jar
+            - rm reference-api-webapp-multitenant/target/*-javadoc.jar
           artifacts:
             - reference-api-webapp-multitenant/target/*.jar
       - step:
@@ -76,10 +75,9 @@ pipelines:
           caches:
             - maven
           script:
-            - mvn -V -B clean package
-#            - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
-#            - rm reference-api-webapp-multitenant/target/*-sources.jar
-#            - rm reference-api-webapp-multitenant/target/*-javadoc.jar
+            - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
+            - rm reference-api-webapp-multitenant/target/*-sources.jar
+            - rm reference-api-webapp-multitenant/target/*-javadoc.jar
           artifacts:
             - reference-api-webapp-multitenant/target/*.jar
       - step:
