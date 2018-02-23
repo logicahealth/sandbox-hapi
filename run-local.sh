@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 profile="stu3"
-sandbox_name="hspc5"
+sandbox_name="hspc6"
 
 if [ $# -gt 0 ]; then
     case "$1" in
@@ -15,7 +15,7 @@ if [ $# -gt 0 ]; then
             ;;
         r4)
             profile=$1
-            sandbox_name="hspc6"
+            sandbox_name="hspc7"
             ;;
         *)
             echo "Usage: $0 {dstu2|stu3|r4} {default|multitenant}"
