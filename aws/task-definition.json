@@ -21,7 +21,22 @@
           "awslogs-stream-prefix": "ecs"
         }
       },
+      "mountPoints": [
+        {
+          "readOnly": false,
+          "containerPath": "/var/indexes",
+          "sourceVolume": "indexes"
+        }
+      ],
       "essential": true
+    }
+  ],
+  "volumes": [
+    {
+      "name": "indexes",
+      "host": {
+        "sourcePath": "/var/ecs/indexes"
+      }
     }
   ]
 }
