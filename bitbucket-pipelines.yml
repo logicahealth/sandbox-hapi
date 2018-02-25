@@ -17,28 +17,26 @@ pipelines:
           caches:
             - maven
           script:
-            - mvn -V -B clean package
-#            - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
-#            - rm reference-api-webapp-multitenant/target/*-sources.jar
-#            - rm reference-api-webapp-multitenant/target/*-javadoc.jar
+            - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
+            - rm reference-api-webapp-multitenant/target/*-sources.jar
+            - rm reference-api-webapp-multitenant/target/*-javadoc.jar
           artifacts:
             - reference-api-webapp-multitenant/target/*.jar
-#      - step:
-#          name: build docker and upload to docker hub
-#          script:
-#            - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
-#            - echo $DOCKER_PROJECT_VERSION
-#            - export DOCKER_IMAGE_COORDINATES="hspconsortium/api:${DOCKER_PROJECT_VERSION}"
-#            - echo $DOCKER_IMAGE_COORDINATES
-#            - docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
-#            - docker build -t $DOCKER_IMAGE_COORDINATES .
-#            - docker push $DOCKER_IMAGE_COORDINATES
+      - step:
+          name: build docker and upload to docker hub
+          script:
+            - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
+            - echo $DOCKER_PROJECT_VERSION
+            - export DOCKER_IMAGE_COORDINATES="hspconsortium/api:${DOCKER_PROJECT_VERSION}"
+            - echo $DOCKER_IMAGE_COORDINATES
+            - docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
+            - docker build -t $DOCKER_IMAGE_COORDINATES .
+            - docker push $DOCKER_IMAGE_COORDINATES
       - step:
           name: update the aws task definition
+          trigger: manual
           script:
             # dstu2
-#            - export AWS_TASK_DEFINITION=$(aws ecs describe-task-definition --region us-east-1 --task-definition sandbox-stack-test)
-#            - echo "$AWS_TASK_DEFINITION"
             - export TEMPLATE_FILE="aws/task-definition-dstu2-test.json"
             - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
             - export DOCKER_IMAGE_COORDINATES="hspconsortium/api:${DOCKER_PROJECT_VERSION}"
@@ -58,6 +56,7 @@ pipelines:
             - echo $(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
       - step:
           name: Update the aws service
+          trigger: manual
           deployment: test
           script:
             # dstu2
