@@ -37,22 +37,22 @@ pipelines:
           script:
             # dstu2
             - export AWS_TASK_DEFINITION=$(aws ecs describe-task-definition --region us-east-1 --task-definition sandbox-stack-test)
-             - echo "$AWS_TASK_DEFINITION"
+            - echo "$AWS_TASK_DEFINITION"
             - export TEMPLATE_FILE="aws/task-definition-dstu2-test.json"
             - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
             - export DOCKER_IMAGE_COORDINATES="hspconsortium/api:${DOCKER_PROJECT_VERSION}"
-            - echo ${AWS_TASK_DEFINITION} | jq '(.taskDefinition.containerDefinitions[] | select(.name == "api-v5-dstu2-test") | .image) |= "$DOCKER_IMAGE_COORDINATES" >> dstu2.json
-            - cat dstu2.json
-            - echo $(aws ecs register-task-definition --region us-east-1 --cli-input-json file://dstu2.json)
+            - echo ${AWS_TASK_DEFINITION} | jq "(.taskDefinition.containerDefinitions[] | select(.name == \"api-v5-dstu2-test\") | .image) |= \"$DOCKER_IMAGE_COORDINATES\""echo ${AWS_TASK_DEFINITION} | jq "(.taskDefinition.containerDefinitions[] | select(.name == \"api-v5-dstu2-test\") | .image) |= \"$DOCKER_IMAGE_COORDINATES\"" >> temp.json
+            - cat temp.json
+#            - echo $(aws ecs register-task-definition --region us-east-1 --cli-input-json file://dstu2.json)
             # stu3
-            - export AWS_TASK_DEFINITION=$(aws ecs describe-task-definition --region us-east-1 --task-definition sandbox-stack-test)
-            - echo "$AWS_TASK_DEFINITION"
+#            - export AWS_TASK_DEFINITION=$(aws ecs describe-task-definition --region us-east-1 --task-definition sandbox-stack-test)
+#            - echo "$AWS_TASK_DEFINITION"
             - export TEMPLATE_FILE="aws/task-definition-stu3-test.json"
             - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
             - export DOCKER_IMAGE_COORDINATES="hspconsortium/api:${DOCKER_PROJECT_VERSION}"
-            - echo ${AWS_TASK_DEFINITION} | jq '(.taskDefinition.containerDefinitions[] | select(.name == "api-v5-stu3-test") | .image) |= "$DOCKER_IMAGE_COORDINATES" >> stu3.json
-            - cat stu3.json
-            - echo $(aws ecs register-task-definition --region us-east-1 --cli-input-json file://stu3.json)
+            - cat temp.json | jq "(.taskDefinition.containerDefinitions[] | select(.name == \"api-v5-stu3-test\") | .image) |= \"$DOCKER_IMAGE_COORDINATES\""echo ${AWS_TASK_DEFINITION} | jq "(.taskDefinition.containerDefinitions[] | select(.name == \"api-v5-stu3-test\") | .image) |= \"$DOCKER_IMAGE_COORDINATES\"" >> temp2.json
+            - cat temp2.json
+            - echo $(aws ecs register-task-definition --region us-east-1 --cli-input-json file://temp2.json)
       - step:
           name: Update the aws service
           deployment: test
