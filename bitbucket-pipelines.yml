@@ -28,7 +28,7 @@ pipelines:
             - node
           script:
             - export ACTIVE_ENV=test
-            - export PROJECT_NAME=bilirubin-cdshooks
+            - export PROJECT_NAME=api
             - cd ci
             - . ci-0-set-properties.sh
             - . ci-1-prepare-sources.sh
@@ -39,9 +39,24 @@ pipelines:
             - node
           script:
             - export ACTIVE_ENV=test
-            - export PROJECT_NAME=bilirubin-cdshooks
+            - export JASYPT_ENCRYPTOR_PASSWORD="${ENC_PW_TEST}"
+            - cp aws/task-config.json aws/task-config.json.bak
+            # DSTU2
+            - export PROJECT_NAME=api-v5-dstu2
+            - export SPRING_PROFILES_ACTIVE="test,multitenant,dstu2"
             - cd ci
             - . ci-0-set-properties.sh
+            - export PROJECT_PORT=${PROJECT_PORT_DSTU2}
+            - export AWS_CONTAINER_MEMORY_RESERVE=${AWS_CONTAINER_MEMORY_RESERVE_DSTU2}
+            - . ci-3-aws-task-update.sh
+            # STU3
+            - cp aws/task-config.json.bak aws/task-config.json
+            - export PROJECT_NAME=api-v5-stu3
+            - export SPRING_PROFILES_ACTIVE="test,multitenant,stu3"
+            - cd ci
+            - . ci-0-set-properties.sh
+            - export PROJECT_PORT=$PROJECT_PORT_STU3
+            - export AWS_CONTAINER_MEMORY_RESERVE=${AWS_CONTAINER_MEMORY_RESERVE_STU3}
             - . ci-3-aws-task-update.sh
       - step:
           name: update the aws service
@@ -49,7 +64,12 @@ pipelines:
             - node
           script:
             - export ACTIVE_ENV=test
-            - export PROJECT_NAME=bilirubin-cdshooks
+            # DSTU2
+            - export PROJECT_NAME=api-v5-dstu2
+            - . ci/ci-0-set-properties.sh
+            - . ci/ci-4-aws-service-update.sh
+            # STU3
+            - export PROJECT_NAME=api-v5-stu3
             - . ci/ci-0-set-properties.sh
             - . ci/ci-4-aws-service-update.sh
     master:
@@ -69,7 +89,7 @@ pipelines:
             - node
           script:
             - export ACTIVE_ENV=prod
-            - export PROJECT_NAME=bilirubin-cdshooks
+            - export PROJECT_NAME=api
             - cd ci
             - . ci-0-set-properties.sh
             - . ci-1-prepare-sources.sh
@@ -80,7 +100,7 @@ pipelines:
             - node
           script:
             - export ACTIVE_ENV=prod
-            - export PROJECT_NAME=bilirubin-cdshooks
+            - export PROJECT_NAME=api
             - cd ci
             - . ci-0-set-properties.sh
             - . ci-3-aws-task-update.sh
@@ -91,7 +111,7 @@ pipelines:
           trigger: manual
           script:
             - export ACTIVE_ENV=prod
-            - export PROJECT_NAME=bilirubin-cdshooks
+            - export PROJECT_NAME=api
             - . ci/ci-0-set-properties.sh
             - . ci/ci-4-aws-service-update.sh
     feature/*:
