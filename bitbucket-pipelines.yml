@@ -24,53 +24,34 @@ pipelines:
             - reference-api-webapp-multitenant/target/*.jar
       - step:
           name: build docker and upload to docker hub
+          caches:
+            - node
           script:
-            - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
-            - echo $DOCKER_PROJECT_VERSION
-            - export DOCKER_IMAGE_COORDINATES="hspconsortium/api:${DOCKER_PROJECT_VERSION}"
-            - echo $DOCKER_IMAGE_COORDINATES
-            - docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
-            - docker build -t $DOCKER_IMAGE_COORDINATES .
-            - docker push $DOCKER_IMAGE_COORDINATES
+            - export ACTIVE_ENV=test
+            - export PROJECT_NAME=bilirubin-cdshooks
+            - cd ci
+            - . ci-0-set-properties.sh
+            - . ci-1-prepare-sources.sh
+            - . ci-2-docker-image.sh
       - step:
           name: update the aws task definition
-          trigger: manual
+          caches:
+            - node
           script:
-            # dstu2
-            - export TEMPLATE_FILE="aws/task-definition-dstu2-test.json"
-            - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
-            - export DOCKER_IMAGE_COORDINATES="hspconsortium/api:${DOCKER_PROJECT_VERSION}"
-            - jq ".containerDefinitions[0].image = \"$DOCKER_IMAGE_COORDINATES\"" ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
-            - jq '.containerDefinitions[0].environment += [{"name":"JASYPT_ENCRYPTOR_PASSWORD", "value":"'$ENC_PW_TEST'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
-            - jq '.containerDefinitions[0].environment += [{"name":"SPRING_PROFILES_ACTIVE", "value":"'test,multitenant,dstu2'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
-            - cat $(echo "$TEMPLATE_FILE")
-            - echo $(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
-            # stu3
-            - export TEMPLATE_FILE="aws/task-definition-stu3-test.json"
-            - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
-            - export DOCKER_IMAGE_COORDINATES="hspconsortium/api:${DOCKER_PROJECT_VERSION}"
-            - jq ".containerDefinitions[0].image = \"$DOCKER_IMAGE_COORDINATES\"" ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
-            - jq '.containerDefinitions[0].environment += [{"name":"JASYPT_ENCRYPTOR_PASSWORD", "value":"'$ENC_PW_TEST'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
-            - jq '.containerDefinitions[0].environment += [{"name":"SPRING_PROFILES_ACTIVE", "value":"'test,multitenant,stu3'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
-            - cat $(echo "$TEMPLATE_FILE")
-            - echo $(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
+            - export ACTIVE_ENV=test
+            - export PROJECT_NAME=bilirubin-cdshooks
+            - cd ci
+            - . ci-0-set-properties.sh
+            - . ci-3-aws-task-update.sh
       - step:
-          name: Update the aws service
-          trigger: manual
-          deployment: test
+          name: update the aws service
+          caches:
+            - node
           script:
-            # dstu2
-            - export AWS_TASK_DEFINITION=$(aws ecs describe-task-definition --region us-east-1 --task-definition api-v5-dstu2-test)
-            - echo $AWS_TASK_DEFINITION
-            - export AWS_TASK_VERSION=$(echo $AWS_TASK_DEFINITION | jq --raw-output '.taskDefinition.revision')
-            - echo $AWS_TASK_VERSION
-            - echo $(aws ecs update-service --region us-east-1 --cluster sandbox-test --service api-v5-dstu2-test --task-definition api-v5-dstu2-test:${AWS_TASK_VERSION})
-            # stu3
-            - export AWS_TASK_DEFINITION=$(aws ecs describe-task-definition --region us-east-1 --task-definition api-v5-stu3-test)
-            - echo $AWS_TASK_DEFINITION
-            - export AWS_TASK_VERSION=$(echo $AWS_TASK_DEFINITION | jq --raw-output '.taskDefinition.revision')
-            - echo $AWS_TASK_VERSION
-            - echo $(aws ecs update-service --region us-east-1 --cluster sandbox-test --service api-v5-stu3-test --task-definition api-v5-stu3-test:${AWS_TASK_VERSION})
+            - export ACTIVE_ENV=test
+            - export PROJECT_NAME=bilirubin-cdshooks
+            - . ci/ci-0-set-properties.sh
+            - . ci/ci-4-aws-service-update.sh
     master:
       - step:
           name: build the source code
@@ -84,69 +65,55 @@ pipelines:
             - reference-api-webapp-multitenant/target/*.jar
       - step:
           name: build docker and upload to docker hub
+          caches:
+            - node
           script:
-            - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
-            - echo $DOCKER_PROJECT_VERSION
-            - export DOCKER_IMAGE_COORDINATES="hspconsortium/api:${DOCKER_PROJECT_VERSION}"
-            - echo $DOCKER_IMAGE_COORDINATES
-            - docker login -u $DOCKER_HUB_USERNAME -p $DOCKER_HUB_PASSWORD
-            - docker build -t $DOCKER_IMAGE_COORDINATES .
-            - docker push $DOCKER_IMAGE_COORDINATES
+            - export ACTIVE_ENV=prod
+            - export PROJECT_NAME=bilirubin-cdshooks
+            - cd ci
+            - . ci-0-set-properties.sh
+            - . ci-1-prepare-sources.sh
+            - . ci-2-docker-image.sh
       - step:
           name: update the aws task definition
+          caches:
+            - node
           script:
-            # dstu2
-            - export TEMPLATE_FILE="aws/task-definition-dstu2-prod.json"
-            - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
-            - export DOCKER_IMAGE_COORDINATES="hspconsortium/api:${DOCKER_PROJECT_VERSION}"
-            - jq ".containerDefinitions[0].image = \"$DOCKER_IMAGE_COORDINATES\"" ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
-            - jq '.containerDefinitions[0].environment += [{"name":"JASYPT_ENCRYPTOR_PASSWORD", "value":"'$ENC_PW_PROD'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
-            - jq '.containerDefinitions[0].environment += [{"name":"SPRING_PROFILES_ACTIVE", "value":"'prod,multitenant,dstu2'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
-            - cat $(echo "$TEMPLATE_FILE")
-            - echo $(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
-            # stu3
-            - export TEMPLATE_FILE="aws/task-definition-stu3-prod.json"
-            - export DOCKER_PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
-            - export DOCKER_IMAGE_COORDINATES="hspconsortium/api:${DOCKER_PROJECT_VERSION}"
-            - jq ".containerDefinitions[0].image = \"$DOCKER_IMAGE_COORDINATES\"" ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
-            - jq '.containerDefinitions[0].environment += [{"name":"JASYPT_ENCRYPTOR_PASSWORD", "value":"'$ENC_PW_PROD'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
-            - jq '.containerDefinitions[0].environment += [{"name":"SPRING_PROFILES_ACTIVE", "value":"'prod,multitenant,stu3'"}]' ${TEMPLATE_FILE} > tmp.json && mv tmp.json ${TEMPLATE_FILE}
-            - cat $(echo "$TEMPLATE_FILE")
-            - echo $(aws ecs register-task-definition --region us-east-1 --cli-input-json file://$TEMPLATE_FILE)
+            - export ACTIVE_ENV=prod
+            - export PROJECT_NAME=bilirubin-cdshooks
+            - cd ci
+            - . ci-0-set-properties.sh
+            - . ci-3-aws-task-update.sh
       - step:
-          name: Update the aws service
-          deployment: production
+          name: update the aws service
+          caches:
+            - node
           trigger: manual
           script:
-            # dstu2
-            - export AWS_TASK_DEFINITION=$(aws ecs describe-task-definition --region us-east-1 --task-definition api-v5-dstu2-prod)
-            - echo $AWS_TASK_DEFINITION
-            - export AWS_TASK_VERSION=$(echo $AWS_TASK_DEFINITION | jq --raw-output '.taskDefinition.revision')
-            - echo $AWS_TASK_VERSION
-            - echo $(aws ecs update-service --region us-east-1 --cluster sandbox-prod --service api-v5-dstu2-prod --task-definition api-v5-dstu2-prod:${AWS_TASK_VERSION})
-            # stu3
-            - export AWS_TASK_DEFINITION=$(aws ecs describe-task-definition --region us-east-1 --task-definition api-v5-stu3-prod)
-            - echo $AWS_TASK_DEFINITION
-            - export AWS_TASK_VERSION=$(echo $AWS_TASK_DEFINITION | jq --raw-output '.taskDefinition.revision')
-            - echo $AWS_TASK_VERSION
-            - echo $(aws ecs update-service --region us-east-1 --cluster sandbox-prod --service api-v5-stu3-prod --task-definition api-v5-stu3-prod:${AWS_TASK_VERSION})
+            - export ACTIVE_ENV=prod
+            - export PROJECT_NAME=bilirubin-cdshooks
+            - . ci/ci-0-set-properties.sh
+            - . ci/ci-4-aws-service-update.sh
     feature/*:
       - step:
+          name: build the source code
           caches:
-            - maven
+            - node
           script:
-            - mvn -B verify
+            - echo "success"
     release/*:
       - step:
+          name: build the source code
           caches:
-            - maven
+            - node
           script:
-            - mvn -B verify
+            - echo "success"
     hotfix/*:
       - step:
+          name: build the source code
           caches:
-            - maven
+            - node
           script:
-            - mvn -B verify
+            - echo "success"
 options:
   docker: true
