@@ -1,0 +1,37 @@
+{
+  "family": "bilirubin-cdshooks-test",
+  "containerDefinitions": [
+    {
+      "name": "bilirubin-cdshooks-test",
+      "image": "hspconsortium/bilirubin-cdshooks:1.11.4-SNAPSHOT",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "containerPort": 8088,
+          "hostPort": 0,
+          "protocol": "tcp"
+        }
+      ],
+      "memoryReservation": 512,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/bilirubin-cdshooks-test",
+          "awslogs-region": "us-west-2",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "essential": true,
+      "environment": [
+        {
+          "name": "JASYPT_bilirubin-cdshooks_PASSWORD",
+          "value": "changeme"
+        },
+        {
+          "name": "SPRING_PROFILES_ACTIVE",
+          "value": "test"
+        }
+      ]
+    }
+  ]
+}
