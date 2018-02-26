@@ -123,7 +123,7 @@ pipelines:
             - . ci-4-aws-task-update.sh
       - step:
           name: update the aws service
-          deployment: prod
+          deployment: production
           trigger: manual
           script:
             - export TARGET_ENV=prod
