@@ -1,0 +1,52 @@
+{
+  "family": "api-v5-dstu2-test",
+  "containerDefinitions": [
+    {
+      "name": "api-v5-dstu2-test",
+      "image": "hspconsortium/api:1.11.4-SNAPSHOT",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "containerPort": 8075,
+          "hostPort": 0,
+          "protocol": "tcp"
+        }
+      ],
+      "memoryReservation": 1000,
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/api-v5-dstu2-test",
+          "awslogs-region": "us-west-2",
+          "awslogs-stream-prefix": "ecs"
+        }
+      },
+      "mountPoints": [
+        {
+          "readOnly": false,
+          "containerPath": "/var/indexes",
+          "sourceVolume": "indexes"
+        }
+      ],
+      "essential": true,
+      "environment": [
+        {
+          "name": "JASYPT_ENCRYPTOR_PASSWORD",
+          "value": ""
+        },
+        {
+          "name": "SPRING_PROFILES_ACTIVE",
+          "value": "test,multitenant,dstu2"
+        }
+      ]
+    }
+  ],
+  "volumes": [
+    {
+      "name": "indexes",
+      "host": {
+        "sourcePath": "/var/ecs/indexes"
+      }
+    }
+  ]
+}
