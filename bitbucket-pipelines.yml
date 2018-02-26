@@ -81,18 +81,31 @@ pipelines:
           script:
             - export TARGET_ENV=prod
             - cd ci
+            # DSTU2
+            - export FHIR_VERSION="dstu2"
+            - . ci-0-set-properties.sh
+            - . ci-1-prepare-sources.sh
+            # STU3
+            - export FHIR_VERSION="stu3"
+            - export PROJECT_NAME="api-v5-stu3"
             - . ci-0-set-properties.sh
             - . ci-1-prepare-sources.sh
             - . ci-2-build-project.sh
           artifacts:
-            - reference-api-server-webapp/target/*.war
-            - reference-api-server-webapp/target/dependency/jetty-runner.jar
-            - aws/task-definition.json
+            - reference-api-webapp-multitenant/target/*.jar
+            - aws/task-definition-dstu2.json
+            - aws/task-definition-stu3.json
       - step:
           name: build docker and upload to docker hub
           script:
             - export TARGET_ENV=prod
             - cd ci
+            # DSTU2
+            - export FHIR_VERSION="dstu2"
+            - . ci-0-set-properties.sh
+            - . ci-3-docker-image.sh
+            # STU3
+            - export FHIR_VERSION="stu3"
             - . ci-0-set-properties.sh
             - . ci-3-docker-image.sh
       - step:
@@ -100,15 +113,27 @@ pipelines:
           script:
             - export TARGET_ENV=prod
             - cd ci
+            # DSTU2
+            - export FHIR_VERSION="dstu2"
+            - . ci-0-set-properties.sh
+            - . ci-4-aws-task-update.sh
+            # STU3
+            - export FHIR_VERSION="stu3"
             - . ci-0-set-properties.sh
             - . ci-4-aws-task-update.sh
       - step:
           name: update the aws service
-          deployment: production
+          deployment: prod
           trigger: manual
           script:
             - export TARGET_ENV=prod
             - cd ci
+            # DSTU2
+            - export FHIR_VERSION="dstu2"
+            - . ci-0-set-properties.sh
+            - . ci-5-aws-service-update.sh
+            # STU3
+            - export FHIR_VERSION="stu3"
             - . ci-0-set-properties.sh
             - . ci-5-aws-service-update.sh
     feature/*:
