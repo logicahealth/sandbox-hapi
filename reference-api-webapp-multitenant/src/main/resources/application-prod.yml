@@ -6,7 +6,7 @@ hspc:
         clientSecret: secret
       fhir:
         db:
-          host: sandbox-db-prod.hspconsortium.org
+          host: sandboxdb.hspconsortium.org
           username: system
           password: ENC(rTXsi4FKX55cPv6RBcVl6bcSxoUmECl+)
     authorization:
