@@ -1,22 +1,22 @@
 {
-  "family": "TBD",
+  "family": "api-v5-stu3-test",
   "containerDefinitions": [
     {
-      "name": "TBD",
-      "image": "TBD",
+      "name": "api-v5-stu3-test",
+      "image": "hspconsortium/api:1.11.4-SNAPSHOT",
       "cpu": 0,
       "portMappings": [
         {
-          "containerPort": 0,
+          "containerPort": 8076,
           "hostPort": 0,
           "protocol": "tcp"
         }
       ],
-      "memoryReservation": 0,
+      "memoryReservation": 1000,
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "TBD",
+          "awslogs-group": "/ecs/api-v5-stu3-test",
           "awslogs-region": "us-west-2",
           "awslogs-stream-prefix": "ecs"
         }
@@ -28,7 +28,17 @@
           "sourceVolume": "indexes"
         }
       ],
-      "essential": true
+      "essential": true,
+      "environment": [
+        {
+          "name": "JASYPT_ENCRYPTOR_PASSWORD",
+          "value": ""
+        },
+        {
+          "name": "SPRING_PROFILES_ACTIVE",
+          "value": "test,multitenant,stu3"
+        }
+      ]
     }
   ],
   "volumes": [

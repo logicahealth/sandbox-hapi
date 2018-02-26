@@ -17,122 +17,113 @@ pipelines:
           caches:
             - maven
           script:
-            - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
-            - rm reference-api-webapp-multitenant/target/*-sources.jar
-            - rm reference-api-webapp-multitenant/target/*-javadoc.jar
-          artifacts:
-            - reference-api-webapp-multitenant/target/*.jar
-      - step:
-          name: build docker and upload to docker hub
-          caches:
-            - node
-          script:
-            - export ACTIVE_ENV=test
-            - export PROJECT_NAME=api
+            - export TARGET_ENV=test
             - cd ci
+            # DSTU2
+            - export FHIR_VERSION="dstu2"
             - . ci-0-set-properties.sh
             - . ci-1-prepare-sources.sh
-            - . ci-2-docker-image.sh
+            # STU3
+            - export FHIR_VERSION="stu3"
+            - export PROJECT_NAME="api-v5-stu3"
+            - . ci-0-set-properties.sh
+            - . ci-1-prepare-sources.sh
+            - . ci-2-build-project.sh
+          artifacts:
+            - reference-api-webapp-multitenant/target/*.jar
+            - aws/task-definition-dstu2.json
+            - aws/task-definition-stu3.json
+      - step:
+          name: build docker and upload to docker hub
+          script:
+            - export TARGET_ENV=test
+            - cd ci
+            # DSTU2
+            - export FHIR_VERSION="dstu2"
+            - . ci-0-set-properties.sh
+            - . ci-3-docker-image.sh
+            # STU3
+            - export FHIR_VERSION="stu3"
+            - . ci-0-set-properties.sh
+            - . ci-3-docker-image.sh
       - step:
           name: update the aws task definition
-          caches:
-            - node
           script:
-            - export ACTIVE_ENV=test
-            - export JASYPT_ENCRYPTOR_PASSWORD="${ENC_PW_TEST}"
-            - cp aws/task-config.json aws/task-config.json.bak
+            - export TARGET_ENV=test
+            - cd ci
             # DSTU2
-            - export PROJECT_NAME=api-v5-dstu2
-            - export SPRING_PROFILES_ACTIVE="test,multitenant,dstu2"
-            - cd ci
+            - export FHIR_VERSION="dstu2"
             - . ci-0-set-properties.sh
-            - export PROJECT_PORT=${PROJECT_PORT_DSTU2}
-            - export AWS_CONTAINER_MEMORY_RESERVE=${AWS_CONTAINER_MEMORY_RESERVE_DSTU2}
-            - . ci-3-aws-task-update.sh
+            - . ci-4-aws-task-update.sh
             # STU3
-            - cp aws/task-config.json.bak aws/task-config.json
-            - export PROJECT_NAME=api-v5-stu3
-            - export SPRING_PROFILES_ACTIVE="test,multitenant,stu3"
-            - cd ci
+            - export FHIR_VERSION="stu3"
             - . ci-0-set-properties.sh
-            - export PROJECT_PORT=$PROJECT_PORT_STU3
-            - export AWS_CONTAINER_MEMORY_RESERVE=${AWS_CONTAINER_MEMORY_RESERVE_STU3}
-            - . ci-3-aws-task-update.sh
+            - . ci-4-aws-task-update.sh
       - step:
           name: update the aws service
-          caches:
-            - node
+          deployment: test
           script:
-            - export ACTIVE_ENV=test
+            - export TARGET_ENV=test
+            - cd ci
             # DSTU2
-            - export PROJECT_NAME=api-v5-dstu2
-            - . ci/ci-0-set-properties.sh
-            - . ci/ci-4-aws-service-update.sh
+            - export FHIR_VERSION="dstu2"
+            - . ci-0-set-properties.sh
+            - . ci-5-aws-service-update.sh
             # STU3
-            - export PROJECT_NAME=api-v5-stu3
-            - . ci/ci-0-set-properties.sh
-            - . ci/ci-4-aws-service-update.sh
+            - export FHIR_VERSION="stu3"
+            - . ci-0-set-properties.sh
+            - . ci-5-aws-service-update.sh
     master:
       - step:
           name: build the source code
           caches:
             - maven
           script:
-            - mvn -V -B -s settings.xml deploy -P DEPLOY-HSPC,hspc-nexus
-            - rm reference-api-webapp-multitenant/target/*-sources.jar
-            - rm reference-api-webapp-multitenant/target/*-javadoc.jar
-          artifacts:
-            - reference-api-webapp-multitenant/target/*.jar
-      - step:
-          name: build docker and upload to docker hub
-          caches:
-            - node
-          script:
-            - export ACTIVE_ENV=prod
-            - export PROJECT_NAME=api
+            - export TARGET_ENV=prod
             - cd ci
             - . ci-0-set-properties.sh
             - . ci-1-prepare-sources.sh
-            - . ci-2-docker-image.sh
+            - . ci-2-build-project.sh
+          artifacts:
+            - reference-api-server-webapp/target/*.war
+            - reference-api-server-webapp/target/dependency/jetty-runner.jar
+            - aws/task-definition.json
       - step:
-          name: update the aws task definition
-          caches:
-            - node
+          name: build docker and upload to docker hub
           script:
-            - export ACTIVE_ENV=prod
-            - export PROJECT_NAME=api
+            - export TARGET_ENV=prod
             - cd ci
             - . ci-0-set-properties.sh
-            - . ci-3-aws-task-update.sh
+            - . ci-3-docker-image.sh
+      - step:
+          name: update the aws task definition
+          script:
+            - export TARGET_ENV=prod
+            - cd ci
+            - . ci-0-set-properties.sh
+            - . ci-4-aws-task-update.sh
       - step:
           name: update the aws service
-          caches:
-            - node
+          deployment: production
           trigger: manual
           script:
-            - export ACTIVE_ENV=prod
-            - export PROJECT_NAME=api
-            - . ci/ci-0-set-properties.sh
-            - . ci/ci-4-aws-service-update.sh
+            - export TARGET_ENV=prod
+            - cd ci
+            - . ci-0-set-properties.sh
+            - . ci-5-aws-service-update.sh
     feature/*:
       - step:
           name: build the source code
-          caches:
-            - node
           script:
             - echo "success"
     release/*:
       - step:
           name: build the source code
-          caches:
-            - node
           script:
             - echo "success"
     hotfix/*:
       - step:
           name: build the source code
-          caches:
-            - node
           script:
             - echo "success"
 options:
