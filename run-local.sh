@@ -37,7 +37,7 @@ set -x
 
 echo "running..."
 java \
-  -Dspring.profiles.active=${profile},${tenant} \
+  -Dspring.profiles.active=${profile},${tenant},prod \
   -Xms256M \
   -Xmx512M \
   -Dhspc.platform.api.sandbox.name=${sandbox_name} \
