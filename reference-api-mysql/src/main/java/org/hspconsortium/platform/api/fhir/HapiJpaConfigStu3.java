@@ -2,6 +2,7 @@ package org.hspconsortium.platform.api.fhir;
 
 import ca.uhn.fhir.jpa.config.BaseJavaConfigDstu3;
 import ca.uhn.fhir.jpa.search.ISearchCoordinatorSvc;
+import ca.uhn.fhir.jpa.subscription.resthook.SubscriptionRestHookInterceptor;
 import ca.uhn.fhir.jpa.util.SubscriptionsRequireManualActivationInterceptorDstu3;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.validation.IValidatorModule;
@@ -21,6 +22,11 @@ public class HapiJpaConfigStu3 extends BaseJavaConfigDstu3 {
     @Bean(autowire = Autowire.BY_TYPE)
     public IServerInterceptor subscriptionSecurityInterceptor() {
         return new SubscriptionsRequireManualActivationInterceptorDstu3();
+    }
+
+    @Bean
+    public SubscriptionRestHookInterceptor subscriptionRestHookInterceptor() {
+        return new SubscriptionRestHookInterceptor();
     }
 
     @Bean(autowire = Autowire.BY_TYPE)

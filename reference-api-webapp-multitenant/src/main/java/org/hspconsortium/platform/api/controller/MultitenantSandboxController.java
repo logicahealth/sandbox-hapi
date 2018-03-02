@@ -10,6 +10,8 @@ import org.hspconsortium.platform.api.service.SandboxService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
@@ -94,6 +96,25 @@ public class MultitenantSandboxController {
             default:
                 throw new RuntimeException("Unknown sandbox command action: " + snapshotSandboxCommand.getAction());
         }
+    }
+
+    @GetMapping("/echo/**")
+    public @ResponseBody ResponseEntity<String> echoGet() {
+        return new ResponseEntity<>("GET Response", HttpStatus.OK);
+    }
+
+    @PostMapping("/echo/**")
+    public @ResponseBody ResponseEntity<String> echoPost(@RequestBody Object obj) {
+        logger.info("Received POST request body: " + obj);
+
+        return new ResponseEntity<>("POST Response", HttpStatus.OK);
+    }
+
+    @PutMapping("/echo/**")
+    public @ResponseBody ResponseEntity<String> echoPut(@RequestBody Object obj) {
+        logger.info("Received PUT request body: " + obj);
+
+        return new ResponseEntity<>("PUT Response", HttpStatus.OK);
     }
 
     private void validate(String teamId) {
