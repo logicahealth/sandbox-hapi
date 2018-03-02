@@ -8,7 +8,7 @@ hspc:
         db:
           host: sandboxdb.hspconsortium.org
           username: system
-          password: ENC(rTXsi4FKX55cPv6RBcVl6bcSxoUmECl+)
+          password: ENC(LfMhv9cr1C3MRuCwBPI80EJAEGP9L4R5)
     authorization:
       url: https://auth.hspconsortium.org
 
