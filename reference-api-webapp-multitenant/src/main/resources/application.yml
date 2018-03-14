@@ -83,15 +83,14 @@ hspc:
       port: ${PUBLISHED_AUTH_PORT:}
       context: ~
       url: ${hspc.platform.manifest.protocol}://${hspc.platform.manifest.host}:${hspc.platform.manifest.port}${hspc.platform.manifest.context}
-
     messaging:
       pubsub:
-        enabled: true
-        subscriptionEndpointEx: http://pubsub.hspconsortium.org:7088
-        user: admin
-        password: wnATxLTgzk2cxcYd
-#        securityMode: secured
-        securityMode: open
+        enabled: false
+        forSandboxes:
+        subscription:
+          channel:
+            endpoint:
+          forResources:
 ---
 
 spring:
