@@ -11,6 +11,14 @@ hspc:
           password: ENC(LfMhv9cr1C3MRuCwBPI80EJAEGP9L4R5)
     authorization:
       url: https://auth.hspconsortium.org
+    messaging:
+      pubsub:
+        enabled: true
+        forSandboxes: travisdstu2
+        subscription:
+          channel:
+            endpoint: https://sandbox.hspconsortium.org/hspc5/sandbox/echo
+          forResources: Patient,Observation,Allergy
 
 jasypt:
   encryptor:
