@@ -14,6 +14,14 @@ hspc:
             size: 5
     authorization:
       url: https://auth-test.hspconsortium.org
+    messaging:
+      pubsub:
+        enabled: true
+        forSandboxes: travisdstu2
+        subscription:
+          channel:
+            endpoint: https://sandbox-test.hspconsortium.org/hspc5/sandbox/echo
+          forResources: Patient,Observation,Allergy
 
 jasypt:
   encryptor:
