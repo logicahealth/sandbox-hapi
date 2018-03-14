@@ -40,7 +40,6 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
                 case DELETE:
                     if (!Strings.isNullOrEmpty(forwardUrl)) {
                         if (forResources.contains(theResponseObject.getClass().getSimpleName())) {
-                            // todo match the desired sandbox
                             String requestSandbox = HapiFhirServlet.getTenantPart(theServletRequest.getServletPath());
                             if (forSandboxes.contains(requestSandbox)) {
                                 LOGGER.info("Matched resource: " + theResponseObject.getIdElement().getIdPart());

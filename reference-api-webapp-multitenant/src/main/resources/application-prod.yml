@@ -24,7 +24,6 @@ jasypt:
   encryptor:
     algorithm: PBEWithMD5AndTripleDES
 
-
 ---
 
 spring:
