@@ -17,6 +17,7 @@ import ca.uhn.fhir.rest.server.ETagSupportEnum;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
+import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hspconsortium.platform.api.conformance.HspcConformanceProviderDstu2;
 import org.hspconsortium.platform.api.conformance.HspcConformanceProviderR4;
@@ -24,7 +25,6 @@ import org.hspconsortium.platform.api.conformance.HspcConformanceProviderStu3;
 import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryDstu2Impl;
 import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryR4;
 import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryStu3;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletException;
@@ -61,9 +61,9 @@ public class HapiFhirServlet extends RestfulServer {
 
         /*
          * The BaseJavaConfigDstu3.java class is a spring configuration
-		 * file which is automatically generated as a part of hapi-fhir-jpaserver-base and
-		 * contains bean definitions for a resource provider for each resource type
-		 */
+         * file which is automatically generated as a part of hapi-fhir-jpaserver-base and
+         * contains bean definitions for a resource provider for each resource type
+         */
         String resourceProviderBeanName;
 
         if (fhirVersionEnum == FhirVersionEnum.DSTU2) {
@@ -79,10 +79,10 @@ public class HapiFhirServlet extends RestfulServer {
         List<IResourceProvider> beans = myAppCtx.getBean(resourceProviderBeanName, List.class);
         setResourceProviders(beans);
 
-		/*
+        /*
          * The system provider implements non-resource-type methods, such as
-		 * transaction, and global history.
-		 */
+         * transaction, and global history.
+         */
 
         Object systemProvider;
         if (fhirVersionEnum == FhirVersionEnum.DSTU2) {
@@ -129,55 +129,55 @@ public class HapiFhirServlet extends RestfulServer {
 
         /*
          * Enable ETag Support (this is already the default)
-		 */
+         */
         setETagSupport(ETagSupportEnum.ENABLED);
 
         /*
          * This server tries to dynamically generate narratives
-		 */
+         */
         FhirContext ctx = getFhirContext();
         ctx.setNarrativeGenerator(new DefaultThymeleafNarrativeGenerator());
 
-		/*
+        /*
          * Default to JSON and pretty printing
-		 */
+         */
         setDefaultPrettyPrint(true);
         setDefaultResponseEncoding(EncodingEnum.JSON);
 
-		/*
+        /*
          * -- New in HAPI FHIR 1.5 --
-		 * This configures the server to page search results to and from
-		 * the database, instead of only paging them to memory. This may mean
-		 * a performance hit when performing searches that return lots of results,
-		 * but makes the server much more scalable.
-		 */
+         * This configures the server to page search results to and from
+         * the database, instead of only paging them to memory. This may mean
+         * a performance hit when performing searches that return lots of results,
+         * but makes the server much more scalable.
+         */
         setPagingProvider(myAppCtx.getBean(DatabaseBackedPagingProvider.class));
 
-		/*
+        /*
          * Load interceptors for the server from Spring (these are defined in FhirServerConfig.java)
-		 */
+         */
         Collection<IServerInterceptor> interceptorBeans = myAppCtx.getBeansOfType(IServerInterceptor.class).values();
         for (IServerInterceptor interceptor : interceptorBeans) {
             this.registerInterceptor(interceptor);
         }
 
-		/*
+        /*
          * If you are hosting this server at a specific DNS name, the server will try to
-		 * figure out the FHIR base URL based on what the web container tells it, but
-		 * this doesn't always work. If you are setting links in your search bundles that
-		 * just refer to "localhost", you might want to use a server address strategy:
-		 */
+         * figure out the FHIR base URL based on what the web container tells it, but
+         * this doesn't always work. If you are setting links in your search bundles that
+         * just refer to "localhost", you might want to use a server address strategy:
+         */
         //setServerAddressStrategy(new HardcodedServerAddressStrategy("http://mydomain.com/fhir/baseDstu3"));
 
-		/*
+        /*
          * If you are using DSTU3+, you may want to add a terminology uploader, which allows
-		 * uploading of external terminologies such as Snomed CT. Note that this uploader
-		 * does not have any security attached (any anonymous user may use it by default)
-		 * so it is a potential security vulnerability. Consider using an AuthorizationInterceptor
-		 * with this feature.
-		 */
+         * uploading of external terminologies such as Snomed CT. Note that this uploader
+         * does not have any security attached (any anonymous user may use it by default)
+         * so it is a potential security vulnerability. Consider using an AuthorizationInterceptor
+         * with this feature.
+         */
         if (fhirVersionEnum == FhirVersionEnum.DSTU3) {
-        	 registerProvider(myAppCtx.getBean(TerminologyUploaderProviderDstu3.class));
+            registerProvider(myAppCtx.getBean(TerminologyUploaderProviderDstu3.class));
         }
     }
 
@@ -220,7 +220,6 @@ public class HapiFhirServlet extends RestfulServer {
     /**
      * Returns the server base URL (with no trailing '/') for a given request
      */
-
     public String getServerBaseForRequest(HttpServletRequest theRequest) {
         String fhirServerBase = getServerAddressStrategy().determineServerBase(getServletContext(), theRequest);
 
@@ -242,4 +241,16 @@ public class HapiFhirServlet extends RestfulServer {
         throw new RuntimeException("Something bad happened, only matched: " + result.toString());
     }
 
+    /**
+     * account for tenant and mapping
+     */
+    public static String getTenantPart(String servletPath) {
+        String[] split = servletPath.split("/", 3);
+        for (int i = 0; i < split.length; i++) {
+            if (StringUtils.isNotEmpty(split[i])) {
+                return split[i];
+            }
+        }
+        throw new NullPointerException("Tenant does not exist in path: " + servletPath);
+    }
 }
