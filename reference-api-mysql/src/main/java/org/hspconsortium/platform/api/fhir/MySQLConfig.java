@@ -64,9 +64,6 @@ public class MySQLConfig {
     @Value("${hspc.platform.api.fhir.allowExternalReferences:true}")
     private boolean allowExternalReferences;
 
-    @Value("${hspc.platform.messaging.subscriptionSupport.enabled:false}")
-    private boolean subscriptionEnabled;
-
     @Value("${flyway.locations}")
     private String flywayLocations;
 

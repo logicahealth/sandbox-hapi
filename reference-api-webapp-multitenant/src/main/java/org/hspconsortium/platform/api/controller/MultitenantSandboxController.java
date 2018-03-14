@@ -10,8 +10,11 @@ import org.hspconsortium.platform.api.service.SandboxService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import java.util.Set;
 
@@ -94,6 +97,33 @@ public class MultitenantSandboxController {
             default:
                 throw new RuntimeException("Unknown sandbox command action: " + snapshotSandboxCommand.getAction());
         }
+    }
+
+    @GetMapping("/echo/**")
+    public @ResponseBody ResponseEntity<String> echoGet(HttpServletRequest request) {
+        String message = "Received " + request.getMethod() + ", request path: " + request.getRequestURI();
+        logger.info(message);
+        return new ResponseEntity<>(message, HttpStatus.OK);
+    }
+
+    @PostMapping("/echo/**")
+    public @ResponseBody ResponseEntity<String> echoPost(HttpServletRequest request, @RequestBody Object obj) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Received " + request.getMethod() + ", request path: " + request.getRequestURI());
+        sb.append("Received POST request body: " + obj);
+        logger.info(sb.toString());
+
+        return new ResponseEntity<>(sb.toString(), HttpStatus.OK);
+    }
+
+    @PutMapping("/echo/**")
+    public @ResponseBody ResponseEntity<String> echoPut(HttpServletRequest request, @RequestBody Object obj) {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Received " + request.getMethod() + ", request path: " + request.getRequestURI());
+        sb.append("Received PUT request body: " + obj);
+        logger.info(sb.toString());
+
+        return new ResponseEntity<>(sb.toString(), HttpStatus.OK);
     }
 
     private void validate(String teamId) {
