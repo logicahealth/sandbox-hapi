@@ -14,11 +14,11 @@ hspc:
     messaging:
       pubsub:
         enabled: true
-        forSandboxes: travisdstu2
+        forSandboxes: travisdstu2,PulmonaryEmbolism,noman_dstu2,nomanstu3
         subscription:
           channel:
             endpoint: https://sandbox.hspconsortium.org/hspc5/sandbox/echo
-          forResources: Patient,Observation,Allergy
+#          forResources: Patient,Observation,Allergy
 
 jasypt:
   encryptor:
