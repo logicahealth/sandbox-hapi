@@ -21,7 +21,7 @@ hspc:
         subscription:
           channel:
             endpoint: https://api-v5-dstu2-test.hspconsortium.org/hspc5/sandbox/echo
-          forResources: Patient,Observation,Allergy
+#          forResources: Patient,Observation,Allergy
 
 jasypt:
   encryptor:
