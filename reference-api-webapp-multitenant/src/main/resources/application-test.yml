@@ -20,8 +20,8 @@ hspc:
         forSandboxes: travisdstu2
         subscription:
           channel:
-            endpoint: https://sandbox-test.hspconsortium.org/hspc5/sandbox/echo
-          forResources: Patient,Observation,Allergy
+            endpoint: https://api-v5-dstu2-test.hspconsortium.org/hspc5/sandbox/echo
+#          forResources: Patient,Observation,Allergy
 
 jasypt:
   encryptor:

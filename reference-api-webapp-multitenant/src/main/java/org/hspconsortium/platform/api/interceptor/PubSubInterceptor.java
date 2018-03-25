@@ -28,8 +28,8 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
     @Value("#{'${hspc.platform.messaging.pubsub.forSandboxes:}'.split(',')}")
     private Set<String> forSandboxes;
 
-    @Value("#{'${hspc.platform.messaging.pubsub.subscription.forResources:}'.split(',')}")
-    private Set<String> forResources;
+//    @Value("#{'${hspc.platform.messaging.pubsub.subscription.forResources:}'.split(',')}")
+//    private Set<String> forResources;
 
     @Override
     public boolean outgoingResponse(RequestDetails theRequestDetails, IBaseResource theResponseObject, HttpServletRequest theServletRequest, HttpServletResponse theServletResponse) {
@@ -39,13 +39,13 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
                 case UPDATE:
                 case DELETE:
                     if (!Strings.isNullOrEmpty(forwardUrl)) {
-                        if (forResources.contains(theResponseObject.getClass().getSimpleName())) {
+//                        if (forResources.contains(theResponseObject.getClass().getSimpleName())) {
                             String requestSandbox = HapiFhirServlet.getTenantPart(theServletRequest.getServletPath());
                             if (forSandboxes.contains(requestSandbox)) {
                                 LOGGER.info("Matched resource: " + theResponseObject.getIdElement().getIdPart());
                                 handleResource(theResponseObject, forwardUrl);
                             }
-                        }
+//                        }
                     }
                     break;
             }
