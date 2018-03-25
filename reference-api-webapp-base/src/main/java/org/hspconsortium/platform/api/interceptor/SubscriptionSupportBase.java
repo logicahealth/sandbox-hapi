@@ -55,7 +55,7 @@ abstract public class SubscriptionSupportBase extends InterceptorAdapter impleme
         try (CloseableHttpResponse closeableHttpResponse = httpClient.execute(postRequest)) {
             if (closeableHttpResponse.getStatusLine().getStatusCode() != 200) {
                 // log and bury exception
-                LOGGER.error("Error Sending Resource.  Status Code: " + closeableHttpResponse.getStatusLine().getStatusCode());
+                LOGGER.error("Error sending resource to [" + endpoint + "]  Status Code: " + closeableHttpResponse.getStatusLine().getStatusCode());
             }
         } catch (IOException e) {
             // log and bury exception
