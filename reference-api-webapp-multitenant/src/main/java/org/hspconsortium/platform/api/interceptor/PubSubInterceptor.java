@@ -39,11 +39,6 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
     @Override
     public boolean outgoingResponse(RequestDetails theRequestDetails, IBaseResource theResponseObject, HttpServletRequest theServletRequest, HttpServletResponse theServletResponse) {
         if (enabled) {
-            LOGGER.info("forwardUrl: " + forwardUrl);
-            LOGGER.info("forSandboxes: " + forSandboxes);
-            LOGGER.info("forSandboxes.size(): " + forSandboxes.size());
-            LOGGER.info("includeSourceQueryParameter: " + includeSourceQueryParameter);
-
             switch (theRequestDetails.getRestOperationType()) {
                 case CREATE:
                 case UPDATE:
@@ -56,7 +51,7 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
                             if (includeSourceQueryParameter) {
                                 try {
                                     String fhirRootPath = theRequestDetails.getFhirServerBase();
-                                    fhirRootPath = fhirRootPath.substring(0, fhirRootPath.indexOf(theRequestDetails.getRequestPath())-1);
+                                    fhirRootPath = fhirRootPath.substring(0, fhirRootPath.indexOf(theRequestDetails.getRequestPath()) - 1);
                                     handleResource(theResponseObject, forwardUrl
                                             + "?source="
                                             + URLEncoder.encode(fhirRootPath, StandardCharsets.UTF_8.toString()));
