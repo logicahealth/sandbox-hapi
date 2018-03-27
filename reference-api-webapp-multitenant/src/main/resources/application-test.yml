@@ -17,11 +17,11 @@ hspc:
     messaging:
       pubsub:
         enabled: true
-        forSandboxes: travisdstu2,noman_dstu2
+        forSandboxes: travisdstu2,PulmonaryEmbolism,noman_dstu2,nomanstu3
         subscription:
           channel:
             endpoint: http://pubsub.hspconsortium.org:9002/fhir-subscription/publish
-#          forResources: Patient,Observation,Allergy
+        includeSourceQueryParameter: true
 
 jasypt:
   encryptor:
