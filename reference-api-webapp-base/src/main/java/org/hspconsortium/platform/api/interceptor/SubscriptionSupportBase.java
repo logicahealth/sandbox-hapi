@@ -29,7 +29,7 @@ abstract public class SubscriptionSupportBase extends InterceptorAdapter impleme
         postRequest.addHeader("Content-Type", "application/json");
         StringEntity entity = null;
         try {
-            LOGGER.info("Sending " + iBaseResource.getIdElement() + " to + " + endpoint);
+            LOGGER.info("Sending " + iBaseResource.getIdElement() + " to " + endpoint);
             ByteArrayOutputStream bytes = new ByteArrayOutputStream();
             Writer writer = new OutputStreamWriter(bytes);
             switch (iBaseResource.getStructureFhirVersionEnum()) {
