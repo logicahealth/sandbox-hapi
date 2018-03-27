@@ -12,6 +12,8 @@ import org.springframework.stereotype.Component;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 @Component
@@ -28,6 +30,9 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
     @Value("#{'${hspc.platform.messaging.pubsub.forSandboxes:}'.split(',')}")
     private Set<String> forSandboxes;
 
+    @Value("${hspc.platform.messaging.pubsub.includeSourceQueryParameter:false}")
+    private boolean includeSourceQueryParameter;
+
 //    @Value("#{'${hspc.platform.messaging.pubsub.subscription.forResources:}'.split(',')}")
 //    private Set<String> forResources;
 
@@ -40,11 +45,23 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
                 case DELETE:
                     if (!Strings.isNullOrEmpty(forwardUrl)) {
 //                        if (forResources.contains(theResponseObject.getClass().getSimpleName())) {
-                            String requestSandbox = HapiFhirServlet.getTenantPart(theServletRequest.getServletPath());
-                            if (forSandboxes.contains(requestSandbox)) {
-                                LOGGER.info("Matched resource: " + theResponseObject.getIdElement().getIdPart());
+                        String requestSandbox = HapiFhirServlet.getTenantPart(theServletRequest.getServletPath());
+                        if (forSandboxes.contains(requestSandbox)) {
+                            LOGGER.info("Matched resource: " + theResponseObject.getIdElement().getIdPart());
+                            if (includeSourceQueryParameter) {
+                                try {
+                                    String fhirRootPath = theRequestDetails.getFhirServerBase();
+                                    fhirRootPath = fhirRootPath.substring(0, fhirRootPath.indexOf(theRequestDetails.getRequestPath())-1);
+                                    handleResource(theResponseObject, forwardUrl
+                                            + "?source="
+                                            + URLEncoder.encode(fhirRootPath, StandardCharsets.UTF_8.toString()));
+                                } catch (Exception e) {
+                                    LOGGER.error("Error handling resource for: " + theRequestDetails.getFhirServerBase(), e);
+                                }
+                            } else {
                                 handleResource(theResponseObject, forwardUrl);
                             }
+                        }
 //                        }
                     }
                     break;
