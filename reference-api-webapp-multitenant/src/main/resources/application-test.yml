@@ -20,7 +20,7 @@ hspc:
         forSandboxes: travisdstu2
         subscription:
           channel:
-            endpoint: https://api-v5-dstu2-test.hspconsortium.org/hspc5/sandbox/echo
+            endpoint: http://pubsub.hspconsortium.org:9002/fhir-subscription/publish
 #          forResources: Patient,Observation,Allergy
 
 jasypt:
