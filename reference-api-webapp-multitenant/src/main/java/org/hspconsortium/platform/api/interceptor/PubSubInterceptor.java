@@ -39,6 +39,11 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
     @Override
     public boolean outgoingResponse(RequestDetails theRequestDetails, IBaseResource theResponseObject, HttpServletRequest theServletRequest, HttpServletResponse theServletResponse) {
         if (enabled) {
+            LOGGER.info("forwardUrl: " + forwardUrl);
+            LOGGER.info("forSandboxes: " + forSandboxes);
+            LOGGER.info("forSandboxes.size(): " + forSandboxes.size());
+            LOGGER.info("includeSourceQueryParameter: " + includeSourceQueryParameter);
+
             switch (theRequestDetails.getRestOperationType()) {
                 case CREATE:
                 case UPDATE:
