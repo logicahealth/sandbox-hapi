@@ -56,7 +56,11 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
                                             + "?source="
                                             + URLEncoder.encode(fhirRootPath, StandardCharsets.UTF_8.toString()));
                                 } catch (Exception e) {
-                                    LOGGER.error("Error handling resource for: " + theRequestDetails.getFhirServerBase(), e);
+                                    LOGGER.error(
+                                            "Error handling resource for server: "
+                                            + theRequestDetails.getFhirServerBase()
+                                            + " path: " + theRequestDetails.getRequestPath()
+                                            + " forwardUrl: " + forwardUrl, e);
                                 }
                             } else {
                                 handleResource(theResponseObject, forwardUrl);
