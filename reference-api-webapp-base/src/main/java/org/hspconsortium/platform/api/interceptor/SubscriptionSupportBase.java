@@ -8,6 +8,7 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.hl7.fhir.instance.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,6 +35,10 @@ abstract public class SubscriptionSupportBase extends InterceptorAdapter impleme
             Writer writer = new OutputStreamWriter(bytes);
             switch (iBaseResource.getStructureFhirVersionEnum()) {
                 case DSTU2:
+                    if (iBaseResource instanceof OperationOutcome) {
+                        OperationOutcome operationOutcome = (OperationOutcome)iBaseResource;
+                        operationOutcome.getResourceType();
+                    }
                     FhirContext.forDstu2().newJsonParser().encodeResourceToWriter(iBaseResource, writer);
                     break;
                 case DSTU3:
