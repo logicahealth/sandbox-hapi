@@ -51,7 +51,12 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
                             if (includeSourceQueryParameter) {
                                 try {
                                     String fhirRootPath = theRequestDetails.getFhirServerBase();
-                                    fhirRootPath = fhirRootPath.substring(0, fhirRootPath.indexOf(theRequestDetails.getRequestPath()) - 1);
+                                    if (fhirRootPath.contains("/data")) {
+                                        fhirRootPath = fhirRootPath.substring(0, fhirRootPath.indexOf("/data"));
+                                    } else if (fhirRootPath.contains("/open")) {
+                                        fhirRootPath = fhirRootPath.substring(0, fhirRootPath.indexOf("/open"));
+                                    }
+                                    LOGGER.info("Source path: " + fhirRootPath);
                                     handleResource(theResponseObject, forwardUrl
                                             + "?source="
                                             + URLEncoder.encode(fhirRootPath, StandardCharsets.UTF_8.toString()));
