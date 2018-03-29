@@ -1,7 +1,13 @@
 package org.hspconsortium.platform.api.interceptor;
 
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.client.api.IGenericClient;
+import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import com.google.common.base.Strings;
+import org.apache.commons.lang3.StringUtils;
+import org.hl7.fhir.instance.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hspconsortium.platform.api.controller.HapiFhirServlet;
 import org.slf4j.Logger;
@@ -36,6 +42,27 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
 //    @Value("#{'${hspc.platform.messaging.pubsub.subscription.forResources:}'.split(',')}")
 //    private Set<String> forResources;
 
+
+    @Override
+    public boolean incomingRequestPostProcessed(RequestDetails theRequestDetails, HttpServletRequest theRequest, HttpServletResponse theResponse) throws AuthenticationException {
+        return super.incomingRequestPostProcessed(theRequestDetails, theRequest, theResponse);
+    }
+
+    @Override
+    public void incomingRequestPreHandled(RestOperationTypeEnum theOperation, ActionRequestDetails theProcessedRequest) {
+        super.incomingRequestPreHandled(theOperation, theProcessedRequest);
+    }
+
+    @Override
+    public boolean incomingRequestPreProcessed(HttpServletRequest theRequest, HttpServletResponse theResponse) {
+        return super.incomingRequestPreProcessed(theRequest, theResponse);
+    }
+
+    @Override
+    public boolean outgoingResponse(RequestDetails theRequestDetails) {
+        return super.outgoingResponse(theRequestDetails);
+    }
+
     @Override
     public boolean outgoingResponse(RequestDetails theRequestDetails, IBaseResource theResponseObject, HttpServletRequest theServletRequest, HttpServletResponse theServletResponse) {
         if (enabled) {
@@ -46,7 +73,9 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
                     if (!Strings.isNullOrEmpty(forwardUrl)) {
 //                        if (forResources.contains(theResponseObject.getClass().getSimpleName())) {
                         String requestSandbox = HapiFhirServlet.getTenantPart(theServletRequest.getServletPath());
+
                         if (forSandboxes.contains(requestSandbox)) {
+                            IBaseResource targetResource = findTargetResource(theRequestDetails, theResponseObject);
                             LOGGER.info("Matched resource: " + theResponseObject.getIdElement().getIdPart());
                             if (includeSourceQueryParameter) {
                                 try {
@@ -57,18 +86,18 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
                                         fhirRootPath = fhirRootPath.substring(0, fhirRootPath.indexOf("/open"));
                                     }
                                     LOGGER.info("Source path: " + fhirRootPath);
-                                    handleResource(theResponseObject, forwardUrl
+                                    handleResource(targetResource, forwardUrl
                                             + "?source="
                                             + URLEncoder.encode(fhirRootPath, StandardCharsets.UTF_8.toString()));
                                 } catch (Exception e) {
                                     LOGGER.error(
                                             "Error handling resource for server: "
-                                            + theRequestDetails.getFhirServerBase()
-                                            + " path: " + theRequestDetails.getRequestPath()
-                                            + " forwardUrl: " + forwardUrl, e);
+                                                    + theRequestDetails.getFhirServerBase()
+                                                    + " path: " + theRequestDetails.getRequestPath()
+                                                    + " forwardUrl: " + forwardUrl, e);
                                 }
                             } else {
-                                handleResource(theResponseObject, forwardUrl);
+                                handleResource(targetResource, forwardUrl);
                             }
                         }
 //                        }
@@ -83,5 +112,87 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
     @Override
     protected void handleResource(IBaseResource resource, String resourceEndpoint) {
         sendViaHTTP(resource, resourceEndpoint);
+    }
+
+    protected IBaseResource findTargetResource(RequestDetails theRequestDetails, IBaseResource theResponseObject) {
+        String resourceIdString = null;
+        String[] resourceIdParts = null;
+        switch (theResponseObject.getStructureFhirVersionEnum()) {
+            case DSTU2:
+                return getTargetResourceForDSTU2(theRequestDetails, theResponseObject);
+            case DSTU3:
+                return getTargetResourceForSTU3(theRequestDetails, theResponseObject);
+            case R4:
+                throw new RuntimeException("R4 is not supported for PubSubInterceptor");
+        }
+        throw new RuntimeException("No match");
+    }
+
+    protected String extractIdFromDiagnosisString(String diagnosisString) {
+        return diagnosisString.split("\"")[1];
+    }
+
+    protected String[] splitResourceId(String resourceIdString) {
+        return resourceIdString.split("/");
+    }
+
+    protected IBaseResource getTargetResourceForDSTU2(RequestDetails theRequestDetails, IBaseResource theResponseObject) {
+        String resourceIdString = null;
+        String[] resourceIdParts = null;
+
+        if (theResponseObject instanceof ca.uhn.fhir.model.dstu2.resource.OperationOutcome) {
+            ca.uhn.fhir.model.dstu2.resource.OperationOutcome operationOutcome = (ca.uhn.fhir.model.dstu2.resource.OperationOutcome) theResponseObject;
+            if (operationOutcome.getIssue().size() > 0) {
+                String diagnosisString = operationOutcome.getIssue().get(0).getDiagnostics();
+                if (StringUtils.isNotEmpty(diagnosisString)) {
+                    resourceIdString = extractIdFromDiagnosisString(diagnosisString);
+                }
+            }
+        } else {
+            return theResponseObject;
+        }
+        FhirContext ctx = FhirContext.forDstu2();
+        String serverBase = theRequestDetails.getFhirServerBase();
+
+
+        IGenericClient client = ctx.newRestfulGenericClient(serverBase);
+        resourceIdParts = splitResourceId(resourceIdString);
+
+        IBaseResource targetResource = client.read()
+                .resource(resourceIdParts[0])
+                .withId(resourceIdParts[1])
+                .execute();
+
+        return targetResource;
+    }
+
+    protected IBaseResource getTargetResourceForSTU3(RequestDetails theRequestDetails, IBaseResource theResponseObject) {
+        String resourceIdString = null;
+        String[] resourceIdParts = null;
+
+        if (theResponseObject instanceof org.hl7.fhir.dstu3.model.OperationOutcome) {
+            org.hl7.fhir.dstu3.model.OperationOutcome operationOutcome = (org.hl7.fhir.dstu3.model.OperationOutcome) theResponseObject;
+            if (operationOutcome.getIssue().size() > 0) {
+                String diagnosisString = operationOutcome.getIssue().get(0).getDiagnostics();
+                if (StringUtils.isNotEmpty(diagnosisString)) {
+                    resourceIdString = extractIdFromDiagnosisString(diagnosisString);
+                }
+            }
+        } else {
+            return theResponseObject;
+        }
+        FhirContext ctx = FhirContext.forDstu3();
+        String serverBase = theRequestDetails.getFhirServerBase();
+
+
+        IGenericClient client = ctx.newRestfulGenericClient(serverBase);
+        resourceIdParts = splitResourceId(resourceIdString);
+
+        IBaseResource targetResource = client.read()
+                .resource(resourceIdParts[0])
+                .withId(resourceIdParts[1])
+                .execute();
+
+        return targetResource;
     }
 }
