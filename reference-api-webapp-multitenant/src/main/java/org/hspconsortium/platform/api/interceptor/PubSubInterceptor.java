@@ -7,8 +7,8 @@ import ca.uhn.fhir.rest.client.api.IGenericClient;
 import ca.uhn.fhir.rest.server.exceptions.AuthenticationException;
 import com.google.common.base.Strings;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.instance.model.OperationOutcome;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.OperationOutcome;
 import org.hspconsortium.platform.api.controller.HapiFhirServlet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -76,6 +76,10 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
 
                         if (forSandboxes.contains(requestSandbox)) {
                             IBaseResource targetResource = findTargetResource(theRequestDetails, theResponseObject);
+                            if (targetResource == null) {
+                                LOGGER.warn("Unable to find resource for request: " + theRequestDetails);
+                                break;
+                            }
                             LOGGER.info("Matched resource: " + theResponseObject.getIdElement().getIdPart());
                             if (includeSourceQueryParameter) {
                                 try {
@@ -115,8 +119,6 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
     }
 
     protected IBaseResource findTargetResource(RequestDetails theRequestDetails, IBaseResource theResponseObject) {
-        String resourceIdString = null;
-        String[] resourceIdParts = null;
         switch (theResponseObject.getStructureFhirVersionEnum()) {
             case DSTU2:
                 return getTargetResourceForDSTU2(theRequestDetails, theResponseObject);
@@ -136,61 +138,72 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
         return resourceIdString.split("/");
     }
 
-    protected IBaseResource getTargetResourceForDSTU2(RequestDetails theRequestDetails, IBaseResource theResponseObject) {
-        String resourceIdString = null;
-        String[] resourceIdParts = null;
-
+    private IBaseResource getTargetResourceForDSTU2(RequestDetails theRequestDetails, IBaseResource theResponseObject) {
         if (theResponseObject instanceof ca.uhn.fhir.model.dstu2.resource.OperationOutcome) {
             ca.uhn.fhir.model.dstu2.resource.OperationOutcome operationOutcome = (ca.uhn.fhir.model.dstu2.resource.OperationOutcome) theResponseObject;
             if (operationOutcome.getIssue().size() > 0) {
                 String diagnosisString = operationOutcome.getIssue().get(0).getDiagnostics();
                 if (StringUtils.isNotEmpty(diagnosisString)) {
-                    resourceIdString = extractIdFromDiagnosisString(diagnosisString);
+                    String resourceIdString = extractIdFromDiagnosisString(diagnosisString);
+                    FhirContext ctx = FhirContext.forDstu2();
+                    String serverBase = theRequestDetails.getFhirServerBase();
+                    String[] resourceIdParts = splitResourceId(resourceIdString);
+                    return getTargetResource(ctx, serverBase, resourceIdParts[0], resourceIdParts[1]);
                 }
             }
+            LOGGER.info("OperationOutcome does not contain an issue diagnosis: " + operationOutcome);
+            return null;
         } else {
             return theResponseObject;
         }
-        FhirContext ctx = FhirContext.forDstu2();
-        String serverBase = theRequestDetails.getFhirServerBase();
-
-
-        IGenericClient client = ctx.newRestfulGenericClient(serverBase);
-        resourceIdParts = splitResourceId(resourceIdString);
-
-        IBaseResource targetResource = client.read()
-                .resource(resourceIdParts[0])
-                .withId(resourceIdParts[1])
-                .execute();
-
-        return targetResource;
     }
 
-    protected IBaseResource getTargetResourceForSTU3(RequestDetails theRequestDetails, IBaseResource theResponseObject) {
-        String resourceIdString = null;
-        String[] resourceIdParts = null;
-
+    private IBaseResource getTargetResourceForSTU3(RequestDetails theRequestDetails, IBaseResource theResponseObject) {
         if (theResponseObject instanceof org.hl7.fhir.dstu3.model.OperationOutcome) {
             org.hl7.fhir.dstu3.model.OperationOutcome operationOutcome = (org.hl7.fhir.dstu3.model.OperationOutcome) theResponseObject;
             if (operationOutcome.getIssue().size() > 0) {
                 String diagnosisString = operationOutcome.getIssue().get(0).getDiagnostics();
                 if (StringUtils.isNotEmpty(diagnosisString)) {
-                    resourceIdString = extractIdFromDiagnosisString(diagnosisString);
+                    String resourceIdString = extractIdFromDiagnosisString(diagnosisString);
+                    FhirContext ctx = FhirContext.forDstu3();
+                    String serverBase = theRequestDetails.getFhirServerBase();
+                    String[] resourceIdParts = splitResourceId(resourceIdString);
+                    return getTargetResource(ctx, serverBase, resourceIdParts[0], resourceIdParts[1]);
                 }
             }
+            LOGGER.info("OperationOutcome does not contain an issue diagnosis: " + operationOutcome);
+            return null;
         } else {
             return theResponseObject;
         }
-        FhirContext ctx = FhirContext.forDstu3();
-        String serverBase = theRequestDetails.getFhirServerBase();
+    }
 
+    private IBaseResource getTargetResourceForR4(RequestDetails theRequestDetails, IBaseResource theResponseObject) {
+        if (theResponseObject instanceof OperationOutcome) {
+            OperationOutcome operationOutcome = (OperationOutcome) theResponseObject;
+            if (operationOutcome.getIssue().size() > 0) {
+                String diagnosisString = operationOutcome.getIssue().get(0).getDiagnostics();
+                if (StringUtils.isNotEmpty(diagnosisString)) {
+                    String resourceIdString = extractIdFromDiagnosisString(diagnosisString);
+                    FhirContext ctx = FhirContext.forR4();
+                    String serverBase = theRequestDetails.getFhirServerBase();
+                    String[] resourceIdParts = splitResourceId(resourceIdString);
+                    return getTargetResource(ctx, serverBase, resourceIdParts[0], resourceIdParts[1]);
+                }
+            }
+            LOGGER.info("OperationOutcome does not contain an issue diagnosis: " + operationOutcome);
+            return null;
+        } else {
+            return theResponseObject;
+        }
+    }
 
+    private IBaseResource getTargetResource(FhirContext ctx, String serverBase, String resourceTypeStr, String resourceIdStr) {
         IGenericClient client = ctx.newRestfulGenericClient(serverBase);
-        resourceIdParts = splitResourceId(resourceIdString);
 
         IBaseResource targetResource = client.read()
-                .resource(resourceIdParts[0])
-                .withId(resourceIdParts[1])
+                .resource(resourceTypeStr)
+                .withId(resourceIdStr)
                 .execute();
 
         return targetResource;
