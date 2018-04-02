@@ -17,6 +17,7 @@ import ca.uhn.fhir.rest.server.ETagSupportEnum;
 import ca.uhn.fhir.rest.server.IResourceProvider;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
+import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hspconsortium.platform.api.conformance.HspcConformanceProviderDstu2;
@@ -220,8 +221,9 @@ public class HapiFhirServlet extends RestfulServer {
     /**
      * Returns the server base URL (with no trailing '/') for a given request
      */
-    public String getServerBaseForRequest(HttpServletRequest theRequest) {
-        String fhirServerBase = getServerAddressStrategy().determineServerBase(getServletContext(), theRequest);
+    @Override
+    public String getServerBaseForRequest(ServletRequestDetails theRequest) {
+        String fhirServerBase = getServerAddressStrategy().determineServerBase(getServletContext(), theRequest.getServletRequest());
 
         String[] split = fhirServerBase.split("/");
 
@@ -231,14 +233,14 @@ public class HapiFhirServlet extends RestfulServer {
 
             if (current.equals(fhirMappingPath) || current.equals(openMappingPath)) {
                 // found the base for request
-                return result.toString();
+                fhirServerBase = result.toString();
             }
 
             // continue
             result.append("/");
         }
-
-        throw new RuntimeException("Something bad happened, only matched: " + result.toString());
+        return fhirServerBase;
+//        throw new RuntimeException("Something bad happened, only matched: " + result.toString());
     }
 
     /**
