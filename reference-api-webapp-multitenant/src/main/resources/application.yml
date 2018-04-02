@@ -90,7 +90,8 @@ hspc:
         subscription:
           channel:
             endpoint:
-          forResources:
+        includeSourceQueryParameter: true
+
 ---
 
 spring:
