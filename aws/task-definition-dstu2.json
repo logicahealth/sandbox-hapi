@@ -3,7 +3,7 @@
   "containerDefinitions": [
     {
       "name": "api-v5-dstu2-test",
-      "image": "hspconsortium/api:1.13.2",
+      "image": "hspconsortium/api:1.13.3-SNAPSHOT",
       "cpu": 0,
       "portMappings": [
         {
