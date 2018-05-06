@@ -37,11 +37,6 @@
         <!-- Reference-API -->
         <dependency>
             <groupId>org.hspconsortium.reference</groupId>
-            <artifactId>hspc-reference-api-fhir</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.hspconsortium.reference</groupId>
             <artifactId>hspc-reference-api-smart-support</artifactId>
             <version>${project.version}</version>
         </dependency>
