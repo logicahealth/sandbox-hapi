@@ -2,11 +2,11 @@ package org.hspconsortium.platform.api.controller;
 
 import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
 import org.apache.commons.lang3.Validate;
-import org.hspconsortium.platform.api.model.DataSet;
-import org.hspconsortium.platform.api.model.ResetSandboxCommand;
-import org.hspconsortium.platform.api.model.Sandbox;
-import org.hspconsortium.platform.api.model.SnapshotSandboxCommand;
-import org.hspconsortium.platform.api.service.SandboxService;
+import org.hspconsortium.platform.api.fhir.model.DataSet;
+import org.hspconsortium.platform.api.fhir.model.ResetSandboxCommand;
+import org.hspconsortium.platform.api.fhir.model.Sandbox;
+import org.hspconsortium.platform.api.fhir.model.SnapshotSandboxCommand;
+import org.hspconsortium.platform.api.fhir.service.SandboxService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

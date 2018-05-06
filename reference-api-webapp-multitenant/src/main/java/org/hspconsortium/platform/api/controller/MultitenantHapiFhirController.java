@@ -1,8 +1,8 @@
 package org.hspconsortium.platform.api.controller;
 
-import org.hspconsortium.platform.api.model.Sandbox;
+import org.hspconsortium.platform.api.fhir.model.Sandbox;
 import org.hspconsortium.platform.api.oauth2.OAuth2ResourceConfig;
-import org.hspconsortium.platform.api.service.SandboxService;
+import org.hspconsortium.platform.api.fhir.service.SandboxService;
 import org.hspconsortium.platform.api.smart.LaunchOrchestrationSendEndpoint;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
