@@ -55,7 +55,6 @@ hspc:
           proxy:
             host: api-v5-stu3.hspconsortium.org/${hspc.platform.api.sandbox.name}
             contextPath: /open
-        federatedEndpointURL: dataphoria.org/datafhir
         contextPath: data
         # remove openContextPath to disable the open endpoint
         openContextPath: open
