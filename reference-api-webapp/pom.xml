@@ -10,7 +10,7 @@
         <version>1.14.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>hspc-reference-api-webapp-multitenant</artifactId>
+    <artifactId>hspc-reference-api-webapp</artifactId>
     <packaging>jar</packaging>
 
     <properties>
@@ -19,10 +19,10 @@
     </properties>
 
     <scm>
-        <connection>scm:git:ssh://git@bitbucket.org/hspconsortium/reference-api-webapp-multitenant.git</connection>
-        <developerConnection>scm:git:ssh://git@bitbucket.org/hspconsortium/reference-api-webapp-multitenant.git
+        <connection>scm:git:ssh://git@bitbucket.org/hspconsortium/reference-api.git</connection>
+        <developerConnection>scm:git:ssh://git@bitbucket.org/hspconsortium/reference-api.git
         </developerConnection>
-        <url>https://bitbucket.org/hspconsortium/reference-api-webapp-multitenant.git</url>
+        <url>https://bitbucket.org/hspconsortium/reference-api.git</url>
         <tag>HEAD</tag>
     </scm>
 
