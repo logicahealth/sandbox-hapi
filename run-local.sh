@@ -30,7 +30,7 @@ if [ $# -gt 1 ]; then
     jar="reference-api-webapp/target/hspc-reference-api-webapp-*.jar"
 else
     tenant="multitenant"
-    jar="reference-api-webapp-multitenant/target/hspc-reference-api-webapp-multitenant-*.jar"
+    jar="reference-api-webapp/target/hspc-reference-api-webapp-*.jar"
 fi
 
 set -x

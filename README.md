@@ -10,11 +10,8 @@ Welcome to the HSPC Reference API!  The HSPC Reference API server contains a FHI
 
 # Servers
 
-## reference-api-webapp-multitenant
-A deployable multitenant, web application that includes configuration of a FHIR server (reference-api-fhir, reference-api-mysql) for OAuth2 (reference-api-oauth2) and SMART launch (reference-api-smart-support).  The reference-api-webapp may be used as an example for a custom HSPC FHIR Resource server.
-
 ## reference-api-webapp
-A example of a deployable web application that includes configuration of a FHIR server (reference-api-fhir, reference-api-mysql) for OAuth2 (reference-api-oauth2) and SMART launch (reference-api-smart-support).  The reference-api-webapp may be used as an example for a custom HSPC FHIR Resource server.
+A deployable multitenant, web application that includes configuration of a FHIR server (reference-api-fhir, reference-api-mysql) for OAuth2 (reference-api-oauth2) and SMART launch (reference-api-smart-support).  The reference-api-webapp may be used as an example for a custom HSPC FHIR Resource server.
 
 # Default Ports
 The following default port assignments exist
@@ -56,7 +53,7 @@ The reference-api-fhir-library is an extension of [HAPI FHIR](http://jamesagnew.
 
 ### Build and Run ###
     mvn clean install
-    java -jar reference-api-webapp-multitenant/target/hspc-reference-api-webapp-multitenant-*.jar
+    java -jar reference-api-webapp/target/hspc-reference-api-webapp-*.jar
 
 ### Verify ###
 * Check the application.yml file for what port is being used. It is at the top under server.port
