@@ -34,13 +34,6 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
-        <!-- Enable MySQL implementation -->
-        <dependency>
-            <groupId>org.hspconsortium.reference</groupId>
-            <artifactId>hspc-reference-api-mysql-multitenant</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
         <!-- Reference-API -->
         <dependency>
             <groupId>org.hspconsortium.reference</groupId>
