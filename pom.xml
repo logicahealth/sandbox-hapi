@@ -20,7 +20,7 @@
         <module>reference-api-mysql</module>
         <module>reference-api-oauth2</module>
         <module>reference-api-smart-support</module>
-        <module>reference-api-webapp-multitenant</module>
+        <module>reference-api-webapp</module>
     </modules>
 
     <properties>
