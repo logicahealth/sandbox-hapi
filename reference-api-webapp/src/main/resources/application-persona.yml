@@ -1,5 +1,0 @@
-# Platform Servers
-hspc:
-  platform:
-    authorization:
-      port: ${AUTH_PORT:8175}
