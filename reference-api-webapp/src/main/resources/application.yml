@@ -45,6 +45,10 @@ hspc:
           url: jdbc:mysql://${hspc.platform.api.fhir.db.host}:${DB_PORT:3306}/${hspc.platform.api.fhir.db.schema}
           username: ${DB_USER:root}
           password: ${DB_PASSWORD:password}
+          emptySchemaScriptPattern: db/mysql/hspc_%s_schema_empty.sql
+          starterSchemaScriptPattern: db/mysql/hspc_%s_%s_%s_dataset.sql
+          # Comma-separated list of scripts to run in order
+          initializationScripts: db/mysql/V1__convert_hapi_3.2.0_to_3.3.0.sql
         datasource:
           cache:
             size: 40
