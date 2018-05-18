@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-profile="stu3"
-sandbox_name="hspc6"
+profile="dstu2"
+sandbox_name="hspc5"
 
 if [ $# -gt 0 ]; then
     case "$1" in

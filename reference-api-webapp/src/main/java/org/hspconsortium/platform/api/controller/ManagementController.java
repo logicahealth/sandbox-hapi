@@ -29,6 +29,13 @@ public class ManagementController {
             "hspc3",
             "hspc4",
             "hspc5",
+            "hspc6",
+            "hspc7",
+            "hspc8",
+            "hspc9",
+            "hspc10",
+            "hspc11",
+            "hspc12",
             "test",
             "management",
             "admin"

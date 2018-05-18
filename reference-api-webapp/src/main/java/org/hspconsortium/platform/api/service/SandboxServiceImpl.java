@@ -57,7 +57,7 @@ public class SandboxServiceImpl implements SandboxService {
             if (existing == null) {
                 // check that the sandbox is unique across versions
                 if (!sandboxPersister.isTeamIdUnique(sandbox.getTeamId())) {
-                    throw new RuntimeException("TeamId is not unique");
+                    throw new RuntimeException("TeamId [" + sandbox.getTeamId() + "] is not unique");
                 }
             }
         } catch (SchemaNotInitializedException e) {
