@@ -28,10 +28,6 @@ public class SandboxPersister {
 
     private static final Logger logger = LoggerFactory.getLogger(SandboxPersister.class);
 
-    private static final String EMPTY_SCHEMA_PATH = "db/hspc_%s_schema_empty.sql.zip";
-
-    private static final String STARTER_SCHEMA_PATH = "db/hspc_%s_%s_%s_dataset.sql.zip";
-
     private static String DEFAULT_OPEN_CONTEXT_PATH = OAuth2ResourceConfig.NO_ENDPOINT;
 
     @Value("${spring.profiles.active}")
@@ -42,6 +38,15 @@ public class SandboxPersister {
         DEFAULT_OPEN_CONTEXT_PATH = openContextPath;
         return this;
     }
+
+    @Value("${hspc.platform.api.fhir.db.emptySchemaScriptPattern}")
+    private String emptySchemaScriptPattern;
+
+    @Value("${hspc.platform.api.fhir.db.starterSchemaScriptPattern}")
+    private String starterSchemaScriptPattern;
+
+    @Value("${hspc.platform.api.fhir.db.initializationScripts}")
+    private String[] additionalScripts;
 
     public static Sandbox sandboxTemplate() {
         return new Sandbox(
@@ -199,6 +204,7 @@ public class SandboxPersister {
     }
 
     public boolean loadInitialDataset(Sandbox sandbox, DataSet starterDataSet) {
+        boolean success = false;
         logger.info("loadInitialDataset [" + starterDataSet + "] in sandbox [" + sandbox.toString() + "]");
         DataSet loadingDataSet = DataSet.NONE;
         if (starterDataSet != null) {
@@ -206,25 +212,69 @@ public class SandboxPersister {
         }
 
         // copy in the starter set
-        String dataFileNameTemplate = loadingDataSet == DataSet.DEFAULT ? STARTER_SCHEMA_PATH : EMPTY_SCHEMA_PATH;
+        String dataFileNameTemplate = loadingDataSet == DataSet.DEFAULT ? starterSchemaScriptPattern : emptySchemaScriptPattern;
         final String dataFileName = String.format(
                 dataFileNameTemplate,
                 sandbox.getSchemaVersion(),
                 returnActiveFhirVersion(),
                 loadingDataSet.toString().toLowerCase());
         ClassPathResource classPathResource = new ClassPathResource(dataFileName);
-        try (InputStream inputStream = classPathResource.getInputStream();
-             ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
-            ZipEntry zipEntry = zipInputStream.getNextEntry();
-            if (zipEntry == null) {
-                throw new RuntimeException("Unable to find script inside of " + dataFileName);
+        try {
+            if (classPathResource.exists()) {
+                logger.info("Found resource: " + dataFileName);
+                try (InputStream inputStream = classPathResource.getInputStream()) {
+                    success = loadFromInputStream(sandbox, inputStream);
+                }
+            } else {
+                logger.info("Did not find resource: " + dataFileName + ", trying as .zip...");
+                String asZip = dataFileName + ".zip";
+                classPathResource = new ClassPathResource(asZip);
+                if (classPathResource.exists()) {
+                    logger.info("found resource: " + asZip);
+                    try (InputStream inputStream = classPathResource.getInputStream();
+                         ZipInputStream zipInputStream = new ZipInputStream(inputStream)) {
+                        ZipEntry zipEntry = zipInputStream.getNextEntry();
+                        if (zipEntry == null) {
+                            throw new RuntimeException("Unable to find script inside of " + dataFileName);
+                        }
+                        success = loadFromInputStream(sandbox, zipInputStream);
+                    }
+                } else {
+                    throw new RuntimeException("Not able to find data file: " + dataFileName);
+                }
             }
-            try (Reader reader = new BufferedReader(new InputStreamReader(zipInputStream))) {
-                return databaseManager.loadInitialDataset(toSchemaName.apply(sandbox), reader);
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(String.format("Error creating initial dataset. Data file reference '%s'", dataFileName), e);
+        } catch (IOException ioe) {
+            throw new RuntimeException(String.format("Error creating initial dataset. Data file reference '%s'", dataFileName), ioe);
         }
+
+        return success && loadInitializationScripts(sandbox);
+    }
+
+    private boolean loadFromInputStream(Sandbox sandbox, InputStream inputStream) throws IOException {
+        try (Reader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+            return databaseManager.loadInitialDataset(toSchemaName.apply(sandbox), reader);
+        }
+    }
+
+    private boolean loadInitializationScripts(Sandbox sandbox) {
+        logger.info("loadInitializationScripts: ");
+        if (additionalScripts != null ) {
+            for (String additionalScript : additionalScripts) {
+                logger.info("additionalScript: " + additionalScript);
+                ClassPathResource classPathResource = new ClassPathResource(additionalScript);
+                if (classPathResource.exists()) {
+                    try (InputStream inputStream = classPathResource.getInputStream()) {
+                        loadFromInputStream(sandbox, inputStream);
+                    } catch (IOException e) {
+                        throw new RuntimeException("Error reading additionalScript: " + additionalScript, e);
+                    }
+
+                } else {
+                    throw new RuntimeException("AdditionalScript not found: " + additionalScript);
+                }
+            }
+        }
+        return true;
     }
 
     public boolean removeSandbox(String schemaVersion, String teamId) {
