@@ -83,10 +83,10 @@ public class ScopeBasedAuthorizationInterceptor extends InterceptorAdapter {
 
         if (existingScopeParamValue == null) {
             // parameter doesn't exist with name 'scopeParam'
-            requestParams.put(scopeParam, new String[]{patientId});
+            requestDetails.addParameter(scopeParam, new String[]{patientId});
         } else if (!valueAlreadyInParameter(existingScopeParamValue, patientId)) {
             // parameter exists, but is different than the current patientId
-            requestParams.put(scopeParam, addValueToStringArray(existingScopeParamValue, patientId));
+            requestDetails.addParameter(scopeParam, addValueToStringArray(existingScopeParamValue, patientId));
         }
     }
 
