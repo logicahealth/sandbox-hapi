@@ -3,7 +3,7 @@
   "containerDefinitions": [
     {
       "name": "api-v5-stu3-test",
-      "image": "hspconsortium/api:1.14.0-SNAPSHOT",
+      "image": "hspconsortium/api:2.0.0-SNAPSHOT",
       "cpu": 0,
       "portMappings": [
         {
