@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
 
-docker build -t hspconsortium/hspc-reference-api-webapp-multitenant:latest .
+docker build -t hspconsortium/hspc-reference-api:latest .

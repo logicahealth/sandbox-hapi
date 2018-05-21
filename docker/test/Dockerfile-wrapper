@@ -1,5 +1,5 @@
 FROM java:8
-ADD reference-api-webapp-multitenant/target/hspc-reference-api-webapp-multitenant*.jar app.jar
+ADD reference-api-webapp/target/hspc-reference-api-webapp*.jar app.jar
 ADD docker/test/wrapper.sh wrapper.sh
 RUN bash -c 'chmod +x /wrapper.sh'
 RUN bash -c 'touch /app.jar'

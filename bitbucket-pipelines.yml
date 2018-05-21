@@ -30,7 +30,7 @@ pipelines:
             - . ci-1-prepare-sources.sh
             - . ci-2-build-project.sh
           artifacts:
-            - reference-api-webapp-multitenant/target/*.jar
+            - reference-api-webapp/target/*.jar
             - aws/task-definition-dstu2.json
             - aws/task-definition-stu3.json
       - step:
@@ -92,7 +92,7 @@ pipelines:
             - . ci-1-prepare-sources.sh
             - . ci-2-build-project.sh
           artifacts:
-            - reference-api-webapp-multitenant/target/*.jar
+            - reference-api-webapp/target/*.jar
             - aws/task-definition-dstu2.json
             - aws/task-definition-stu3.json
       - step:

@@ -8,7 +8,7 @@ spring:
   application:
     name: HSPC Reference API
   profiles:
-    active: default,dstu2
+    active: multitenant,dstu2
   datasource:
     initialSize: 1
     maxActive: 5
@@ -45,9 +45,13 @@ hspc:
           url: jdbc:mysql://${hspc.platform.api.fhir.db.host}:${DB_PORT:3306}/${hspc.platform.api.fhir.db.schema}
           username: ${DB_USER:root}
           password: ${DB_PASSWORD:password}
+          emptySchemaScriptPattern: db/mysql/hspc_%s_schema_empty.sql
+          starterSchemaScriptPattern: db/mysql/hspc_%s_%s_%s_dataset.sql
+          # Comma-separated list of scripts to run in order
+          initializationScripts: db/mysql/V1__convert_hapi_3.2.0_to_3.3.0.sql
         datasource:
           cache:
-            size: 5
+            size: 40
         defaultTenantId: ${hspc.platform.api.sandbox.name}
         hibernate:
           dialect: org.hibernate.dialect.MySQL5Dialect
@@ -55,7 +59,6 @@ hspc:
           proxy:
             host: api-v5-stu3.hspconsortium.org/${hspc.platform.api.sandbox.name}
             contextPath: /open
-        federatedEndpointURL: dataphoria.org/datafhir
         contextPath: data
         # remove openContextPath to disable the open endpoint
         openContextPath: open
@@ -83,6 +86,14 @@ hspc:
       port: ${PUBLISHED_AUTH_PORT:}
       context: ~
       url: ${hspc.platform.manifest.protocol}://${hspc.platform.manifest.host}:${hspc.platform.manifest.port}${hspc.platform.manifest.context}
+    messaging:
+      pubsub:
+        enabled: false
+        forSandboxes:
+        subscription:
+          channel:
+            endpoint:
+        includeSourceQueryParameter: true
 
 ---
 
