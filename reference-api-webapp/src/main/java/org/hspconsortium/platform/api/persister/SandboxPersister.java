@@ -118,9 +118,9 @@ public class SandboxPersister {
         // those that begin with the sandbox prefix
         Set<String> schemas = databaseManager.getSchemasLike(
                 DatabaseProperties.SANDBOX_SCHEMA_PREFIX +
-                        DatabaseProperties.SANDBOX_SCHEMA_DELIMITER +
+                        DatabaseProperties.SANDBOX_SCHEMA_DELIMITER_ESCAPED +
                         DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION +
-                        DatabaseProperties.SANDBOX_SCHEMA_DELIMITER + "%",
+                        DatabaseProperties.SANDBOX_SCHEMA_DELIMITER_ESCAPED + "%",
                 "%" + DatabaseProperties.SANDBOX_SCHEMA_SNAPSHOT_DELIMITER + "%");
         if (!schemas.isEmpty()) {
             return schemas
@@ -134,7 +134,7 @@ public class SandboxPersister {
     public boolean isTeamIdUnique(String teamId) {
         // those that end with the teamId
         Set<String> schemasLike = databaseManager.getSchemasLike(
-                "%" + DatabaseProperties.SANDBOX_SCHEMA_DELIMITER + teamId);
+                "%" + DatabaseProperties.SANDBOX_SCHEMA_DELIMITER_ESCAPED + teamId);
         return schemasLike.isEmpty();
     }
 
@@ -142,9 +142,9 @@ public class SandboxPersister {
         // those that end with the teamId
         Set<String> schemasLike = databaseManager.getSchemasLike(
                 DatabaseProperties.SANDBOX_SCHEMA_PREFIX +
-                        DatabaseProperties.SANDBOX_SCHEMA_DELIMITER +
+                        DatabaseProperties.SANDBOX_SCHEMA_DELIMITER_ESCAPED +
                         DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION +
-                        DatabaseProperties.SANDBOX_SCHEMA_DELIMITER +
+                        DatabaseProperties.SANDBOX_SCHEMA_DELIMITER_ESCAPED +
                         teamId);
         // should be only one
         switch (schemasLike.size()) {
