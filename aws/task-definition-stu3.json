@@ -3,7 +3,7 @@
   "containerDefinitions": [
     {
       "name": "api-v5-stu3-test",
-      "image": "hspconsortium/api:2.0.1",
+      "image": "hspconsortium/api:{{PROJECT_VERSION}}",
       "cpu": 0,
       "portMappings": [
         {

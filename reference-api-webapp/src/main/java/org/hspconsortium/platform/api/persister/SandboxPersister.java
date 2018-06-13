@@ -258,22 +258,22 @@ public class SandboxPersister {
 
     private boolean loadInitializationScripts(Sandbox sandbox) {
         logger.info("loadInitializationScripts: ");
-        if (additionalScripts != null ) {
-            for (String additionalScript : additionalScripts) {
-                logger.info("additionalScript: " + additionalScript);
-                ClassPathResource classPathResource = new ClassPathResource(additionalScript);
-                if (classPathResource.exists()) {
-                    try (InputStream inputStream = classPathResource.getInputStream()) {
-                        loadFromInputStream(sandbox, inputStream);
-                    } catch (IOException e) {
-                        throw new RuntimeException("Error reading additionalScript: " + additionalScript, e);
-                    }
-
-                } else {
-                    throw new RuntimeException("AdditionalScript not found: " + additionalScript);
-                }
-            }
-        }
+//        if (additionalScripts != null ) {
+//            for (String additionalScript : additionalScripts) {
+//                logger.info("additionalScript: " + additionalScript);
+//                ClassPathResource classPathResource = new ClassPathResource(additionalScript);
+//                if (classPathResource.exists()) {
+//                    try (InputStream inputStream = classPathResource.getInputStream()) {
+//                        loadFromInputStream(sandbox, inputStream);
+//                    } catch (IOException e) {
+//                        throw new RuntimeException("Error reading additionalScript: " + additionalScript, e);
+//                    }
+//
+//                } else {
+//                    throw new RuntimeException("AdditionalScript not found: " + additionalScript);
+//                }
+//            }
+//        }
         return true;
     }
 
