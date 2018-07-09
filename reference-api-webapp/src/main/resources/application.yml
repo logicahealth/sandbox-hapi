@@ -39,7 +39,7 @@ hspc:
         name: ${SANDBOX_NAME:hspc5}
       sandboxManagerApi:
         url: http://localhost:${SBMA_PORT:12000}
-        transactionPath: /analytics/transaction/
+        transactionPath: /analytics/transaction
       fhir:
         db:
           schema: hspc_5_${hspc.platform.api.sandbox.name}
