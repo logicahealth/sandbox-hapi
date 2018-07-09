@@ -18,9 +18,11 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
+import org.hspconsortium.platform.api.oauth2.HspcOAuth2Authentication;
 import org.hspconsortium.platform.api.security.TenantInfoRequestMatcher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.stereotype.Component;
 
@@ -51,9 +53,9 @@ public class UserSecurityandAnalyticsInterceptor extends InterceptorAdapter {
         Integer responseCode = theException.getStatusCode();
         // TODO: find better solution to the if statement below
         // This if statement is so a second call isn't made to the sandbox manager api because an exception was thrown earlier
-        if (!theException.getCause().getMessage().equals("User does not have privileges to this sandbox.")) {
-            handleCallToSandboxAPI(theServletRequest, theServletRequest, responseCode);
-        }
+//        if (!theException.getCause().getMessage().equals("User does not have privileges to this sandbox.")) {
+//            handleCallToSandboxAPI(theServletRequest, theServletRequest, responseCode);
+//        }
         return true;
     }
 
@@ -79,18 +81,20 @@ public class UserSecurityandAnalyticsInterceptor extends InterceptorAdapter {
         if (!resource.equals("metadata")) {
             try {
                 String authHeader = request.getHeader("Authorization");
+                String userId = getUserID();
                 HttpClient httpclient = HttpClients.createDefault();
                 HttpPost httppost = new HttpPost(sandboxManagerApiUrl + transactionPath);
                 String body = "{" +
-                        "\"url\": \"" + urlPath + "\"," +
-                        "\"domain\": \"" + domain + "\"," +
-                        "\"resource\": \"" + resource + "\"," +
-                        "\"method\": \"" + request.getMethod() + "\"," +
-                        "\"response_code\": \"" + responseCode + "\"," +
-                        "\"ip_address\": \"" + getRemoteAddress(servletRequest) + "\"," +
-                        "\"tenant\": \"" + tenant + "\"," +
-                        "\"secured\": \"" + secured + "\"" +
-                        "}";
+                                "\"url\": \"" + urlPath + "\"," +
+                                "\"domain\": \"" + domain + "\"," +
+                                "\"resource\": \"" + resource + "\"," +
+                                "\"method\": \"" + request.getMethod() + "\"," +
+                                "\"response_code\": \"" + responseCode + "\"," +
+                                "\"ip_address\": \"" + getRemoteAddress(servletRequest) + "\"," +
+                                "\"tenant\": \"" + tenant + "\"," +
+                                "\"secured\": \"" + secured + "\"," +
+                                "\"userId\": \"" + userId + "\"" +
+                              "}";
                 httppost.setEntity(new StringEntity(body, ContentType.APPLICATION_JSON));
                 httppost.setHeader("Authorization", authHeader);
                 httppost.setHeader("Content-type", "application/json");
@@ -119,5 +123,8 @@ public class UserSecurityandAnalyticsInterceptor extends InterceptorAdapter {
         return remoteAddress;
     }
 
+    private String getUserID() {
+        return ((HspcOAuth2Authentication) SecurityContextHolder.getContext().getAuthentication()).getUserId();
+    }
 
 }
