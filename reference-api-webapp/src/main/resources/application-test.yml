@@ -14,7 +14,7 @@ hspc:
             size: 5
       sandboxManagerApi:
         url: https://sandbox-api-test.hspconsortium.org
-        transactionPath: /analytics/transaction/
+        transactionPath: /analytics/transaction
     authorization:
       url: https://auth-test.hspconsortium.org
     messaging:
