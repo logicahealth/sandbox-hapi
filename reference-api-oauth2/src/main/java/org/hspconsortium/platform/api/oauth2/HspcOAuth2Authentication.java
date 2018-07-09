@@ -9,6 +9,7 @@ import java.util.Map;
 public class HspcOAuth2Authentication extends OAuth2Authentication {
 
     Map<String, String> launchContextParams;
+    String userId;
 
     public HspcOAuth2Authentication(OAuth2Request storedRequest, Authentication userAuthentication) {
         super(storedRequest, userAuthentication);
@@ -20,5 +21,13 @@ public class HspcOAuth2Authentication extends OAuth2Authentication {
 
     public void setLaunchContextParams(Map<String, String> launchContextParams) {
         this.launchContextParams = launchContextParams;
+    }
+
+    public String getUserId() {
+        return userId;
+    }
+
+    public void setUserId(String userId) {
+        this.userId = userId;
     }
 }
