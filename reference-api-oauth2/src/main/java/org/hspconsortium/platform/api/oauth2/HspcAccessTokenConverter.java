@@ -19,6 +19,7 @@ public class HspcAccessTokenConverter extends DefaultAccessTokenConverter {
 
         HspcOAuth2Authentication hspcOAuth2Authentication = new HspcOAuth2Authentication(oAuth2Authentication.getOAuth2Request(), oAuth2Authentication.getUserAuthentication());
         hspcOAuth2Authentication.setLaunchContextParams(extractLaunchContextParams(map));
+        hspcOAuth2Authentication.setUserId((String) newMap.get("sub"));
 
         return hspcOAuth2Authentication;
     }
