@@ -181,6 +181,14 @@ public class SandboxPersister {
         return toSandbox.apply(saved);
     }
 
+    public Sandbox cloneSandbox(Sandbox newSandbox, Sandbox clonedSandbox) {
+        String schemaNameNewSandbox = toSchemaName.apply(newSandbox);
+        TenantInfo tenantInfoNewSandbox = toTenantInfo.apply(newSandbox);
+        String schemaNameClonedSandbox = toSchemaName.apply(clonedSandbox);
+        TenantInfo tenantInfoClonedSandbox = toTenantInfo.apply(clonedSandbox);
+        return null;
+    }
+
     public Set<String> getSnapshots(Sandbox sandbox) {
         String schemaName = toSchemaName.apply(sandbox);
         return databaseManager.getSnapshotsForSchema(schemaName);
@@ -201,6 +209,13 @@ public class SandboxPersister {
     public String deleteSnapshot(Sandbox sandbox, String suffix) {
         String schemaName = toSchemaName.apply(sandbox);
         return databaseManager.deleteSnapshot(schemaName, suffix);
+    }
+
+    public boolean cloneDataset(Sandbox newSandbox, Sandbox clonedSandbox) {
+        boolean success = false;
+
+
+        return true;
     }
 
     public boolean loadInitialDataset(Sandbox sandbox, DataSet starterDataSet) {

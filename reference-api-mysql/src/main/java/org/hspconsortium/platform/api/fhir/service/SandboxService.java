@@ -14,6 +14,8 @@ public interface SandboxService {
 
     Sandbox save(@NotNull Sandbox sandbox, @NotNull DataSet dataSet);
 
+    Sandbox clone(@NotNull Sandbox newSandbox, @NotNull Sandbox clonedSandbox);
+
     Sandbox get(String teamId);
 
     boolean remove(String teamId);
