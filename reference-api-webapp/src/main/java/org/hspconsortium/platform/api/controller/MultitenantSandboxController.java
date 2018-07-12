@@ -10,6 +10,7 @@ import org.hspconsortium.platform.api.fhir.service.SandboxService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -26,6 +27,9 @@ public class MultitenantSandboxController {
     private static final Logger logger = LoggerFactory.getLogger(MultitenantSandboxController.class);
 
     private SandboxService sandboxService;
+
+    @Value("${hspc.platform.api.fhir.db.password}")
+    private String password;
 
     @Autowired
     public MultitenantSandboxController(SandboxService sandboxService) {
@@ -59,16 +63,38 @@ public class MultitenantSandboxController {
         Validate.notNull(clonedSandbox);
         Validate.notNull(clonedSandbox.getTeamId());
         try {
-            String dump = "mysqldump -h sandboxdb-test.hspconsortium.org -u system -p'FH!R4a11' hspc_5_newtest > ./reference-api-webapp/src/main/resources/tryagain.sql";
+            String dump = "mysqldump -h sandboxdb-test.hspconsortium.org -u system -p" + password + " hspc_5_newtest > ./tryagain.sql";
             String[] cmdarray = {"/bin/sh","-c", dump};
             Process pr = Runtime.getRuntime().exec(cmdarray);
-            pr.waitFor();
-            logger.info("Sandbox Snapshot action of [");
-        } catch (Exception e) {
-            logger.info("Sandbox Snapshot action of [");
-        }
+            if (pr.waitFor() == 0) {
+                logger.info("Phase 1 of cloning worked");
+                String create = "mysqladmin -h sandboxdb-test.hspconsortium.org -u system -p" + password + " create tryagain";
+                String[] cmdarray2 = {"/bin/sh","-c", create};
+                Process pr2 = Runtime.getRuntime().exec(cmdarray2);
+                if (pr2.waitFor() == 0) {
+                    logger.info("Phase 2 of cloning worked");
+                    String clone = "mysql -h sandboxdb-test.hspconsortium.org -u system -p" + password + " tryagain < ./tryagain.sql";
+                    String[] cmdarray3 = {"/bin/sh","-c", clone};
+                    Process pr3 = Runtime.getRuntime().exec(cmdarray3);
+                    if (pr3.waitFor() == 0) {
+                        logger.info("Phase 3 of cloning worked");
+                        String delete = "rm ./tryagain.sql";
+                        String[] cmdarray4 = {"/bin/sh","-c", delete};
+                        Process pr4 = Runtime.getRuntime().exec(cmdarray4);
+                        if (pr4.waitFor() == 0) {
+                            logger.info("Phase 2 of cloning worked");
+                            return sandboxService.clone(newSandbox, clonedSandbox);
+                        }
+                    }
 
-        return sandboxService.clone(newSandbox, clonedSandbox);
+                }
+
+            }
+
+        } catch (Exception e) {
+        }
+        return null;
+
     }
 
     @RequestMapping(method = RequestMethod.GET)
