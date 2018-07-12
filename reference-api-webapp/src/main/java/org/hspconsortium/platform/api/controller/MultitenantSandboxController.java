@@ -63,17 +63,17 @@ public class MultitenantSandboxController {
         Validate.notNull(clonedSandbox);
         Validate.notNull(clonedSandbox.getTeamId());
         try {
-            String dump = "mysqldump -h sandboxdb-test.hspconsortium.org -u system -p" + password + " hspc_5_newtest > ./tryagain.sql";
+            String dump = "mysqldump -h sandboxdb-test.hspconsortium.org -u system -p'" + password + "' hspc_5_newtest > ./tryagain.sql";
             String[] cmdarray = {"/bin/sh","-c", dump};
             Process pr = Runtime.getRuntime().exec(cmdarray);
             if (pr.waitFor() == 0) {
                 logger.info("Phase 1 of cloning worked");
-                String create = "mysqladmin -h sandboxdb-test.hspconsortium.org -u system -p" + password + " create tryagain";
+                String create = "mysqladmin -h sandboxdb-test.hspconsortium.org -u system -p'" + password + "' create tryagain";
                 String[] cmdarray2 = {"/bin/sh","-c", create};
                 Process pr2 = Runtime.getRuntime().exec(cmdarray2);
                 if (pr2.waitFor() == 0) {
                     logger.info("Phase 2 of cloning worked");
-                    String clone = "mysql -h sandboxdb-test.hspconsortium.org -u system -p" + password + " tryagain < ./tryagain.sql";
+                    String clone = "mysql -h sandboxdb-test.hspconsortium.org -u system -p'" + password + "' tryagain < ./tryagain.sql";
                     String[] cmdarray3 = {"/bin/sh","-c", clone};
                     Process pr3 = Runtime.getRuntime().exec(cmdarray3);
                     if (pr3.waitFor() == 0) {
