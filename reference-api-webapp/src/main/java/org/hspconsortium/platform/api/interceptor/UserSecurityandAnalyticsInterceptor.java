@@ -54,7 +54,7 @@ public class UserSecurityandAnalyticsInterceptor extends InterceptorAdapter {
         // TODO: find better solution to the if statement below
         // This if statement is so a second call isn't made to the sandbox manager api because an exception was thrown earlier
 //        if (!theException.getCause().getMessage().equals("User does not have privileges to this sandbox.")) {
-//            handleCallToSandboxAPI(theServletRequest, theServletRequest, responseCode);
+            handleCallToSandboxAPI(theServletRequest, theServletRequest, responseCode);
 //        }
         return true;
     }
@@ -81,7 +81,7 @@ public class UserSecurityandAnalyticsInterceptor extends InterceptorAdapter {
         if (!resource.equals("metadata")) {
             try {
                 String authHeader = request.getHeader("Authorization");
-                String userId = getUserID();
+                String userId = getUserID(secured);
                 HttpClient httpclient = HttpClients.createDefault();
                 HttpPost httppost = new HttpPost(sandboxManagerApiUrl + transactionPath);
                 String body = "{" +
@@ -123,8 +123,13 @@ public class UserSecurityandAnalyticsInterceptor extends InterceptorAdapter {
         return remoteAddress;
     }
 
-    private String getUserID() {
-        return ((HspcOAuth2Authentication) SecurityContextHolder.getContext().getAuthentication()).getUserId();
+    private String getUserID(String secured) {
+        if (secured.equals("true")) {
+            return ((HspcOAuth2Authentication) SecurityContextHolder.getContext().getAuthentication()).getUserId();
+        } else {
+            return "none";
+        }
+
     }
 
 }

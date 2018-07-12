@@ -89,6 +89,53 @@ public class SandboxServiceImpl implements SandboxService {
     }
 
     @Override
+    public Sandbox clone(@NotNull Sandbox newSandbox, @NotNull Sandbox clonedSandbox) {
+        logger.info("Cloning sandbox " + clonedSandbox.getTeamId() + " to sandbox: " + newSandbox.getTeamId());
+        Validate.notNull(newSandbox, "Sandbox must be provided");
+        Validate.notNull(newSandbox.getTeamId(), "Sandbox.teamId must be provided");
+        Validate.notNull(clonedSandbox, "Cloned sandbox must be provided");
+        Validate.notNull(clonedSandbox.getTeamId(), "Cloned sandbox.teamId must be provided");
+
+        newSandbox.setSchemaVersion(DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION);
+
+        Sandbox existing = null;
+        try {
+            existing = sandboxPersister.findSandbox(newSandbox.getTeamId());
+            logger.info("Existing sandbox: " + existing);
+            if (existing == null) {
+                // check that the sandbox is unique across versions
+                if (!sandboxPersister.isTeamIdUnique(newSandbox.getTeamId())) {
+                    throw new RuntimeException("TeamId [" + newSandbox.getTeamId() + "] is not unique");
+                }
+            }
+        } catch (SchemaNotInitializedException e) {
+            logger.info("SchemaNotInitializedException ignored for now");
+            // ignore, will be fixed when saving
+        }
+
+        // save the sandbox info
+        Sandbox saved = sandboxPersister.saveSandbox(newSandbox);
+        logger.info("Saved sandbox: " + saved);
+
+        if (existing == null) {
+            sandboxPersister.cloneSandbox(newSandbox, clonedSandbox);
+        }
+
+        // Make sure the initial data set didn't replace the sandbox info
+        saved = sandboxPersister.saveSandbox(newSandbox);
+        logger.info("Saved sandbox: " + saved);
+
+        // update security
+        if (newSandbox.isAllowOpenAccess()) {
+            tenantInfoRequestMatcher.addOpenTeamId(saved.getTeamId());
+        } else {
+            tenantInfoRequestMatcher.removeOpenTeamId(saved.getTeamId());
+        }
+
+        return saved;
+    }
+
+    @Override
     public Sandbox get(String teamId) {
         Sandbox sandbox;
         try {

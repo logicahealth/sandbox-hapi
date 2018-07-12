@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
+import java.util.HashMap;
 import java.util.Set;
 
 @RestController
@@ -47,6 +48,27 @@ public class MultitenantSandboxController {
         }
 
         return sandboxService.save(sandbox, dataSet);
+    }
+
+    @RequestMapping(path = "/clone", method = RequestMethod.PUT)
+    public Sandbox clone(@NotNull @RequestBody HashMap<String, Sandbox> sandboxes) {
+        Sandbox newSandbox = sandboxes.get("newSandbox");
+        Sandbox clonedSandbox = sandboxes.get("clonedSandbox");
+        Validate.notNull(newSandbox);
+        Validate.notNull(newSandbox.getTeamId());
+        Validate.notNull(clonedSandbox);
+        Validate.notNull(clonedSandbox.getTeamId());
+        try {
+            String dump = "mysqldump -h sandboxdb-test.hspconsortium.org -u system -p'FH!R4a11' hspc_5_newtest > ./reference-api-webapp/src/main/resources/tryagain.sql";
+            String[] cmdarray = {"/bin/sh","-c", dump};
+            Process pr = Runtime.getRuntime().exec(cmdarray);
+            pr.waitFor();
+            logger.info("Sandbox Snapshot action of [");
+        } catch (Exception e) {
+            logger.info("Sandbox Snapshot action of [");
+        }
+
+        return sandboxService.clone(newSandbox, clonedSandbox);
     }
 
     @RequestMapping(method = RequestMethod.GET)
