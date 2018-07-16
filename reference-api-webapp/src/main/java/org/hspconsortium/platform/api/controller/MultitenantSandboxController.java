@@ -33,15 +33,6 @@ public class MultitenantSandboxController {
 
     private SandboxService sandboxService;
 
-    @Value("${hspc.platform.api.fhir.db.password}")
-    private String dbpassword;
-
-    @Value("${hspc.platform.api.fhir.db.username}")
-    private String dbusername;
-
-    @Value("${hspc.platform.api.fhir.db.host}")
-    private String dbhost;
-
     @Autowired
     public MultitenantSandboxController(SandboxService sandboxService) {
         this.sandboxService = sandboxService;
@@ -73,58 +64,8 @@ public class MultitenantSandboxController {
         Validate.notNull(newSandbox.getTeamId());
         Validate.notNull(clonedSandbox);
         Validate.notNull(clonedSandbox.getTeamId());
-        try {
-            String dump = "mysqldump -h " + dbhost + " -u " + dbusername + " -p'" + dbpassword + "' hspc_5_" + clonedSandbox.getTeamId() + " > ./temp.sql";
-            String[] cmdarray = {"/bin/sh","-c", dump};
-            Process pr = Runtime.getRuntime().exec(cmdarray);
-            Integer outcome = pr.waitFor();
-            BufferedReader in = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
-            String error = IOUtils.toString(in);
-            if (outcome == 0) {
-                logger.info("Phase 1 of cloning worked");
-                String create = "mysqladmin -h " + dbhost + " -u " + dbusername + " -p'" + dbpassword + "' create hspc_5_" + newSandbox.getTeamId();
-                String[] cmdarray2 = {"/bin/sh","-c", create};
-                Process pr2 = Runtime.getRuntime().exec(cmdarray2);
-                Integer outcome2 = pr2.waitFor();
-                BufferedReader in2 = new BufferedReader(new InputStreamReader(pr2.getErrorStream()));
-                error = IOUtils.toString(in2);
-                if (outcome2 == 0) {
-                    logger.info("Phase 2 of cloning worked");
-                    String clone = "mysql -h " + dbhost + " -u " + dbusername + " -p'" + dbpassword + "' hspc_5_" + newSandbox.getTeamId() + " < ./temp.sql";
-                    String[] cmdarray3 = {"/bin/sh","-c", clone};
-                    Process pr3 = Runtime.getRuntime().exec(cmdarray3);
-                    Integer outcome3 = pr3.waitFor();
-                    BufferedReader in3 = new BufferedReader(new InputStreamReader(pr3.getErrorStream()));
-                    error = IOUtils.toString(in3);
-                    if (outcome3 == 0) {
-                        logger.info("Phase 3 of cloning worked");
-                        String delete = "rm ./temp.sql";
-                        String[] cmdarray4 = {"/bin/sh","-c", delete};
-                        Process pr4 = Runtime.getRuntime().exec(cmdarray4);
-                        Integer outcome4 = pr4.waitFor();
-                        BufferedReader in4 = new BufferedReader(new InputStreamReader(pr4.getErrorStream()));
-                        error = IOUtils.toString(in4);
-                        if (outcome4 == 0) {
-                            logger.info("Phase 2 of cloning worked");
-                            return sandboxService.clone(newSandbox, clonedSandbox);
-                        } else {
-                            throw new Exception(error);
-                        }
-                    } else {
-                        throw new Exception(error);
-                    }
-                } else {
-                    throw new Exception(error);
-                }
-            } else {
-                throw new Exception(error);
-            }
-
-        } catch (Exception e) {
-            logger.info("Error in cloning.", e);
-        }
-        return null;
-
+        sandboxService.clone(newSandbox, clonedSandbox);
+        return newSandbox;
     }
 
     @RequestMapping(method = RequestMethod.GET)
