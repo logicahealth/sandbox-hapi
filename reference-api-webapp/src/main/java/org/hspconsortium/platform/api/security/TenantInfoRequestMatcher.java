@@ -24,7 +24,7 @@ public class TenantInfoRequestMatcher implements RequestMatcher {
     @Lazy
     private SandboxService sandboxService;
 
-    private List<String> openTeamIds = null;
+    private Set<String> openTeamIds = null;
 
     private Map<String, RequestMatcher> requestMatcherMap = null;
 
@@ -68,7 +68,7 @@ public class TenantInfoRequestMatcher implements RequestMatcher {
     public void initOpenTeamIds() {
         resetOpenTeamIds();
 
-        openTeamIds = new ArrayList<>();
+        openTeamIds = new HashSet<>();
         requestMatcherMap = new HashMap<>();
     }
 
@@ -80,7 +80,7 @@ public class TenantInfoRequestMatcher implements RequestMatcher {
         }
     }
 
-    public List<String> getOpenTeamIds() {
+    public Set<String> getOpenTeamIds() {
         if (!isInitialized()) {
             initOpenTeamIds();
         }

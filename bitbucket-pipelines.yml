@@ -18,6 +18,7 @@ pipelines:
             - maven
           script:
             - export TARGET_ENV=test
+            - export CREDENTIALS=${ENC_PW_TEST}
             - cd ci
             # DSTU2
             - export FHIR_VERSION="dstu2"
@@ -98,6 +99,7 @@ pipelines:
             - maven
           script:
             - export TARGET_ENV=prod
+            - export CREDENTIALS=${ENC_PW_PROD}
             - cd ci
             # DSTU2
             - export FHIR_VERSION="dstu2"
