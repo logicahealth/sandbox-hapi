@@ -245,7 +245,7 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
             // This level of security says that any other requests (all requests for FHIR resources)
             // must be authenticated.  It does not determine if the user has access to the specific
             // data according to scope and user role. That more granular level of provisioning should
-            // be handled by an interceptor
+            // be handled by an interceptor (which has been completed in AnalyticsInterceptor.java)
             permitRegex(http, "\\/" + fhirPath + "\\/metadata", "GET");
             permitRegex(http, "\\/" + fhirPath + "\\/metadata.*", "GET");
             permitRegex(http, "\\/" + fhirPath + "\\/_services\\/smart\\/.*", null);

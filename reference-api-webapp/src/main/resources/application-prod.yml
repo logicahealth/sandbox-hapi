@@ -8,7 +8,10 @@ hspc:
         db:
           host: sandboxdb.hspconsortium.org
           username: system
-          password: ENC(LfMhv9cr1C3MRuCwBPI80EJAEGP9L4R5)
+          password: ENC(PN5w0Ds+k3I2vOVS/dZM/N9HaIFZgGIX)
+      sandboxManagerApi:
+        url: https://sandbox-api.hspconsortium.org
+        transactionPath: /analytics/transaction
     authorization:
       url: https://auth.hspconsortium.org
     messaging:
