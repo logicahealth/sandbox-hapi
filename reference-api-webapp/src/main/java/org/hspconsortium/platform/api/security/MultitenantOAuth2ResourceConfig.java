@@ -35,7 +35,7 @@ public class MultitenantOAuth2ResourceConfig extends OAuth2ResourceConfig {
     @Override
     protected void configureOpenFHIRServer(HttpSecurity http, String nonTenantFhirContextPath) throws Exception {
         if (nonTenantFhirContextPath != null && nonTenantFhirContextPath.length() > 0) {
-            // for example, /team1/data/metadata
+            // for example, /team1/open/metadata
             String multitenantFhirPath = TENANT_PATTERN + nonTenantFhirContextPath;
             super.configureOpenFHIRServer(http, multitenantFhirPath);
         }

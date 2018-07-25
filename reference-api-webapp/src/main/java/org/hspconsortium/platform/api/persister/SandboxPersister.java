@@ -1,5 +1,6 @@
 package org.hspconsortium.platform.api.persister;
 
+import org.apache.commons.io.IOUtils;
 import org.hspconsortium.platform.api.controller.HapiFhirController;
 import org.hspconsortium.platform.api.fhir.DatabaseManager;
 import org.hspconsortium.platform.api.fhir.DatabaseProperties;
@@ -47,6 +48,15 @@ public class SandboxPersister {
 
     @Value("${hspc.platform.api.fhir.db.initializationScripts}")
     private String[] additionalScripts;
+
+    @Value("${hspc.platform.api.fhir.db.password}")
+    private String dbpassword;
+
+    @Value("${hspc.platform.api.fhir.db.username}")
+    private String dbusername;
+
+    @Value("${hspc.platform.api.fhir.db.host}")
+    private String dbhost;
 
     public static Sandbox sandboxTemplate() {
         return new Sandbox(
@@ -179,6 +189,65 @@ public class SandboxPersister {
 
         TenantInfo saved = databaseManager.createAndInitializeSchema(schemaName, tenantInfo);
         return toSandbox.apply(saved);
+    }
+
+    public void cloneSandbox(Sandbox newSandbox, Sandbox clonedSandbox) {
+        String schemaNameNewSandbox = toSchemaName.apply(newSandbox);
+        TenantInfo tenantInfoNewSandbox = toTenantInfo.apply(newSandbox);
+        String schemaNameClonedSandbox = toSchemaName.apply(clonedSandbox);
+
+        try {
+            String dump = "mysqldump -h " + dbhost + " -u " + dbusername + " -p'" + dbpassword + "' " + schemaNameClonedSandbox + " > ./temp.sql";
+            String[] cmdarray = {"/bin/sh","-c", dump};
+            Process pr = Runtime.getRuntime().exec(cmdarray);
+            Integer outcome = pr.waitFor();
+            BufferedReader in = new BufferedReader(new InputStreamReader(pr.getErrorStream()));
+            String error = IOUtils.toString(in);
+            if (outcome == 0) {
+                logger.info("Mysql dump successful.");
+                String create = "mysqladmin -h " + dbhost + " -u " + dbusername + " -p'" + dbpassword + "' create " + schemaNameNewSandbox;
+                String[] cmdarray2 = {"/bin/sh","-c", create};
+                Process pr2 = Runtime.getRuntime().exec(cmdarray2);
+                Integer outcome2 = pr2.waitFor();
+                BufferedReader in2 = new BufferedReader(new InputStreamReader(pr2.getErrorStream()));
+                error = IOUtils.toString(in2);
+                if (outcome2 == 0) {
+                    logger.info("New schema created.");
+                    String clone = "mysql -h " + dbhost + " -u " + dbusername + " -p'" + dbpassword + "' " + schemaNameNewSandbox + " < ./temp.sql";
+                    String[] cmdarray3 = {"/bin/sh","-c", clone};
+                    Process pr3 = Runtime.getRuntime().exec(cmdarray3);
+                    Integer outcome3 = pr3.waitFor();
+                    BufferedReader in3 = new BufferedReader(new InputStreamReader(pr3.getErrorStream()));
+                    error = IOUtils.toString(in3);
+                    if (outcome3 == 0) {
+                        logger.info("Data loaded into new schema.");
+                        String delete = "rm ./temp.sql";
+                        String[] cmdarray4 = {"/bin/sh","-c", delete};
+                        Process pr4 = Runtime.getRuntime().exec(cmdarray4);
+                        Integer outcome4 = pr4.waitFor();
+                        BufferedReader in4 = new BufferedReader(new InputStreamReader(pr4.getErrorStream()));
+                        error = IOUtils.toString(in4);
+                        if (outcome4 == 0) {
+                            logger.info("Temp sql file deleted.");
+                            TenantInfo saved = databaseManager.createAndInitializeSchema(schemaNameNewSandbox, tenantInfoNewSandbox);
+                            toSandbox.apply(saved);
+                        } else {
+                            throw new Exception(error);
+                        }
+                    } else {
+                        throw new Exception(error);
+                    }
+                } else {
+                    throw new Exception(error);
+                }
+            } else {
+                throw new Exception(error);
+            }
+
+        } catch (Exception e) {
+            logger.info("Error in cloning.", e);
+
+        }
     }
 
     public Set<String> getSnapshots(Sandbox sandbox) {
