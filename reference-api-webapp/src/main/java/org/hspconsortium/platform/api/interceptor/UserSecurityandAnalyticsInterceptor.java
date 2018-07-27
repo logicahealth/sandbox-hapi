@@ -70,7 +70,7 @@ public class UserSecurityandAnalyticsInterceptor extends InterceptorAdapter {
         String domain = parameters[2];
         String tenant = parameters[3];
         String secured = parameters[4];
-        String resource = null;
+        String resource = "";
         if (parameters.length > 5) {
             resource = parameters[5];
         }
@@ -81,7 +81,7 @@ public class UserSecurityandAnalyticsInterceptor extends InterceptorAdapter {
         }  else {
             secured = "true";
         }
-        if (resource != "metadata") {
+        if (!resource.equals("metadata")) {
             try {
                 String authHeader = request.getHeader("Authorization");
                 String userId = getUserID(secured);
