@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
 docker login -u ${DOCKER_HUB_USERNAME} -p ${DOCKER_HUB_PASSWORD}
-docker build --build-arg TARGET_ENV=$TARGET_ENV -t $DOCKER_IMAGE_COORDINATES ..
+cd ../docker; ./build.sh $DOCKER_IMAGE_COORDINATES $TARGET_ENV
 echo "docker push..."
 docker push "$DOCKER_IMAGE_COORDINATES"
