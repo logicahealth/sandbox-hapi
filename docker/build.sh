@@ -16,5 +16,5 @@ cp ../reference-api-webapp/target/*.jar target
 
 docker \
   build -t $tag \
-  --build-arg TARGET_ENV=$target_env
+  --build-arg TARGET_ENV=$target_env \
   .
