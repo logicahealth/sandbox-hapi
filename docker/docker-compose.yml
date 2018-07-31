@@ -1,0 +1,153 @@
+version: '3'
+
+services:
+  api-dstu2-db:
+    image: mysql:5.7
+    volumes:
+      - api-dstu2-db-data:/var/lib/mysql
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        reservations:
+          memory: 20M
+    environment:
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_USER: "apidstu2usr"
+      MYSQL_PASSWORD: "password"
+
+  api-stu3-db:
+    image: mysql:5.7
+    volumes:
+      - api-stu3-db-data:/var/lib/mysql
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        reservations:
+          memory: 20M
+    environment:
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_USER: "apistu3usr"
+      MYSQL_PASSWORD: "password"
+
+  api-r4-db:
+    image: mysql:5.7
+    volumes:
+      - api-r4-db-data:/var/lib/mysql
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        reservations:
+          memory: 20M
+    environment:
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_USER: "apir4usr"
+      MYSQL_PASSWORD: "password"
+
+  api-dstu2:
+    depends_on:
+      - api-dstu2-db
+    image: hspconsortium/hspc-reference-api:latest
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.2'
+          memory: 512M
+    environment:
+      DB_HOST: "api-dstu2-db"
+      DB_USER: "root"
+      DB_PASSWORD: "password"
+      DB_PORT: 3306
+      SANDBOX_NAME: "hspc5"
+      AUTH_HOST: "auth"
+      AUTH_PORT: 8060
+      MANIFEST_OVERRIDE: "true"
+      PUBLISHED_AUTH_HOST: "localhost"
+      PUBLISHED_AUTH_PORT: 8060
+      JAVA_OPTS: "-Dspring.profiles.active=dstu2,multitenant -Xdebug -agentlib:jdwp=transport=dt_socket,address=5075,server=y,suspend=n"
+
+  api-stu3:
+    depends_on:
+      - api-stu3-db
+    image: hspconsortium/hspc-reference-api:latest
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.2'
+          memory: 512M
+    environment:
+      DB_HOST: "api-stu3-db"
+      DB_USER: "root"
+      DB_PASSWORD: "password"
+      DB_PORT: 3306
+      SANDBOX_NAME: "hspc6"
+      AUTH_HOST: "auth"
+      AUTH_PORT: 8060
+      MANIFEST_OVERRIDE: "true"
+      PUBLISHED_AUTH_HOST: "localhost"
+      PUBLISHED_AUTH_PORT: 8060
+      JAVA_OPTS: "-Dspring.profiles.active=stu3,multitenant -Xdebug -agentlib:jdwp=transport=dt_socket,address=5076,server=y,suspend=n"
+
+  api-r4:
+    depends_on:
+      - api-r4-db
+    image: hspconsortium/hspc-reference-api:latest
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.2'
+          memory: 512M
+    environment:
+      DB_HOST: "api-r4-db"
+      DB_USER: "root"
+      DB_PASSWORD: "password"
+      DB_PORT: 3306
+      SANDBOX_NAME: "hspc6"
+      AUTH_HOST: "auth"
+      AUTH_PORT: 8060
+      MANIFEST_OVERRIDE: "true"
+      PUBLISHED_AUTH_HOST: "localhost"
+      PUBLISHED_AUTH_PORT: 8060
+      JAVA_OPTS: "-Dspring.profiles.active=r4,multitenant -Xdebug -agentlib:jdwp=transport=dt_socket,address=5077,server=y,suspend=n"
+
+  nginx-api:
+    depends_on:
+      - api-dstu2
+      - api-stu3
+      - api-r4
+    image: hspconsortium/hspc-sandbox-nginx-api:latest
+    ports:
+      - "8075:8075"
+      - "5075:5075"
+      - "8076:8076"
+      - "5076:5076"
+      - "8077:8077"
+      - "5077:5077"
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        reservations:
+          memory: 64M
+
+volumes:
+  api-dstu2-db-data:
+  api-stu3-db-data:
+  api-r4-db-data:
