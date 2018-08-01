@@ -22,3 +22,6 @@ hs_err_pid*
 
 *.retry
 ops/
+
+# docker target folder
+docker/target
