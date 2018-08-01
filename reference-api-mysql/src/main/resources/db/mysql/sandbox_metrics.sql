@@ -1,9 +1,13 @@
 -- determine the size (MB)
-SELECT table_schema AS "database",
-ROUND(SUM(data_length + index_length) / 1024 / 1024, 2) AS "size"
-FROM information_schema.TABLES
-WHERE UPPER(table_schema) like 'HSPC_5%'
-GROUP BY table_schema;
+SELECT sub.table_schema, sub.table_schema_size_mb, SUBSTRING(sub.table_schema, 6 + POSITION('_' IN SUBSTRING(sub.table_schema, 6))) AS "sandbox_name"
+FROM (
+  SELECT table_schema AS "table_schema",
+  (SUM(data_length + index_length) / 1024 / 1024) AS "table_schema_size_mb"
+  FROM information_schema.TABLES
+  WHERE UPPER(table_schema) like 'HSPC_%'
+  GROUP BY table_schema
+) AS sub
+ORDER BY sub.table_schema_size_mb;
 
 -- include the creator, high usage
 SELECT sub_metadata.user_name, sub_metadata.email, sub_metadata.name, sub_data.sandbox, sub_data.size
