@@ -10,7 +10,7 @@ hspc:
           username: system
           password: ENC(PN5w0Ds+k3I2vOVS/dZM/N9HaIFZgGIX)
       sandboxManagerApi:
-        url: https://sandbox-api.hspconsortium.org
+        url: https://${SBMA_HOST:sandbox-api.hspconsortium.org}:${SBMA_PORT:12000}
         transactionPath: /analytics/transaction
     authorization:
       url: https://auth.hspconsortium.org

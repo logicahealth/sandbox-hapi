@@ -106,7 +106,7 @@ public class UserSecurityandAnalyticsInterceptor extends InterceptorAdapter {
                     throw new Exception();
                 }
             } catch (Exception e) {
-                throw new UnauthorizedUserException("User does not have privileges to this sandbox.");
+                throw new RuntimeException("Failed to determine if user has access to sandbox.", e);
             }
         }
     }

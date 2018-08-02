@@ -23,6 +23,7 @@ pipelines:
             # DSTU2
             - export FHIR_VERSION="dstu2"
             - . ci-0-set-properties.sh
+            - if [[ ! ${PROJECT_VERSION} =~ ${VERSION_SNAPSHOT_REGEX} ]]; then exit 1; fi
             - . ci-1-prepare-sources.sh
             # STU3
             - export FHIR_VERSION="stu3"
@@ -48,6 +49,7 @@ pipelines:
             # DSTU2
             - export FHIR_VERSION="dstu2"
             - . ci-0-set-properties.sh
+            - if [[ ! ${PROJECT_VERSION} =~ ${VERSION_RELEASE_REGEX} ]]; then exit 1; fi
             - . ci-3-docker-image.sh
             # STU3
             - export FHIR_VERSION="stu3"
