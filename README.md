@@ -38,9 +38,9 @@ The reference-api-oauth2 library configures OAuth2/OpenID Connect security for a
 ## reference-api-mysql
 The reference-api-mysql library configures a MySQL FHIR resource repository to be used by the reference-api-webapp library.
 
-## How do I get set up? ##
+### How do I get set up?
 
-### Preconditions ###
+#### Preconditions
     For secured configuration, the reference-api server must register a client with the reference-authorization server.
     From MySQL
     mysql> use oic;
@@ -48,21 +48,32 @@ The reference-api-mysql library configures a MySQL FHIR resource repository to b
     * note this script is included with the complete installation of the reference-impl (optional)
     * alse need to create the hspc_4_hspc4 schema in mysql-local along with the oic one mentioned above. Check the Application.yml to make sure name has not changed.
 
-### Build and Run ###
-    mvn clean install
-    java -jar reference-api-webapp/target/hspc-reference-api-webapp-*.jar
+#### Maven Build
 
-### Verify ###
-* Check the application.yml file for what port is being used. It is at the top under server.port
-* http://localhost:8075/dstu2/data/metadata
+    mvn package
+    
+#### Run locally
+
+    ./run-local.sh
+
+#### Docker Install
+
+    cd docker/nginx
+    ./build.sh
+    cd ..
+    ./build.sh
+    docker-compose up
+    
+The service is available at (see default ports): 
+    http://localhost:8075/
 
 ## Open Mode ##
 When the HSPC Reference API server is run in open mode, no security is applied.  This is very convenient for development, allowing resources to be read and written without authentication.  See reference-api-webapp/src/main/resources/application.yml.
 * hsp.platform.api.security.mode=open
 
 ### Sample Operations ###
-* http://localhost:8075/dstu2/open/Patient
-* http://localhost:8075/dstu2/open/Observation
+* http://localhost:8075/hspc5/open/Patient
+* http://localhost:8075/hspc5/open/Observation
 
 ## Secured Mode ##
 When the HSPC Reference API server is run in secured mode, authentication is required for most endpoints with the exception of the conformance statement.  See reference-api-webapp/src/main/resources/application.yml.

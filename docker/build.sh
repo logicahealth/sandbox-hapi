@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-tag="hspconsortium/hspc-reference-api:latest"
+tag="hspconsortium/api:latest"
 if [ $# -gt 0 ]; then
   tag=$1
 fi
@@ -11,6 +11,7 @@ if [ $# -gt 1 ]; then
 fi
 
 # files must be in a folder or subfolder
+rm -rf target
 mkdir -p target
 cp ../reference-api-webapp/target/*.jar target
 
