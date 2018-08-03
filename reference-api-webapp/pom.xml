@@ -159,6 +159,18 @@
             <version>${guava.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.opencds.cqf</groupId>
+            <artifactId>cql-engine</artifactId>
+            <version>1.2.48-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opencds.cqf</groupId>
+            <artifactId>cql-engine-fhir</artifactId>
+            <version>1.2.48-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 
     <build>
