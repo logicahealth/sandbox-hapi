@@ -8,6 +8,7 @@ import org.hspconsortium.platform.api.fhir.multitenant.search.MultiTenantSearchC
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 
 //import org.hspconsortium.platform.api.fhir.util.HspcFhirInstanceValidator;
@@ -37,4 +38,15 @@ public class HapiJpaConfigStu3 extends BaseJavaConfigDstu3 {
 //        val.setValidationSupport(this.validationSupportChainDstu3());
 //        return val;
 //    }
+
+    @Bean(name="myMeasureReportRpDstu3")
+    @Override
+    @Lazy
+    public ca.uhn.fhir.jpa.rp.dstu3.MeasureReportResourceProvider rpMeasureReportDstu3() {
+        ca.uhn.fhir.jpa.rp.dstu3.MeasureReportResourceProvider retVal;
+        retVal = new ca.uhn.fhir.jpa.rp.dstu3.MeasureReportResourceProvider();
+        retVal.setContext(fhirContextDstu3());
+        retVal.setDao(daoMeasureReportDstu3());
+        return retVal;
+    }
 }
