@@ -47,6 +47,8 @@ public class MeasureReportResourceProviderHspc extends MeasureReportResourceProv
             }
         }
 
+        transactionBundle.addEntry(createTransactionEntry(report));
+
         IGenericClient client = this.getContext().newRestfulGenericClient(details.getFhirServerBase());
 
         if (details.getHeader("Authorization") != null) {
