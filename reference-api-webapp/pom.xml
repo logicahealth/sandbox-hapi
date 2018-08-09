@@ -16,6 +16,10 @@
     <properties>
         <artifact.name>hspc-reference-api</artifact.name>
         <springboot_jar.skip>false</springboot_jar.skip>
+        <!-- todo these values used by ci should not have to be from the pom.xml file -->
+        <spring.server.port>8075</spring.server.port>
+        <docker.memory.reservation>1000</docker.memory.reservation>
+        <aws.deploy.region>us-west-2</aws.deploy.region>
     </properties>
 
     <scm>
