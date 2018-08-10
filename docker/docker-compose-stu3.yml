@@ -1,0 +1,63 @@
+version: '3'
+
+services:
+  api-stu3-db:
+    image: mysql:5.7.23
+    volumes:
+      - api-stu3-db-data:/var/lib/mysql
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        reservations:
+          memory: 20M
+    environment:
+      MYSQL_ROOT_PASSWORD: "password"
+      MYSQL_USER: "apistu3usr"
+      MYSQL_PASSWORD: "password"
+
+  api-stu3:
+    depends_on:
+      - api-stu3-db
+    image: hspconsortium/api:latest
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.2'
+          memory: 512M
+    environment:
+      DB_HOST: "api-stu3-db"
+      DB_USER: "root"
+      DB_PASSWORD: "password"
+      DB_PORT: 3306
+      SANDBOX_NAME: "hspc6"
+      AUTH_HOST: "host.docker.internal"
+      AUTH_PORT: 8060
+      MANIFEST_OVERRIDE: "true"
+      PUBLISHED_AUTH_HOST: "localhost"
+      PUBLISHED_AUTH_PORT: 8060
+      SBMA_HOST: "host.docker.internal"
+      SBMA_PORT: 12000
+      JAVA_OPTS: "-Dspring.profiles.active=stu3,multitenant -Xdebug -agentlib:jdwp=transport=dt_socket,address=5076,server=y,suspend=n"
+
+  nginx-api:
+    depends_on:
+      - api-stu3
+    image: hspconsortium/api-nginx:latest
+    ports:
+      - "8076:8076"
+      - "5076:5076"
+    deploy:
+      restart_policy:
+        condition: on-failure
+      resources:
+        reservations:
+          memory: 64M
+
+volumes:
+  api-stu3-db-data:
