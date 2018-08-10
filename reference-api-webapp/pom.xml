@@ -7,7 +7,7 @@
         <groupId>org.hspconsortium.reference</groupId>
         <artifactId>hspc-reference-api-parent</artifactId>
         <relativePath>../pom.xml</relativePath>
-        <version>2.1.3</version>
+        <version>2.1.5</version>
     </parent>
 
     <artifactId>hspc-reference-api-webapp</artifactId>
@@ -16,6 +16,10 @@
     <properties>
         <artifact.name>hspc-reference-api</artifact.name>
         <springboot_jar.skip>false</springboot_jar.skip>
+        <!-- todo these values used by ci should not have to be from the pom.xml file -->
+        <spring.server.port>8075</spring.server.port>
+        <docker.memory.reservation>1000</docker.memory.reservation>
+        <aws.deploy.region>us-west-2</aws.deploy.region>
     </properties>
 
     <scm>
@@ -157,6 +161,18 @@
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
             <version>${guava.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opencds.cqf</groupId>
+            <artifactId>cql-engine</artifactId>
+            <version>1.2.48-SNAPSHOT</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.opencds.cqf</groupId>
+            <artifactId>cql-engine-fhir</artifactId>
+            <version>1.2.48-SNAPSHOT</version>
         </dependency>
 
     </dependencies>

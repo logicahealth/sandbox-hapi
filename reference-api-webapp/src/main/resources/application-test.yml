@@ -13,7 +13,7 @@ hspc:
           cache:
             size: 5
       sandboxManagerApi:
-        url: https://sandbox-api-test.hspconsortium.org
+        url: https://${SBMA_HOST:sandbox-api-test.hspconsortium.org}
         transactionPath: /analytics/transaction
     authorization:
       url: https://auth-test.hspconsortium.org
