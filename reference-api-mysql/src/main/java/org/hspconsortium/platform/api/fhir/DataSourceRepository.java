@@ -16,6 +16,9 @@ import org.springframework.stereotype.Component;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 @Component
 public class DataSourceRepository {
@@ -64,6 +67,9 @@ public class DataSourceRepository {
 
         datasourceCache.put(key, dataSource);
 
+        //TODO: see if there's a better place to put this method call
+        createTemplateDataSources(hspcSchemaVersion, tenantIdentifier);
+
         return dataSource;
     }
 
@@ -90,6 +96,16 @@ public class DataSourceRepository {
                 return createDataSource(hspcSchemaVersion, tenant);
             }
 
+//            if (Arrays.asList(multitenancyProperties.getTemplateSandboxes()).contains(tenant)) {
+//                if (tenant.endsWith("Empty")) {
+//                    sandboxService.save(new Sandbox(tenant, hspcSchemaVersion, false), DataSet.NONE);
+//                    return createDataSource(hspcSchemaVersion, tenant);
+//                } else {
+//                    sandboxService.save(new Sandbox(tenant, hspcSchemaVersion, false), DataSet.DEFAULT);
+//                    return createDataSource(hspcSchemaVersion, tenant);
+//                }
+//            }
+
             LOGGER.error(String.format("Connection couldn't be established for tenant '%s' with '%s' database url."
                     , tenant
                     , dataSourceProperties.getUrl()));
@@ -105,5 +121,65 @@ public class DataSourceRepository {
             }
         }
         return dataSource;
+    }
+
+    public void createTemplateDataSources(String hspcSchemaVersion, String mainTenant) {
+        List<String> defaultTenants = new ArrayList<>();
+        switch(mainTenant) {
+            case "hspc5":
+                defaultTenants.add("MasterDstu2Empty");
+                defaultTenants.add("MasterDstu2Smart");
+                createSpecifiedDataSources(hspcSchemaVersion, defaultTenants);
+                return;
+            case "hspc6":
+                defaultTenants.add("MasterStu3Empty");
+                defaultTenants.add("MasterStu3Smart");
+                createSpecifiedDataSources(hspcSchemaVersion, defaultTenants);
+                return;
+            case "hspc7":
+                defaultTenants.add("MasterR4Empty");
+                defaultTenants.add("MasterR4Smart");
+                createSpecifiedDataSources(hspcSchemaVersion, defaultTenants);
+                return;
+        }
+
+    }
+    private void createSpecifiedDataSources(String hspcSchemaVersion, List<String> defaultTenants) {
+        for (String tenant: defaultTenants) {
+            final DataSourceProperties dataSourceProperties = this.multitenancyProperties.getDataSource(hspcSchemaVersion, tenant);
+            DataSourceBuilder factory = DataSourceBuilder
+                    .create(this.multitenancyProperties.getDb().getClassLoader())
+                    .driverClassName(this.multitenancyProperties.getDb().getDriverClassName())
+                    .username(dataSourceProperties.getUsername())
+                    .password(dataSourceProperties.getPassword())
+                    .url(dataSourceProperties.getUrl());
+
+            DataSource dataSource = factory.build();
+            Connection conn = null;
+            try {
+                //verify for a valid datasource
+                if (dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource) {
+                    ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getPoolProperties().setMaxActive(5);
+                }
+                conn = dataSource.getConnection();
+                conn.isValid(2);
+            } catch (SQLException e) {
+                if (tenant.endsWith("Empty")) {
+                    sandboxService.save(new Sandbox(tenant, hspcSchemaVersion, false), DataSet.NONE);
+                } else {
+                    sandboxService.save(new Sandbox(tenant, hspcSchemaVersion, false), DataSet.DEFAULT);
+                }
+            } finally {
+                // Always make sure result sets and statements are closed, and the connection is returned to the pool
+                if (conn != null) {
+                    try {
+                        conn.close();
+                    } catch (SQLException e) {
+                        LOGGER.error("Error closing connection pool", e);
+                    }
+                }
+            }
+
+        }
     }
 }
