@@ -10,8 +10,9 @@ spring:
   profiles:
     active: multitenant,dstu2
   datasource:
-    initialSize: 1
-    maxActive: 5
+    tomcat:
+      initialSize: 1
+      maxActive: 5
 
 hibernate:
   search:
@@ -54,8 +55,9 @@ hspc:
           initializationScripts: db/mysql/V1__convert_hapi_3.2.0_to_3.3.0.sql
         datasource:
           cache:
-            size: 40
+            size: 10
         defaultTenantId: ${hspc.platform.api.sandbox.name}
+        templateSandboxes: MasterDstu2Empty, MasterDstu2Smart, MasterStu3Empty, MasterStu3Smart, MasterR4Empty, MasterR4Smart
         hibernate:
           dialect: org.hibernate.dialect.MySQL5Dialect
         terminology:
