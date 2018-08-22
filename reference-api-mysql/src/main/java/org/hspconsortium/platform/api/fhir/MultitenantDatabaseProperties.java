@@ -20,6 +20,9 @@ public class MultitenantDatabaseProperties extends DatabaseProperties {
 	@Value("${hspc.platform.api.fhir.defaultTenantId}")
 	private String defaultTenantId;
 
+	@Value("${hspc.platform.api.fhir.templateSandboxes}")
+	private String[] templateSandboxes;
+
 	public int getDataSourceCacheSize() {
 		return dataSourceCacheSize;
 	}
@@ -27,6 +30,8 @@ public class MultitenantDatabaseProperties extends DatabaseProperties {
 	public String getDefaultTenantId() {
 		return defaultTenantId;
 	}
+
+	public String[] getTemplateSandboxes() { return templateSandboxes; }
 
 	public DataSourceProperties getDataSource(String hspcSchemaVersion, String tenant) {
 		// override the database url and schema
