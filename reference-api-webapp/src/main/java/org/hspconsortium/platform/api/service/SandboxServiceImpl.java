@@ -91,7 +91,7 @@ public class SandboxServiceImpl implements SandboxService {
 
         if (existing == null) {
             sandboxPersister.cloneSandbox(newSandbox, clonedSandbox);
-            if (clonedSandbox.isAllowOpenAccess()) {
+            if (newSandbox.isAllowOpenAccess()) {
                 tenantInfoRequestMatcher.addOpenTeamId(newSandbox.getTeamId());
             } else {
                 tenantInfoRequestMatcher.removeOpenTeamId(newSandbox.getTeamId());
@@ -99,7 +99,7 @@ public class SandboxServiceImpl implements SandboxService {
             return;
         }
 
-        if (clonedSandbox.isAllowOpenAccess()) {
+        if (newSandbox.isAllowOpenAccess()) {
             tenantInfoRequestMatcher.addOpenTeamId(newSandbox.getTeamId());
         } else {
             tenantInfoRequestMatcher.removeOpenTeamId(newSandbox.getTeamId());
