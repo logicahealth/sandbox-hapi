@@ -17,7 +17,7 @@ hspc:
     messaging:
       pubsub:
         enabled: true
-        forSandboxes: travisdstu2,PulmonaryEmbolismDSTU2,noman_dstu2,nomanstu3,nomandstu2
+        forSandboxes: travisdstu2,PulmonaryEmbolismDSTU2,noman_dstu2,nomanstu3,nomandstu2,PulmonaryEmbolism2
         subscription:
           channel:
             endpoint: http://pubsub.hspconsortium.org:9002/fhir-subscription/publish
