@@ -94,6 +94,6 @@ public class HapiFhirController extends ServletWrappingController {
             }
         }
 
-        throw new IllegalStateException("One of the following profiles must be set: [dstu2, stu3, rf]");
+        throw new IllegalStateException("One of the following profiles must be set: [dstu2, stu3, r4]");
     }
 }
