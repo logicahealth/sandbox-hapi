@@ -69,7 +69,7 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
             switch (theRequestDetails.getRestOperationType()) {
                 case CREATE:
                 case UPDATE:
-                case DELETE:
+//                case DELETE:
                     if (!Strings.isNullOrEmpty(forwardUrl)) {
 //                        if (forResources.contains(theResponseObject.getClass().getSimpleName())) {
                         String requestSandbox = HapiFhirServlet.getTenantPart(theServletRequest.getServletPath());
@@ -134,6 +134,10 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
         return diagnosisString.split("\"")[1];
     }
 
+//    protected String extractIdFromRequestPath(RequestDetails theRequestDetails) {
+//        return theRequestDetails.getRequestPath();
+//    }
+
     protected String[] splitResourceId(String resourceIdString) {
         return resourceIdString.split("/");
     }
@@ -145,6 +149,7 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
                 String diagnosisString = operationOutcome.getIssue().get(0).getDiagnostics();
                 if (StringUtils.isNotEmpty(diagnosisString)) {
                     String resourceIdString = extractIdFromDiagnosisString(diagnosisString);
+//                    String resourceIdString = extractIdFromRequestPath(theRequestDetails);
                     FhirContext ctx = FhirContext.forDstu2();
                     String serverBase = theRequestDetails.getFhirServerBase();
                     String[] resourceIdParts = splitResourceId(resourceIdString);
@@ -165,6 +170,7 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
                 String diagnosisString = operationOutcome.getIssue().get(0).getDiagnostics();
                 if (StringUtils.isNotEmpty(diagnosisString)) {
                     String resourceIdString = extractIdFromDiagnosisString(diagnosisString);
+//                    String resourceIdString = extractIdFromRequestPath(theRequestDetails);
                     FhirContext ctx = FhirContext.forDstu3();
                     String serverBase = theRequestDetails.getFhirServerBase();
                     String[] resourceIdParts = splitResourceId(resourceIdString);
@@ -185,6 +191,7 @@ public class PubSubInterceptor extends SubscriptionSupportBase {
                 String diagnosisString = operationOutcome.getIssue().get(0).getDiagnostics();
                 if (StringUtils.isNotEmpty(diagnosisString)) {
                     String resourceIdString = extractIdFromDiagnosisString(diagnosisString);
+//                    String resourceIdString = extractIdFromRequestPath(theRequestDetails);
                     FhirContext ctx = FhirContext.forR4();
                     String serverBase = theRequestDetails.getFhirServerBase();
                     String[] resourceIdParts = splitResourceId(resourceIdString);
