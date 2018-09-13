@@ -93,12 +93,12 @@ hspc:
       url: ${hspc.platform.manifest.protocol}://${hspc.platform.manifest.host}:${hspc.platform.manifest.port}${hspc.platform.manifest.context}
     messaging:
       pubsub:
-        enabled:
+        enabled: false
         forSandboxes:
         subscription:
           channel:
             endpoint:
-        includeSourceQueryParameter:
+        includeSourceQueryParameter: true
 
 ---
 
