@@ -1,7 +1,6 @@
 package org.hspconsortium.platform.api.controller;
 
 import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.Validate;
 import org.hspconsortium.platform.api.fhir.model.DataSet;
 import org.hspconsortium.platform.api.fhir.model.ResetSandboxCommand;
@@ -11,19 +10,14 @@ import org.hspconsortium.platform.api.fhir.service.SandboxService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Set;
-import java.util.stream.Stream;
 
 @RestController
 @RequestMapping("${hspc.platform.api.sandboxPath:/{teamId}/sandbox}")

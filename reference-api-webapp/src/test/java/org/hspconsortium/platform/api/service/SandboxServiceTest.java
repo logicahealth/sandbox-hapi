@@ -21,9 +21,9 @@ public class SandboxServiceTest {
 
     }
 
-    @Test
-    public void resetTest() {
-        sandboxService.reset();
-        verify(tenantInfoRequestMatcher).reset();
-    }
+//    @Test
+//    public void resetTest() {
+//        sandboxService.reset();
+//        verify(tenantInfoRequestMatcher).reset();
+//    }
 }
