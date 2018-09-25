@@ -41,6 +41,7 @@ hspc:
       sandboxManagerApi:
         url: http://${SBMA_HOST:localhost}:${SBMA_PORT:12000}
         transactionPath: /analytics/transaction
+        userAuthPath: /user/authorize
       fhir:
         db:
           schema: hspc_5_${hspc.platform.api.sandbox.name}
