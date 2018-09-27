@@ -197,7 +197,7 @@ public class SandboxPersister {
         String schemaNameClonedSandbox = toSchemaName.apply(clonedSandbox);
 
         try {
-            String dump = "mysqldump -h " + dbhost + " -u " + dbusername + " -p'" + dbpassword + "' " + schemaNameClonedSandbox + " > ./temp.sql";
+            String dump = "mysqldump --column-statistics=0 -h " + dbhost + " -u " + dbusername + " -p'" + dbpassword + "' " + schemaNameClonedSandbox + " > ./temp.sql";
             String[] cmdarray = {"/bin/sh","-c", dump};
             Process pr = Runtime.getRuntime().exec(cmdarray);
             Integer outcome = pr.waitFor();
@@ -246,7 +246,7 @@ public class SandboxPersister {
 
         } catch (Exception e) {
             logger.info("Error in cloning.", e);
-
+            throw new RuntimeException(e);
         }
     }
 

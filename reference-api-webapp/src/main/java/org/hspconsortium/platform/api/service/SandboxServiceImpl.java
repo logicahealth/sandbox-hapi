@@ -258,7 +258,7 @@ public class SandboxServiceImpl implements SandboxService {
 
         HttpEntity entity = new HttpEntity(jsonBody, headers);
         try {
-            ResponseEntity<String> response = restTemplate.exchange(this.sandboxManagerApiUrl, HttpMethod.POST, entity, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(this.sandboxManagerApiUrl + this.userAuthPath, HttpMethod.POST, entity, String.class);
             return true;
         } catch (HttpClientErrorException e) {
             return false;
