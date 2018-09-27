@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -33,7 +34,7 @@ public class MultitenantSandboxController {
     }
 
     @RequestMapping(method = RequestMethod.PUT)
-    public Sandbox save(@PathVariable String teamId, @NotNull @RequestBody Sandbox sandbox,
+    public Sandbox save(HttpServletRequest request, @PathVariable String teamId, @NotNull @RequestBody Sandbox sandbox,
                         @RequestParam(value = "dataSet", required = false) DataSet dataSet) {
         Validate.notNull(sandbox);
         Validate.notNull(sandbox.getTeamId());
@@ -42,22 +43,26 @@ public class MultitenantSandboxController {
 //        validate(teamId);
 
         Validate.isTrue(teamId.equals(sandbox.getTeamId()));
-
+        if (!sandboxService.verifyUser(request, sandbox.getTeamId())) {
+            throw new UnauthorizedUserException("User not authorized to create/update sandbox " + sandbox.getTeamId());
+        }
         if (dataSet == null) {
             dataSet = DataSet.NONE;
         }
-
         return sandboxService.save(sandbox, dataSet);
     }
 
     @RequestMapping(path = "/clone", method = RequestMethod.PUT)
-    public Sandbox clone(@NotNull @RequestBody HashMap<String, Sandbox> sandboxes) {
+    public Sandbox clone(HttpServletRequest request, @NotNull @RequestBody HashMap<String, Sandbox> sandboxes) {
         Sandbox newSandbox = sandboxes.get("newSandbox");
         Sandbox clonedSandbox = sandboxes.get("clonedSandbox");
         Validate.notNull(newSandbox);
         Validate.notNull(newSandbox.getTeamId());
         Validate.notNull(clonedSandbox);
         Validate.notNull(clonedSandbox.getTeamId());
+        if (!sandboxService.verifyUser(request, clonedSandbox.getTeamId())) {
+            throw new UnauthorizedUserException("User not authorized to clone sandbox " + clonedSandbox.getTeamId());
+        }
         sandboxService.clone(newSandbox, clonedSandbox);
         return newSandbox;
     }
@@ -72,13 +77,19 @@ public class MultitenantSandboxController {
     }
 
     @RequestMapping(method = RequestMethod.DELETE)
-    public boolean delete(@PathVariable String teamId) {
+    public boolean delete(HttpServletRequest request,@PathVariable String teamId) {
         validate(teamId);
+        if (!sandboxService.verifyUser(request, teamId)) {
+            throw new UnauthorizedUserException("User not authorized to delete sandbox " + teamId);
+        }
         return sandboxService.remove(teamId);
     }
 
     @RequestMapping(path = "/reset", method = RequestMethod.POST)
-    public String reset(@PathVariable String teamId, @RequestBody ResetSandboxCommand resetSandboxCommand) {
+    public String reset(HttpServletRequest request, @PathVariable String teamId, @RequestBody ResetSandboxCommand resetSandboxCommand) {
+        if (!sandboxService.verifyUser(request, teamId)) {
+            throw new UnauthorizedUserException("User not authorized to reset sandbox " + teamId);
+        }
         sandboxService.reset(teamId, resetSandboxCommand.getDataSet());
         return "Success";
     }
