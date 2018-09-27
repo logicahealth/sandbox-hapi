@@ -7,6 +7,7 @@ import org.hspconsortium.platform.api.fhir.model.SnapshotSandboxCommand;
 import org.hspconsortium.platform.api.fhir.service.SandboxService;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -34,6 +35,7 @@ public class MultitenantSandboxControllerTest {
     @Before
     public void setUp() {
         sandbox = new Sandbox(teamId);
+        when(sandboxService.verifyUser(request, teamId)).thenReturn(true);
     }
 
 //    @Test
@@ -60,6 +62,15 @@ public class MultitenantSandboxControllerTest {
         assertEquals(sandbox, returnedSandbox);
     }
 
+    @Test(expected = UnauthorizedUserException.class)
+    public void cloneTestUserNotAuthorized() {
+        when(sandboxService.verifyUser(request, teamId)).thenReturn(false);
+        HashMap<String, Sandbox> sandboxHashMap = new HashMap<>();
+        sandboxHashMap.put("newSandbox", sandbox);
+        sandboxHashMap.put("clonedSandbox", sandbox);
+        multitenantSandboxController.clone(request, sandboxHashMap);
+    }
+
     @Test
     public void getTest() {
         when(sandboxService.get(teamId)).thenReturn(sandbox);
@@ -79,11 +90,23 @@ public class MultitenantSandboxControllerTest {
         verify(sandboxService).remove(teamId);
     }
 
+    @Test(expected = UnauthorizedUserException.class)
+    public void deleteTestUserNotAuthorized() {
+        when(sandboxService.verifyUser(request, teamId)).thenReturn(false);
+        multitenantSandboxController.delete(request, teamId);
+    }
+
     @Test
     public void resetTest() {
         String returnedString = multitenantSandboxController.reset(request, teamId, new ResetSandboxCommand());
         assertEquals("Success", returnedString);
         verify(sandboxService).reset(anyString(), any());
+    }
+
+    @Test(expected = UnauthorizedUserException.class)
+    public void resetTestUserNotAuthorized() {
+        when(sandboxService.verifyUser(request, teamId)).thenReturn(false);
+        multitenantSandboxController.reset(request, teamId, new ResetSandboxCommand());
     }
 
     @Test
