@@ -66,6 +66,9 @@ The reference-api-mysql library configures a MySQL FHIR resource repository to b
     
 The service is available at (see default ports): 
     http://localhost:8075/
+    
+#### Datatbase Migration
+If you wish to migrate sandboxes from previous HAPI versions, see reference-api-mysql/src/main/resources/db/mysql for the appropriate migration scripts.
 
 ## Open Mode ##
 When the HSPC Reference API server is run in open mode, no security is applied.  This is very convenient for development, allowing resources to be read and written without authentication.  See reference-api-webapp/src/main/resources/application.yml.
