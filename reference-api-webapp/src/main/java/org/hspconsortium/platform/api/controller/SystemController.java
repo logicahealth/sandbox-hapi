@@ -2,6 +2,7 @@ package org.hspconsortium.platform.api.controller;
 
 import org.hspconsortium.platform.api.fhir.DataSourceRepository;
 import org.hspconsortium.platform.api.fhir.model.ResetSecurityCommand;
+import org.hspconsortium.platform.api.fhir.model.Sandbox;
 import org.hspconsortium.platform.api.fhir.service.SandboxService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,9 +41,15 @@ public class SystemController {
     }
 
     @RequestMapping(value = "/sandbox", method = RequestMethod.GET)
-    public Collection<String> all() {
+    public Collection<String> allSandboxNames() {
         //TODO: figure out security here
-        return sandboxService.all();
+        return sandboxService.allTenantNames();
+    }
+
+    @RequestMapping(value = "/sandboxObjects", method = RequestMethod.GET)
+    public String allSandboxes() {
+        //TODO: figure out security here
+        return sandboxService.allSandboxes().toString();
     }
 
     @RequestMapping(value = "/memory", method = RequestMethod.PUT)

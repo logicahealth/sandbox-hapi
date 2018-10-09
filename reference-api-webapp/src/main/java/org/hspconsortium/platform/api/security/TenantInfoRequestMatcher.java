@@ -89,7 +89,7 @@ public class TenantInfoRequestMatcher implements RequestMatcher {
 
     private Collection<String> findOpenTeamIds(SandboxService sandboxService) {
         return sandboxService
-                .all()
+                .allTenantNames()
                 .stream()
                 .filter(teamId -> {
                     Sandbox sandbox = sandboxService.get(teamId);
