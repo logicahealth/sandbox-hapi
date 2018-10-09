@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 @RestController
@@ -68,12 +70,20 @@ public class MultitenantSandboxController {
     }
 
     @RequestMapping(method = RequestMethod.GET)
-    public Sandbox get(@PathVariable String teamId) {
+    public Sandbox get(HttpServletRequest request, @PathVariable String teamId) {
         Sandbox existing = sandboxService.get(teamId);
         if (existing == null) {
             throw new ResourceNotFoundException("Sandbox [" + teamId + "] is not found");
         }
         return existing;
+    }
+
+    @RequestMapping(value = "/all", method = RequestMethod.GET)
+    public Collection<String> getAll(HttpServletRequest request) {
+//        if (!sandboxService.verifyUser(request, teamId)) {
+//            throw new UnauthorizedUserException("User not authorized to delete sandbox " + teamId);
+//        }
+        return sandboxService.all();
     }
 
     @RequestMapping(method = RequestMethod.DELETE)
