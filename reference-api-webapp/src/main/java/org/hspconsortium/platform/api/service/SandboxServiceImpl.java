@@ -56,7 +56,12 @@ public class SandboxServiceImpl implements SandboxService {
     }
 
     @Override
-    public Collection<String> all() {
+    public Collection<String> allTenantNames() {
+        return sandboxPersister.getSandboxNames();
+    }
+
+    @Override
+    public Collection<Sandbox> allSandboxes() {
         return sandboxPersister.getSandboxes();
     }
 

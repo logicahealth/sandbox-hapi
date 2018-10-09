@@ -121,10 +121,19 @@ public class SandboxPersister {
         return sandbox;
     };
 
+    Function<String, Sandbox> toSandboxWithTenantName = (tenantName) ->  {
+        try {
+            tenantName = tenantName.split(DatabaseProperties.SANDBOX_SCHEMA_DELIMITER)[2];
+            return findSandbox(tenantName);
+        } catch (SchemaNotInitializedException e) {
+            throw new RuntimeException("Error finding " + tenantName, e);
+        }
+    };
+
     @Autowired
     private DatabaseManager databaseManager;
 
-    public List<String> getSandboxes() {
+    public List<String> getSandboxNames() {
         // those that begin with the sandbox prefix
         Set<String> schemas = databaseManager.getSchemasLike(
                 DatabaseProperties.SANDBOX_SCHEMA_PREFIX +
@@ -136,6 +145,23 @@ public class SandboxPersister {
             return schemas
                     .parallelStream()
                     .map(toTeamId)
+                    .collect(Collectors.toList());
+        }
+        return Collections.emptyList();
+    }
+
+    public List<Sandbox> getSandboxes() {
+        // those that begin with the sandbox prefix
+        Set<String> schemas = databaseManager.getSchemasLike(
+                DatabaseProperties.SANDBOX_SCHEMA_PREFIX +
+                        DatabaseProperties.SANDBOX_SCHEMA_DELIMITER_ESCAPED +
+                        DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION +
+                        DatabaseProperties.SANDBOX_SCHEMA_DELIMITER_ESCAPED + "%",
+                "%" + DatabaseProperties.SANDBOX_SCHEMA_SNAPSHOT_DELIMITER + "%");
+        if (!schemas.isEmpty()) {
+            return schemas
+                    .parallelStream()
+                    .map(toSandboxWithTenantName)
                     .collect(Collectors.toList());
         }
         return Collections.emptyList();
