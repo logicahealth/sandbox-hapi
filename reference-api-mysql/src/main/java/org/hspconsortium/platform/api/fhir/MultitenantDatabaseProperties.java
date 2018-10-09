@@ -42,4 +42,12 @@ public class MultitenantDatabaseProperties extends DatabaseProperties {
 		baseProperties.setSchema(Collections.singletonList(schema));
 		return baseProperties;
 	}
+
+	public DataSourceProperties getInformationSchemaProperties() {
+		DataSourceProperties baseProperties = super.getDb();
+		String url = getDb().getUrl().replace(baseProperties.getSchema().get(0), "information_schema");
+		baseProperties.setUrl(url);
+		baseProperties.setSchema(Collections.singletonList("information_schema"));
+		return baseProperties;
+	}
 }

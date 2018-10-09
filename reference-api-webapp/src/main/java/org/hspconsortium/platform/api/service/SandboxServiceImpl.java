@@ -11,8 +11,16 @@ import org.hspconsortium.platform.api.security.TenantInfoRequestMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.HttpClientErrorException;
+import org.springframework.web.client.RestTemplate;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Set;
@@ -21,14 +29,24 @@ import java.util.Set;
 public class SandboxServiceImpl implements SandboxService {
     private static final Logger logger = LoggerFactory.getLogger(SandboxServiceImpl.class);
 
+    @Value("${hspc.platform.api.sandboxManagerApi.url}")
+    private String sandboxManagerApiUrl;
+
+    @Value("${hspc.platform.api.sandboxManagerApi.userAuthPath}")
+    private String userAuthPath;
+
     private SandboxPersister sandboxPersister;
 
     private TenantInfoRequestMatcher tenantInfoRequestMatcher;
 
+    private RestTemplate restTemplate;
+
     @Autowired
-    public SandboxServiceImpl(SandboxPersister sandboxPersister, TenantInfoRequestMatcher tenantInfoRequestMatcher) {
+    public SandboxServiceImpl(SandboxPersister sandboxPersister, TenantInfoRequestMatcher tenantInfoRequestMatcher,
+                              RestTemplate restTemplate) {
         this.sandboxPersister = sandboxPersister;
         this.tenantInfoRequestMatcher = tenantInfoRequestMatcher;
+        this.restTemplate = restTemplate;
     }
 
     @Override
@@ -225,5 +243,37 @@ public class SandboxServiceImpl implements SandboxService {
             return null;
         }
     }
+
+    @Override
+    public boolean verifyUser(HttpServletRequest request, String sandboxId) {
+        String authToken = getBearerToken(request);
+        if (authToken == null) {
+            return false;
+        }
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "BEARER " + authToken);
+
+        String jsonBody = "{\"sandbox\": \""+ sandboxId + "\"}";
+
+        HttpEntity entity = new HttpEntity(jsonBody, headers);
+        try {
+            ResponseEntity<String> response = restTemplate.exchange(this.sandboxManagerApiUrl + this.userAuthPath, HttpMethod.POST, entity, String.class);
+            return true;
+        } catch (HttpClientErrorException e) {
+            return false;
+        }
+
+    }
+
+    private String getBearerToken(HttpServletRequest request) {
+
+        String authToken = request.getHeader("Authorization");
+        if (authToken == null) {
+            return null;
+        }
+        return authToken.substring(7);
+    }
+
 
 }
