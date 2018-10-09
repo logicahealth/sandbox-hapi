@@ -74,14 +74,14 @@ public class MultitenantSandboxControllerTest {
     @Test
     public void getTest() {
         when(sandboxService.get(teamId)).thenReturn(sandbox);
-        Sandbox returnedSandbox = multitenantSandboxController.get(teamId);
+        Sandbox returnedSandbox = multitenantSandboxController.get(request, teamId);
         assertEquals(sandbox, returnedSandbox);
     }
 
     @Test(expected = ResourceNotFoundException.class)
     public void getTestDoesntExist() {
         when(sandboxService.get(teamId)).thenReturn(null);
-        multitenantSandboxController.get(teamId);
+        multitenantSandboxController.get(request, teamId);
     }
 
     @Test
