@@ -3,6 +3,7 @@ package org.hspconsortium.platform.api.fhir.service;
 import org.hspconsortium.platform.api.fhir.model.DataSet;
 import org.hspconsortium.platform.api.fhir.model.Sandbox;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
 import java.util.Set;
@@ -21,6 +22,8 @@ public interface SandboxService {
     boolean remove(String teamId);
 
     Sandbox reset(String teamId, DataSet dataSet);
+
+    boolean verifyUser(HttpServletRequest request, String sandboxId);
 
     Set<String> getSandboxSnapshots(String teamId);
 
