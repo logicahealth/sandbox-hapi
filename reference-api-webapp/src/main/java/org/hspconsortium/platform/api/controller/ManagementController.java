@@ -58,7 +58,7 @@ public class ManagementController {
 
     @RequestMapping(value = "/sandbox", method = RequestMethod.GET)
     public Collection<String> all() {
-        return sandboxService.all();
+        return sandboxService.allTenantNames();
     }
 
     @RequestMapping(value = "/sandbox/{teamId}", method = RequestMethod.PUT)
