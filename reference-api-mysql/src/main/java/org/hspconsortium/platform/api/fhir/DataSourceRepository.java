@@ -15,9 +15,12 @@ import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 @Component
@@ -181,5 +184,99 @@ public class DataSourceRepository {
             }
 
         }
+
+    }
+
+    public HashMap<String, Double> memoryAllSandboxes(List<String> activeSandboxIds) {
+        HashMap<String, Double> sandboxMemorySizes = new HashMap<>();
+
+        final DataSourceProperties dataSourceProperties = this.multitenancyProperties.getInformationSchemaProperties();
+        DataSourceBuilder factory = DataSourceBuilder
+                .create(this.multitenancyProperties.getDb().getClassLoader())
+                .driverClassName(this.multitenancyProperties.getDb().getDriverClassName())
+                .username(dataSourceProperties.getUsername())
+                .password(dataSourceProperties.getPassword())
+                .url(dataSourceProperties.getUrl());
+
+        DataSource dataSource = factory.build();
+        Connection conn = null;
+        try {
+            //verify for a valid datasource
+            if (dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource) {
+                ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getPoolProperties().setMaxActive(5);
+            }
+            conn = dataSource.getConnection();
+            conn.isValid(2);
+            Statement stmt = conn.createStatement();
+            String query = "select table_schema, sum((data_length+index_length)/1024/1024) AS MB from information_schema.tables group by 1;" ;
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                if (activeSandboxIds.contains(rs.getString(1))) {
+                    sandboxMemorySizes.put(rs.getString(1), Double.parseDouble(rs.getString(2)));
+                }
+
+            }
+            return sandboxMemorySizes;
+        } catch (SQLException e) {
+
+        } finally {
+            // Always make sure result sets and statements are closed, and the connection is returned to the pool
+            if (conn != null) {
+                try {
+                    conn.close();
+
+                } catch (SQLException e) {
+                    LOGGER.error("Error closing connection pool", e);
+                }
+            }
+        }
+        return null;
+    }
+
+    public HashMap<String, Double> memoryAllSandboxesOfUser(List<String> sandboxIds) {
+        HashMap<String, Double> sandboxMemorySizes = new HashMap<>();
+
+        final DataSourceProperties dataSourceProperties = this.multitenancyProperties.getInformationSchemaProperties();
+        DataSourceBuilder factory = DataSourceBuilder
+                .create(this.multitenancyProperties.getDb().getClassLoader())
+                .driverClassName(this.multitenancyProperties.getDb().getDriverClassName())
+                .username(dataSourceProperties.getUsername())
+                .password(dataSourceProperties.getPassword())
+                .url(dataSourceProperties.getUrl());
+
+        DataSource dataSource = factory.build();
+        Connection conn = null;
+        try {
+            //verify for a valid datasource
+            if (dataSource instanceof org.apache.tomcat.jdbc.pool.DataSource) {
+                ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getPoolProperties().setMaxActive(5);
+            }
+            conn = dataSource.getConnection();
+            conn.isValid(2);
+            Statement stmt = conn.createStatement();
+            for (String id: sandboxIds) {
+                String query = "select table_schema, sum((data_length+index_length)/1024/1024) AS MB from information_schema.tables " +
+                        "WHERE table_schema REGEXP 'hspc_[0-9]_" + id + "' group by 1;";
+                ResultSet rs = stmt.executeQuery(query);
+                while (rs.next()) {
+                    sandboxMemorySizes.put(rs.getString(1), Double.parseDouble(rs.getString(2)));
+                }
+            }
+
+            return sandboxMemorySizes;
+        } catch (SQLException e) {
+
+        } finally {
+            // Always make sure result sets and statements are closed, and the connection is returned to the pool
+            if (conn != null) {
+                try {
+                    conn.close();
+
+                } catch (SQLException e) {
+                    LOGGER.error("Error closing connection pool", e);
+                }
+            }
+        }
+        return null;
     }
 }
