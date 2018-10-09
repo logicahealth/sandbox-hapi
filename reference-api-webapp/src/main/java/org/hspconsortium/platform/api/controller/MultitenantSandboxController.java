@@ -78,14 +78,6 @@ public class MultitenantSandboxController {
         return existing;
     }
 
-    @RequestMapping(value = "/all", method = RequestMethod.GET)
-    public Collection<String> getAll(HttpServletRequest request) {
-//        if (!sandboxService.verifyUser(request, teamId)) {
-//            throw new UnauthorizedUserException("User not authorized to delete sandbox " + teamId);
-//        }
-        return sandboxService.all();
-    }
-
     @RequestMapping(method = RequestMethod.DELETE)
     public boolean delete(HttpServletRequest request,@PathVariable String teamId) {
         validate(teamId);
