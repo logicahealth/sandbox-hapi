@@ -1,5 +1,6 @@
 package org.hspconsortium.platform.api.controller;
 
+import org.hspconsortium.platform.api.fhir.DataSourceRepository;
 import org.hspconsortium.platform.api.fhir.model.ResetSecurityCommand;
 import org.hspconsortium.platform.api.fhir.service.SandboxService;
 import org.slf4j.Logger;
@@ -11,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("/system")
@@ -19,6 +22,9 @@ public class SystemController {
 
     @Autowired
     private SandboxService sandboxService;
+
+    @Autowired
+    private DataSourceRepository dataSourceRepository;
 
     @RequestMapping("/")
     public String system() {
@@ -35,7 +41,18 @@ public class SystemController {
 
     @RequestMapping(value = "/sandbox", method = RequestMethod.GET)
     public Collection<String> all() {
+        //TODO: figure out security here
         return sandboxService.all();
+    }
+
+    @RequestMapping(value = "/memory", method = RequestMethod.PUT)
+    public HashMap<String, Double> memoryAllSandboxes(@RequestBody List<String> sandboxIds) {
+        return dataSourceRepository.memoryAllSandboxes(sandboxIds);
+    }
+
+    @RequestMapping(value = "/memory/user", method = RequestMethod.PUT)
+    public HashMap<String, Double> memoryAllSandboxesOfUser(@RequestBody List<String> sandboxIds) {
+        return dataSourceRepository.memoryAllSandboxesOfUser(sandboxIds);
     }
 
 }
