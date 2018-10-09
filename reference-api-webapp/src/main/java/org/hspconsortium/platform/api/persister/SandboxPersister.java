@@ -246,7 +246,7 @@ public class SandboxPersister {
 
         } catch (Exception e) {
             logger.info("Error in cloning.", e);
-
+            throw new RuntimeException(e);
         }
     }
 
