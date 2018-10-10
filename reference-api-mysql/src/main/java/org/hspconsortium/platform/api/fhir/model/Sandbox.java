@@ -82,12 +82,12 @@ public class Sandbox implements Serializable {
 
     @Override
     public String toString() {
-        return "Sandbox{" +
-                "teamId='" + teamId + '\'' +
-                "schemaVersion='" + schemaVersion + "'" +
-                "allowOpenAccess='" + allowOpenAccess + "'" +
-                "baselineDate='" + baselineDate + "'" +
-                "properties='" + properties + "'" +
+        return "{" +
+                "\"teamId\": \"" + teamId + "\"" +
+                ", \"schemaVersion\": \"" + schemaVersion + "\"" +
+                ", \"allowOpenAccess\": \"" + allowOpenAccess + "\"" +
+                ", \"baselineDate\": \"" + baselineDate + "\"" +
+                ", \"properties\": \"" + properties + "\"" +
                 '}';
     }
 }
