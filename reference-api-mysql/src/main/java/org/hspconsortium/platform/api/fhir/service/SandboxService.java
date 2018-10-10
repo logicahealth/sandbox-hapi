@@ -11,7 +11,9 @@ import java.util.Set;
 public interface SandboxService {
     void reset();
 
-    Collection<String> all();
+    Collection<String> allTenantNames();
+
+    Collection<Sandbox> allSandboxes();
 
     Sandbox save(@NotNull Sandbox sandbox, @NotNull DataSet dataSet);
 
