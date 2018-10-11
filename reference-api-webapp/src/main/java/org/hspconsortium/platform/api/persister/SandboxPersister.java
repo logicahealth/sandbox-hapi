@@ -179,7 +179,7 @@ public class SandboxPersister {
         Set<String> schemasLike = databaseManager.getSchemasLike(
                 DatabaseProperties.SANDBOX_SCHEMA_PREFIX +
                         DatabaseProperties.SANDBOX_SCHEMA_DELIMITER_ESCAPED +
-                        DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION +
+                        "%" +
                         DatabaseProperties.SANDBOX_SCHEMA_DELIMITER_ESCAPED +
                         teamId);
         // should be only one
