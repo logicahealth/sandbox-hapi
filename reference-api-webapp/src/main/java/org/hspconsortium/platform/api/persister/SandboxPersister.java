@@ -155,7 +155,7 @@ public class SandboxPersister {
         Set<String> schemas = databaseManager.getSchemasLike(
                 DatabaseProperties.SANDBOX_SCHEMA_PREFIX +
                         DatabaseProperties.SANDBOX_SCHEMA_DELIMITER_ESCAPED +
-                        DatabaseProperties.DEFAULT_HSPC_SCHEMA_VERSION +
+                        "%" +
                         DatabaseProperties.SANDBOX_SCHEMA_DELIMITER_ESCAPED + "%",
                 "%" + DatabaseProperties.SANDBOX_SCHEMA_SNAPSHOT_DELIMITER + "%");
         if (!schemas.isEmpty()) {
