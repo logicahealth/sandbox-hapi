@@ -145,12 +145,12 @@ public class MultiTenantSearchCoordinatorSvcImpl implements ISearchCoordinatorSv
             List<Long> retVal = (List) txTemplate.execute(new TransactionCallback<List<Long>>() {
                 public List<Long> doInTransaction(TransactionStatus theStatus) {
                     List<Long> resultPids = new ArrayList();
-                    Page<SearchResult> searchResults = MultiTenantSearchCoordinatorSvcImpl.this.mySearchResultDao.findWithSearchUuid(search, page);
+                    Page<Long> searchResults = MultiTenantSearchCoordinatorSvcImpl.this.mySearchResultDao.findWithSearchUuid(search, page);
                     Iterator var4 = searchResults.iterator();
 
                     while (var4.hasNext()) {
-                        SearchResult next = (SearchResult) var4.next();
-                        resultPids.add(next.getResourcePid());
+                        Long next = (Long) var4.next();
+                        resultPids.add(next);
                     }
 
                     return resultPids;
@@ -190,8 +190,8 @@ public class MultiTenantSearchCoordinatorSvcImpl implements ISearchCoordinatorSv
                     }
 
                     Set<Long> includedPids = new HashSet();
-                    includedPids.addAll(sb.loadReverseIncludes(theCallingDao, MultiTenantSearchCoordinatorSvcImpl.this.myContext, MultiTenantSearchCoordinatorSvcImpl.this.myEntityManager, pids, theParams.getRevIncludes(), true, theParams.getLastUpdated()));
-                    includedPids.addAll(sb.loadReverseIncludes(theCallingDao, MultiTenantSearchCoordinatorSvcImpl.this.myContext, MultiTenantSearchCoordinatorSvcImpl.this.myEntityManager, pids, theParams.getIncludes(), false, theParams.getLastUpdated()));
+                    includedPids.addAll(sb.loadIncludes(theCallingDao, MultiTenantSearchCoordinatorSvcImpl.this.myContext, MultiTenantSearchCoordinatorSvcImpl.this.myEntityManager, pids, theParams.getRevIncludes(), true, theParams.getLastUpdated()));
+                    includedPids.addAll(sb.loadIncludes(theCallingDao, MultiTenantSearchCoordinatorSvcImpl.this.myContext, MultiTenantSearchCoordinatorSvcImpl.this.myEntityManager, pids, theParams.getIncludes(), false, theParams.getLastUpdated()));
                     List<IBaseResource> resources = new ArrayList();
                     sb.loadResourcesByPid(pids, resources, includedPids, false, MultiTenantSearchCoordinatorSvcImpl.this.myEntityManager, MultiTenantSearchCoordinatorSvcImpl.this.myContext, theCallingDao);
                     return new SimpleBundleProvider(resources);
