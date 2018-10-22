@@ -27,7 +27,7 @@
         <hapi.version>3.6.0-SNAPSHOT</hapi.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- spring boot properties -->
-        <hibernate.version>5.2.10.Final</hibernate.version> <!-- defaults is 5.0.12.Final -->
+        <hibernate.version>5.3.6.Final</hibernate.version> <!-- defaults is 5.0.12.Final -->
         <hibernate-validator.version>5.4.1.Final</hibernate-validator.version> <!-- default is 5.3.5.Final -->
         <thymeleaf.version>3.0.7.RELEASE</thymeleaf.version> <!-- default is 2.1.5.RELEASE -->
         <!-- end spring boot hibernate properties -->
@@ -37,9 +37,10 @@
         <thymeleaf-layout-dialect.version>2.2.1</thymeleaf-layout-dialect.version>
         <thymeleaf-extras-data-attribute.version>2.1.0-SNAPSHOT</thymeleaf-extras-data-attribute.version>
         <thymeleaf-extras-java8time.version>3.0.0.RELEASE</thymeleaf-extras-java8time.version>
-        <guava.version>21.0</guava.version>
+        <guava.version>25.0-jre</guava.version>
         <!-- Most artifacts don't need to be an executable jar, so skip by default -->
         <springboot_jar.skip>true</springboot_jar.skip>
+        <spring_version>5.0.8.RELEASE</spring_version>
     </properties>
 
     <build>
@@ -54,5 +55,78 @@
             </plugin>
         </plugins>
     </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-jpa</artifactId>
+            <version>2.0.7.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.data</groupId>
+            <artifactId>spring-data-commons</artifactId>
+            <version>2.0.7.RELEASE</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context-support</artifactId>
+            <version>${spring_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-jdbc</artifactId>
+            <version>${spring_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-messaging</artifactId>
+            <version>${spring_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-orm</artifactId>
+            <version>${spring_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>${spring_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-tx</artifactId>
+            <version>${spring_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring_version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-websocket</artifactId>
+            <version>${spring_version}</version>
+        </dependency>
+    </dependencies>
 
 </project>

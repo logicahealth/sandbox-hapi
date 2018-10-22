@@ -1,6 +1,6 @@
 package org.hspconsortium.platform.api.fhir;
 
-import com.google.common.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.google.common.cache.CacheBuilder;
 import org.hspconsortium.platform.api.fhir.model.DataSet;
 import org.hspconsortium.platform.api.fhir.model.Sandbox;
@@ -10,7 +10,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
-import org.springframework.cache.guava.GuavaCache;
+
+import org.springframework.cache.caffeine.CaffeineCache;
+import com.github.benmanes.caffeine.cache.Cache;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -30,7 +32,7 @@ public class DataSourceRepository {
 
     private MultitenantDatabaseProperties multitenancyProperties;
 
-    private GuavaCache datasourceCache;
+    private CaffeineCache datasourceCache;
 
     private SandboxService sandboxService;
 
@@ -40,12 +42,12 @@ public class DataSourceRepository {
         this.sandboxService = sandboxService;
 
         Cache<Object, Object> cacheBuilder =
-                CacheBuilder
+                Caffeine
                         .newBuilder()
                         .maximumSize(this.multitenancyProperties.getDataSourceCacheSize())
                         .build();
 
-        datasourceCache = new GuavaCache("datasourceCache", cacheBuilder);
+        datasourceCache = new CaffeineCache("datasourceCache", cacheBuilder);
     }
 
     public DataSource getDataSource(String hspcSchemaVersion, String tenantIdentifier) {
