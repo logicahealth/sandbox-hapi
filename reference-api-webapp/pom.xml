@@ -55,10 +55,10 @@
             <version>${project.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.springframework</groupId>-->
+            <!--<artifactId>spring-web</artifactId>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>mysql</groupId>
@@ -168,6 +168,8 @@
             <artifactId>jacoco-maven-plugin</artifactId>
             <version>0.8.1</version>
         </dependency>
+
+
 
     </dependencies>
 

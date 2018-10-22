@@ -336,13 +336,14 @@ public class MultiTenantSearchCoordinatorSvcImpl implements ISearchCoordinatorSv
             return null;
         } else {
             int pageIndex = theFromIndex / pageSize;
-            Pageable page = new PageRequest(pageIndex, pageSize) {
-                private static final long serialVersionUID = 1L;
-
-                public int getOffset() {
-                    return theFromIndex;
-                }
-            };
+            Pageable page = PageRequest.of(pageIndex, pageSize);
+//            {
+//                private static final long serialVersionUID = 1L;
+//
+//                public int getOffset() {
+//                    return theFromIndex;
+//                }
+//            };
             return page;
         }
     }
@@ -557,8 +558,10 @@ public class MultiTenantSearchCoordinatorSvcImpl implements ISearchCoordinatorSv
                         nextResult.setOrder(MultiTenantSearchCoordinatorSvcImpl.SearchTask.this.myCountSaved++);
                         resultsToSave.add(nextResult);
                     }
+                    for (SearchResult searchResult: resultsToSave) {
+                        MultiTenantSearchCoordinatorSvcImpl.this.mySearchResultDao.save(searchResult);
+                    }
 
-                    MultiTenantSearchCoordinatorSvcImpl.this.mySearchResultDao.save(resultsToSave);
                     synchronized (MultiTenantSearchCoordinatorSvcImpl.SearchTask.this.mySyncedPids) {
                         int numSyncedThisPass = MultiTenantSearchCoordinatorSvcImpl.SearchTask.this.myUnsyncedPids.size();
                         MultiTenantSearchCoordinatorSvcImpl.ourLog.trace("Syncing {} search results", Integer.valueOf(numSyncedThisPass));
