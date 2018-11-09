@@ -40,7 +40,7 @@
         <guava.version>21.0</guava.version>
         <!-- Most artifacts don't need to be an executable jar, so skip by default -->
         <springboot_jar.skip>true</springboot_jar.skip>
-        <protocolAndHost>https://api-v5-stu3-test.hspconsortium.org</protocolAndHost>
+        <!--<protocolAndHost>https://api-v5-stu3-test.hspconsortium.org</protocolAndHost>-->
     </properties>
 
     <build>
