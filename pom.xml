@@ -24,7 +24,7 @@
 
     <properties>
         <java.version>1.8</java.version>
-        <hapi.version>3.6.0-SNAPSHOT</hapi.version>
+        <hapi.version>3.6.0</hapi.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- spring boot properties -->
         <hibernate.version>5.3.6.Final</hibernate.version> <!-- defaults is 5.0.12.Final -->
