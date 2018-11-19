@@ -70,7 +70,6 @@ public class MultiTenantSearchCoordinatorSvcImpl implements ISearchCoordinatorSv
     private int mySyncSize = 250;
 
     public MultiTenantSearchCoordinatorSvcImpl() {
-        myDaoConfig.setDisableHashBasedSearches(true);
     }
 
     public void cancelAllActiveSearches() {
