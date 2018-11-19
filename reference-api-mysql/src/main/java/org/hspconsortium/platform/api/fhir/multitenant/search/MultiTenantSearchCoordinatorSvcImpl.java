@@ -70,6 +70,7 @@ public class MultiTenantSearchCoordinatorSvcImpl implements ISearchCoordinatorSv
     private int mySyncSize = 250;
 
     public MultiTenantSearchCoordinatorSvcImpl() {
+        myDaoConfig.setDisableHashBasedSearches(true);
     }
 
     public void cancelAllActiveSearches() {
@@ -190,8 +191,8 @@ public class MultiTenantSearchCoordinatorSvcImpl implements ISearchCoordinatorSv
                     }
 
                     Set<Long> includedPids = new HashSet();
-                    includedPids.addAll(sb.loadIncludes(theCallingDao, MultiTenantSearchCoordinatorSvcImpl.this.myContext, MultiTenantSearchCoordinatorSvcImpl.this.myEntityManager, pids, theParams.getRevIncludes(), true, theParams.getLastUpdated()));
-                    includedPids.addAll(sb.loadIncludes(theCallingDao, MultiTenantSearchCoordinatorSvcImpl.this.myContext, MultiTenantSearchCoordinatorSvcImpl.this.myEntityManager, pids, theParams.getIncludes(), false, theParams.getLastUpdated()));
+                    includedPids.addAll(sb.loadIncludes(theCallingDao, MultiTenantSearchCoordinatorSvcImpl.this.myContext, MultiTenantSearchCoordinatorSvcImpl.this.myEntityManager, pids, theParams.getRevIncludes(), true, theParams.getLastUpdated(), "(synchronous)"));
+                    includedPids.addAll(sb.loadIncludes(theCallingDao, MultiTenantSearchCoordinatorSvcImpl.this.myContext, MultiTenantSearchCoordinatorSvcImpl.this.myEntityManager, pids, theParams.getIncludes(), false, theParams.getLastUpdated(), "(synchronous)"));
                     List<IBaseResource> resources = new ArrayList();
                     sb.loadResourcesByPid(pids, resources, includedPids, false, MultiTenantSearchCoordinatorSvcImpl.this.myEntityManager, MultiTenantSearchCoordinatorSvcImpl.this.myContext, theCallingDao);
                     return new SimpleBundleProvider(resources);

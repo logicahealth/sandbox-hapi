@@ -195,38 +195,38 @@ public class HapiFhirServlet extends RestfulServer {
     /**
      * account for tenant and mapping
      */
-    @Override
-    protected String getRequestPath(String requestFullPath, String servletContextPath, String servletPath) {
-
-        // trim off the servletContextPath
-        String remainder = requestFullPath.substring(escapedLength(servletContextPath));
-
-        if (remainder.length() > 0 && remainder.charAt(0) == '/') {
-            remainder = remainder.substring(1);
-        }
-
-        // followed by tenant and fhir mapping
-        String[] split = remainder.split("/", 3);
-
-        // capture the whole path after the fhir mapping
-        StringBuffer stringBuffer = new StringBuffer();
-        boolean foundFhirMappingPath = false;
-        for (String part : split) {
-            if (foundFhirMappingPath) {
-                stringBuffer.append(part);
-                stringBuffer.append("/");
-            } else {
-                // check each of the fhirMappingPaths to see if one is found
-                if (part.equals(fhirMappingPath) || part.equals(openMappingPath)) {
-                    foundFhirMappingPath = true;
-                }
-            }
-        }
-
-        return stringBuffer.length() > 0
-                ? stringBuffer.substring(0, stringBuffer.length() - 1)
-                : "";
-    }
+//    @Override
+//    protected String getRequestPath(String requestFullPath, String servletContextPath, String servletPath) {
+//
+//        // trim off the servletContextPath
+//        String remainder = requestFullPath.substring(escapedLength(servletContextPath));
+//
+//        if (remainder.length() > 0 && remainder.charAt(0) == '/') {
+//            remainder = remainder.substring(1);
+//        }
+//
+//        // followed by tenant and fhir mapping
+//        String[] split = remainder.split("/", 3);
+//
+//        // capture the whole path after the fhir mapping
+//        StringBuffer stringBuffer = new StringBuffer();
+//        boolean foundFhirMappingPath = false;
+//        for (String part : split) {
+//            if (foundFhirMappingPath) {
+//                stringBuffer.append(part);
+//                stringBuffer.append("/");
+//            } else {
+//                // check each of the fhirMappingPaths to see if one is found
+//                if (part.equals(fhirMappingPath) || part.equals(openMappingPath)) {
+//                    foundFhirMappingPath = true;
+//                }
+//            }
+//        }
+//
+//        return stringBuffer.length() > 0
+//                ? stringBuffer.substring(0, stringBuffer.length() - 1)
+//                : "";
+//    }
 
     /**
      * Returns the server base URL (with no trailing '/') for a given request
