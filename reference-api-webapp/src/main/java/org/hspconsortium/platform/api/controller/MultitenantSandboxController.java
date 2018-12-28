@@ -1,6 +1,12 @@
 package org.hspconsortium.platform.api.controller;
 
 import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
+import ca.uhn.fhir.util.UrlUtil;
+import com.google.common.base.Charsets;
+import com.google.common.hash.HashCode;
+import com.google.common.hash.HashFunction;
+import com.google.common.hash.Hasher;
+import com.google.common.hash.Hashing;
 import org.apache.commons.lang3.Validate;
 import org.hspconsortium.platform.api.fhir.model.DataSet;
 import org.hspconsortium.platform.api.fhir.model.ResetSandboxCommand;
@@ -17,10 +23,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 @RestController
 @RequestMapping("${hspc.platform.api.sandboxPath:/{teamId}/sandbox}")
@@ -160,6 +163,30 @@ public class MultitenantSandboxController {
         } catch (IllegalArgumentException e) {
             // good, not a reserved name
         }
+    }
+
+    // TODO: remove after migration to 3.6.0
+
+    private static final HashFunction HASH_FUNCTION = Hashing.murmur3_128(0);
+    private static final byte[] DELIMITER_BYTES = "|".getBytes(Charsets.UTF_8);
+
+    @RequestMapping(path = "/hash/{values}", method = RequestMethod.GET)
+    public long hash(@PathVariable("values") String values) {
+        Hasher hasher = HASH_FUNCTION.newHasher();
+        List<String> valueList = new ArrayList<String>(Arrays.asList(values.split(",")));
+        for (String next : valueList) {
+            if (next == null) {
+                hasher.putByte((byte) 0);
+            } else {
+                next = UrlUtil.escapeUrlParam(next);
+                byte[] bytes = next.getBytes(Charsets.UTF_8);
+                hasher.putBytes(bytes);
+            }
+            hasher.putBytes(DELIMITER_BYTES);
+        }
+
+        HashCode hashCode = hasher.hash();
+        return hashCode.asLong();
     }
 
 }
