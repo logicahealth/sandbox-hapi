@@ -34,7 +34,8 @@ esac
 #done
 FULL_NAME="hspc_5_360"
 SANDBOX_NAME="360"
-echo "Running Pre-Reindexing sql scripts"
+echo "Running Pre-Reindexing sql scripts for $SANDBOX_NAME"
+echo "USE $FULL_NAME" | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs
 mysql --user="$MYSQL_USER" --password="$MYSQL_PASS" --database="$FULL_NAME" < preReindexing.sql
 fhirVersion="stu3"
 PORT="8075"
@@ -62,9 +63,8 @@ case "${ENVIRONMENT}" in
         ;;
 esac
 
-echo "Killing port $PORT if already running."
-
 if [[ ! -z "$(lsof -t -i:$PORT)" ]]; then
+        echo "Killing port $PORT."
         kill "$(lsof -t -i:${PORT})"
     fi
 
@@ -84,12 +84,15 @@ done
 
 echo "Running server on port $PORT."
 
-echo "$(lsof -t -i:$PORT)"
-sleep 5
-echo "$FHIR_HOST/$SANDBOX_NAME/open/\$mark-all-resources-for-reindexing"
-
-curl --header "Authorization: BEARER ${BEARER_TOKEN}" "$FHIR_HOST/$SANDBOX_NAME/data/\$mark-all-resources-for-reindexing"
-sleep 30
+echo "curl --header \"Authorization: BEARER ${BEARER_TOKEN}\" \"$FHIR_HOST/$SANDBOX_NAME/data/\$mark-all-resources-for-reindexing\""
+STARTED=0
+until [  $STARTED -eq 1 ]; do
+    if [[ "$(curl -X GET --header "Authorization: BEARER $BEARER_TOKEN" "$FHIR_HOST/$SANDBOX_NAME/data/\$mark-all-resources-for-reindexing")" != *"NullPointerException"* ]]; then
+        let STARTED=1
+        echo "Successful reindexing connection!"
+    fi
+    sleep 1
+done
 
 STARTED=0
 SQL_STRING="SELECT SP_INDEX_STATUS FROM $FULL_NAME.HFJ_RESOURCE WHERE RES_ID = (SELECT MAX(RES_ID) FROM $FULL_NAME.HFJ_RESOURCE);"
@@ -109,17 +112,18 @@ hapi-fhir-3.6.0-cli/hapi-fhir-cli migrate-database -d MYSQL_5_7 -u "jdbc:mysql:/
 declare -A my_dict
 FOUND=0
 IFS="$( echo -e '\t' )"
-mysql -u$MYSQL_USER -p$MYSQL_PASS 2>/dev/null -e "SELECT * FROM $FULL_NAME.HFJ_SPIDX_STRING WHERE HASH_IDENTITY is null;" |
+mysql -u$MYSQL_USER -p$MYSQL_PASS -e "SELECT * FROM $FULL_NAME.HFJ_SPIDX_STRING WHERE HASH_IDENTITY is null;" |
     while read SP_ID SP_MISSING SP_NAME RES_ID RES_TYPE SP_UPDATED SP_VALUE_EXACT SP_VALUE_NORMALIZED HASH_EXACT HASH_NORM_PREFIX HASH_IDENTITY; do
 
     for key in ${!my_dict[@]}; do
-        if [[ ${key} == $RES_TYPE && ${my_dict[${key}]} == *"$SP_NAME,"* ]]; then
+        if [[ ${key} == $RES_TYPE && ${my_dict[${key}]} == *",$SP_NAME,"* ]]; then
             let FOUND=1
         fi
     done
 
     if [[ $FOUND -eq 0 ]]; then
-        my_dict[$RES_TYPE]+="$SP_NAME,"
+    echo $RES_TYPE,$SP_NAME
+        my_dict[$RES_TYPE]+=",$SP_NAME,"
         HASH=$(curl --silent "http://localhost:8076/$SANDBOX_NAME/sandbox/hash/$RES_TYPE,$SP_NAME" --header "Authorization: BEARER ${BEARER_TOKEN}")
         mysql -u$MYSQL_USER -p$MYSQL_PASS -e "UPDATE $FULL_NAME.HFJ_SPIDX_STRING SET HASH_IDENTITY='$HASH' WHERE RES_TYPE='$RES_TYPE' AND SP_NAME='$SP_NAME';"
     fi
