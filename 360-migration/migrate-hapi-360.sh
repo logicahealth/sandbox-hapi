@@ -101,6 +101,10 @@ until [  $STARTED -eq 1 ]; do
     sleep 5
 done
 
+mysql --user="$MYSQL_USER" --password="$MYSQL_PASS" --database="$FULL_NAME" < postReindexing.sql
+
+hapi-fhir-3.6.0-cli/hapi-fhir-cli migrate-database -d MYSQL_5_7 -u "jdbc:mysql://$HOST/$FULL_NAME?serverTimezone=America/Denver" -n "$MYSQL_USER" -p "$MYSQL_PASS" -f V3_4_0 -t V3_6_0
+
 declare -A my_dict
 FOUND=0
 IFS="$( echo -e '\t' )"
@@ -123,8 +127,4 @@ done
 
 echo "Killing port $PORT"
 kill "$(lsof -t -i:${PORT})"
-
-mysql --user="$MYSQL_USER" --password="$MYSQL_PASS" --database="$FULL_NAME" < postReindexing.sql
-
-hapi-fhir-3.6.0-cli/hapi-fhir-cli migrate-database -d MYSQL_5_7 -u "jdbc:mysql://$HOST/$FULL_NAME?serverTimezone=America/Denver" -n "$MYSQL_USER" -p "$MYSQL_PASS" -f V3_4_0 -t V3_6_0
 
