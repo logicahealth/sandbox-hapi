@@ -122,7 +122,6 @@ mysql -u$MYSQL_USER -p$MYSQL_PASS -e "SELECT * FROM $FULL_NAME.HFJ_SPIDX_STRING 
     done
 
     if [[ $FOUND -eq 0 ]]; then
-    echo $RES_TYPE,$SP_NAME
         my_dict[$RES_TYPE]+=",$SP_NAME,"
         HASH=$(curl --silent "http://localhost:8076/$SANDBOX_NAME/sandbox/hash/$RES_TYPE,$SP_NAME" --header "Authorization: BEARER ${BEARER_TOKEN}")
         mysql -u$MYSQL_USER -p$MYSQL_PASS -e "UPDATE $FULL_NAME.HFJ_SPIDX_STRING SET HASH_IDENTITY='$HASH' WHERE RES_TYPE='$RES_TYPE' AND SP_NAME='$SP_NAME';"
