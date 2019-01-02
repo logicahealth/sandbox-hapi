@@ -85,6 +85,7 @@ done
 echo "Running server on port $PORT."
 
 echo "$(lsof -t -i:$PORT)"
+sleep 5
 echo "$FHIR_HOST/$SANDBOX_NAME/open/\$mark-all-resources-for-reindexing"
 
 curl --header "Authorization: BEARER ${BEARER_TOKEN}" "$FHIR_HOST/$SANDBOX_NAME/data/\$mark-all-resources-for-reindexing"
