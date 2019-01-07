@@ -96,7 +96,7 @@ STARTED=0
 SQL_STRING="SELECT SP_INDEX_STATUS FROM hspc_5_3606.HFJ_RESOURCE WHERE RES_ID = (SELECT MAX(RES_ID) FROM hspc_5_3606.HFJ_RESOURCE);"
 
 until [  $STARTED -eq 1 ]; do
-    if [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)" != "NULL" ]]; then
+    if [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS --database="$FULL_NAME" -Bs)" != "NULL" ]]; then
         let STARTED=1
     fi
     echo "Attempting..."
