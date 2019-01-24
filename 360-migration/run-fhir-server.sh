@@ -15,6 +15,7 @@ java \
   -Dspring.profiles.active=${profile},multitenant,${environment} \
   -Xms256M \
   -Xmx512M \
+  -DnameForShutdown=1 \
   -Dhspc.platform.api.sandbox.name=${sandbox_name} \
   -Djasypt.encryptor.password=${jasypt_password} \
   -jar ${jar} &> output.log &
