@@ -1,5 +1,4 @@
 #!/usr/bin/env bash
-#!/usr/bin/env bash
 
 MYSQL_USER=$1
 MYSQL_PASS=$2
@@ -75,7 +74,6 @@ do
                 FHIR_VERSION="stu3"
                 ;;
         esac
-        echo $FHIR_VERSION
         ./run-fhir-server.sh $FHIR_VERSION $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
         sleep 240
 
@@ -90,8 +88,8 @@ do
             sleep 15
         done
 
-        kill "$(lsof -t -i:${PORT})" 2>/dev/null
-        FINISHED=0
+        ps ax | grep nameForShutdown | grep -v grep | awk '{print $1}' | xargs kill
     fi
 
 done
+
