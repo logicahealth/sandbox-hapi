@@ -1,20 +1,29 @@
 package org.hspconsortium.platform.api.controller;
 
+import org.codehaus.jackson.map.util.JSONPObject;
+import org.codehaus.plexus.util.IOUtil;
 import org.hspconsortium.platform.api.fhir.DataSourceRepository;
 import org.hspconsortium.platform.api.fhir.model.ResetSecurityCommand;
 import org.hspconsortium.platform.api.fhir.model.Sandbox;
 import org.hspconsortium.platform.api.fhir.service.SandboxService;
+import org.hspconsortium.platform.api.fhir.service.SystemService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+import sun.misc.IOUtils;
 
+import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 @RestController
 @RequestMapping("/system")
@@ -26,6 +35,9 @@ public class SystemController {
 
     @Autowired
     private DataSourceRepository dataSourceRepository;
+
+    @Autowired
+    private SystemService systemService;
 
     @RequestMapping("/")
     public String system() {
@@ -60,6 +72,25 @@ public class SystemController {
     @RequestMapping(value = "/memory/user", method = RequestMethod.PUT)
     public HashMap<String, Double> memoryAllSandboxesOfUser(@RequestBody List<String> sandboxIds) {
         return dataSourceRepository.memoryAllSandboxesOfUser(sandboxIds);
+    }
+
+    @RequestMapping(value = "/uploadProfile", method = RequestMethod.POST)
+    public void uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, String sandboxId) throws IOException {
+        // Save file to temp
+        File zip = File.createTempFile(UUID.randomUUID().toString(), "temp");
+        FileOutputStream o = new FileOutputStream(zip);
+        IOUtil.copy(file.getInputStream(), o);
+        o.close();
+
+        try {
+            ZipFile zipFile = new ZipFile(zip);
+            systemService.saveZipFile(zipFile, request, sandboxId);
+        } catch (ZipException e) {
+            e.printStackTrace();
+        }
+//        finally {
+//            zip.delete();
+//        }
     }
 
 }
