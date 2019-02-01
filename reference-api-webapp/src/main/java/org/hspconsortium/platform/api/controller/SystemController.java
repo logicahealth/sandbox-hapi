@@ -74,6 +74,12 @@ public class SystemController {
         return dataSourceRepository.memoryAllSandboxesOfUser(sandboxIds);
     }
 
+    @RequestMapping(value = "/getAllUploadedProfiles", method = RequestMethod.GET)
+    public HashMap<String, String> getAllUploadedProfiles(HttpServletRequest request, String sandboxId) {
+        //TODO: figure out security here
+        return systemService.getAllUploadedProfiles(request, sandboxId);
+    }
+
     @RequestMapping(value = "/uploadProfile", method = RequestMethod.POST)
     public void uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, String sandboxId) throws IOException {
         // Save file to temp
