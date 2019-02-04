@@ -38,6 +38,20 @@ public class SandboxServiceTest {
         when(sandboxPersister.findSandbox(sandbox.getTeamId())).thenReturn(sandbox);
         when(sandboxPersister.saveSandbox(sandbox)).thenReturn(sandbox);
         Sandbox result = sandboxService.save(sandbox, dt);
+        verify(tenantInfoRequestMatcher).removeOpenTeamId(any());
+        Assert.assertNotNull(result);
+    }
+
+    @Test
+    public void saveTestIfExistingIsNull() throws Exception{
+        DataSet dt = DataSet.DEFAULT;
+        when(sandbox.getTeamId()).thenReturn("123");
+        when(sandboxPersister.findSandbox(sandbox.getTeamId())).thenReturn(null);
+        when(sandboxPersister.saveSandbox(sandbox)).thenReturn(sandbox);
+        when(sandboxPersister.isTeamIdUnique(sandbox.getTeamId())).thenReturn(true);
+        Sandbox result = sandboxService.save(sandbox, dt);
+        verify(sandboxPersister).loadInitialDataset(any(), any());
+        verify(tenantInfoRequestMatcher).removeOpenTeamId(any());
         Assert.assertNotNull(result);
     }
 
@@ -74,13 +88,26 @@ public class SandboxServiceTest {
     }
 
     @Test
-    public void testCloneWhenTeamIdNullAndExists() throws Exception{
+    public void testCloneWhenTeamIdAndExistsAreNull() throws Exception{
         when(sandbox.getTeamId()).thenReturn("12");
         Sandbox clonedSandbox = mock(Sandbox.class);
         when(clonedSandbox.getTeamId()).thenReturn("123");
         when(sandboxPersister.findSandbox(sandbox.getTeamId())).thenReturn(null);
         when(sandboxPersister.isTeamIdUnique(sandbox.getTeamId())).thenReturn(true);
-        sandboxService.clone(sandbox, clonedSandbox);;
+        sandboxService.clone(sandbox, clonedSandbox);
+        verify(tenantInfoRequestMatcher).removeOpenTeamId(any());
+    }
+
+    @Test
+    public void testCloneWhenTeamIdAndExistAreNullAndAllowOpenAccessIsTrue() throws Exception{
+        when(sandbox.getTeamId()).thenReturn("12");
+        Sandbox clonedSandbox = mock(Sandbox.class);
+        when(clonedSandbox.getTeamId()).thenReturn("123");
+        when(sandboxPersister.findSandbox(sandbox.getTeamId())).thenReturn(null);
+        when(sandboxPersister.isTeamIdUnique(sandbox.getTeamId())).thenReturn(true);
+        when(sandbox.isAllowOpenAccess()).thenReturn(true);
+        sandboxService.clone(sandbox, clonedSandbox);
+        verify(tenantInfoRequestMatcher).addOpenTeamId(any());
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -89,7 +116,19 @@ public class SandboxServiceTest {
         Sandbox clonedSandbox = mock(Sandbox.class);
         when(clonedSandbox.getTeamId()).thenReturn("123");
         when(sandboxPersister.findSandbox(sandbox.getTeamId())).thenReturn(sandbox);
-        sandboxService.clone(sandbox, clonedSandbox);;
+        sandboxService.clone(sandbox, clonedSandbox);
+        verify(tenantInfoRequestMatcher).removeOpenTeamId(any());
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void testCloneThrowsExceptionWhenExistingIsNotNullAndAllowOpenAccessIsTrue() throws Exception{
+        when(sandbox.getTeamId()).thenReturn("12");
+        Sandbox clonedSandbox = mock(Sandbox.class);
+        when(clonedSandbox.getTeamId()).thenReturn("123");
+        when(sandboxPersister.findSandbox(sandbox.getTeamId())).thenReturn(sandbox);
+        when(sandbox.isAllowOpenAccess()).thenReturn(true);
+        sandboxService.clone(sandbox, clonedSandbox);
+        verify(tenantInfoRequestMatcher).addOpenTeamId(any());
     }
 
     @Test (expected = NullPointerException.class)
@@ -135,6 +174,7 @@ public class SandboxServiceTest {
     public void removeTest() {
         when(sandboxService.get("1")).thenReturn(sandbox);
         boolean result = sandboxService.remove("1");
+        verify(tenantInfoRequestMatcher).removeOpenTeamId(any());
         Assert.assertFalse(result);
     }
 
@@ -191,6 +231,7 @@ public class SandboxServiceTest {
     public void testTakeSnapshot(){
         when(sandboxService.get("123")).thenReturn(sandbox);
         String result = sandboxService.takeSnapshot("123", "12");
+        Assert.assertNull(result);
     }
 
     @Test (expected = RuntimeException.class)
