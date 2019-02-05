@@ -2,8 +2,10 @@ package org.hspconsortium.platform.api.controller;
 
 import org.codehaus.plexus.util.IOUtil;
 import org.hspconsortium.platform.api.fhir.service.ProfileService;
+import org.hspconsortium.platform.api.fhir.service.SandboxService;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -20,6 +22,8 @@ import java.util.zip.ZipFile;
 @RestController
 @RequestMapping("/profile")
 public class ProfileController {
+    @Autowired
+    private SandboxService sandboxService;
 
     @Autowired
     private ProfileService profileService;
@@ -27,19 +31,17 @@ public class ProfileController {
     @ResponseBody
     @GetMapping(value = "/getAllProfiles", params = {"sandboxId"})
     public HashMap<String, List<JSONObject>> getAllUploadedProfiles(HttpServletRequest request, @RequestParam(value = "sandboxId") String sandboxId) {
-        //TODO: figure out security here
+        if(!sandboxService.verifyUser(request, sandboxId)) {
+            throw new UnauthorizedUserException("User not authorized");
+        }
         return profileService.getAllUploadedProfiles(request, sandboxId);
-    }
-
-    @ResponseBody
-    @GetMapping(value = "/getAllProfilesOriginal", params = {"sandboxId"})
-    public HashMap<String, HashMap<String, String>> getAllUploadedProfilesOriginal(HttpServletRequest request, @RequestParam(value = "sandboxId") String sandboxId) {
-        //TODO: figure out security here
-        return profileService.getAllUploadedProfilesOriginal(request, sandboxId);
     }
 
     @PostMapping(value = "/uploadProfile")
     public void uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, String sandboxId) throws IOException {
+        if(!sandboxService.verifyUser(request, sandboxId)) {
+            throw new UnauthorizedUserException("User not authorized");
+        }
         // Save file to temp
         File zip = File.createTempFile(UUID.randomUUID().toString(), "temp");
         FileOutputStream o = new FileOutputStream(zip);
@@ -52,10 +54,9 @@ public class ProfileController {
         } catch (ZipException e) {
             e.printStackTrace();
         }
-//        finally {
-//            zip.delete();
-//        }
+        finally {
+            zip.delete();
+        }
     }
-
 }
 

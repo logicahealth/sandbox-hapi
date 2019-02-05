@@ -1,4 +1,5 @@
 server:
+  localhost: http://localhost:${API_PORT:8076}
   port: ${API_PORT:8075}
   tomcat:
     remote_ip_header: x-forwarded-for
@@ -68,6 +69,8 @@ hspc:
         contextPath: data
         # remove openContextPath to disable the open endpoint
         openContextPath: open
+        profileResources: StructureDefinition, CodeSystem, ValueSet
+        profileResourcesUpload: StructureDefinition, CodeSystem
     # these values are used for internal calls to the auth server
     authorization:
       protocol: http
@@ -139,3 +142,4 @@ hspc:
         name: ${SANDBOX_NAME:hspc7}
 server:
   port: ${API_PORT:8077}
+

@@ -28,102 +28,96 @@ public class ProfileServiceImpl implements ProfileService {
 
     private RestTemplate restTemplate = new RestTemplate();
 
-    @Value("${server.port}")
-    private String port;
+    @Value("${server.localhost}")
+    private String localhost;
 
-    public HashMap<String, HashMap<String, String>> getAllUploadedProfilesOriginal(HttpServletRequest request, String sandboxId) {
-        String authToken = getBearerToken(request);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "BEARER " + authToken);
-        String jsonBody = "{\"sandbox\": \""+ sandboxId + "\"}";
-        HttpEntity entity = new HttpEntity(jsonBody, headers);
+    @Value("${hspc.platform.api.fhir.profileResources}")
+    private String[] profileResources;
 
-        HashMap<String, HashMap<String, String>> resourceAndUrl = new HashMap<>();
-        HashMap<String, String> innerMap = new HashMap<>();
-        JSONParser jsonParser = new JSONParser();
-
-        List<String> resourceTypes = Arrays.asList("StructureDefinition", "ValueSet", "CodeSystem");
-        for (String resourceType: resourceTypes) {
-            String url = "http://localhost:" + port + "/" + sandboxId + "/data/" + resourceType;
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-            if (response.hasBody()) {
-                String jsonString = response.getBody();
-                try {
-                    JSONObject jsonBundle = (JSONObject) jsonParser.parse(jsonString);
-                    JSONArray entry = (JSONArray) jsonBundle.get("entry");
-                    for (int i = 0; i < entry.size(); i++) {
-                        JSONObject resource = (JSONObject) entry.get(i);
-                        JSONObject urt = (JSONObject) resource.get("resource");
-                        String uploadedResourceType = urt.get("resourceType").toString();
-                        String resourceUrl = urt.get("url").toString();
-                        String fhirVersion = urt.get("fhirVersion").toString();
-                        innerMap.put(resourceUrl, fhirVersion);
-                        resourceAndUrl.put(uploadedResourceType, innerMap);
-                    }
-                } catch (Exception e) {
-                    logger.error(e.getMessage());
-                }
-            }
-        }
-        return resourceAndUrl;
-    }
+    @Value("${hspc.platform.api.fhir.profileResourcesUpload}")
+    private String[] profileResoucesUpload;
 
     public HashMap<String, List<JSONObject>> getAllUploadedProfiles(HttpServletRequest request, String sandboxId) {
-        String authToken = getBearerToken(request);
+        String authToken = request.getHeader("Authorization").substring(7);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "BEARER " + authToken);
         String jsonBody = "{\"sandbox\": \""+ sandboxId + "\"}";
         HttpEntity entity = new HttpEntity(jsonBody, headers);
 
-        HashMap<String, List<JSONObject>> resourceAndUrl = new HashMap<>();
+        HashMap<String, List<JSONObject>> urlAndResources = new HashMap<>();
 
+        String url = "";
         String completeUrl = "";
         String profileUrl = "";
         String currentUrl = "";
 
         JSONParser jsonParser = new JSONParser();
         List<JSONObject> urtList = new ArrayList<>();
+        Boolean next = true;
 
-        List<String> resourceTypes = Arrays.asList("StructureDefinition", "CodeSystem");
-        for (String resourceType: resourceTypes) {
-            String url = "http://localhost:" + port + "/" + sandboxId + "/data/" + resourceType;
-            ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-            if (response.hasBody()) {
-                String jsonString = response.getBody();
-                try {
-                    JSONObject jsonBundle = (JSONObject) jsonParser.parse(jsonString);
-                    JSONArray entry = (JSONArray) jsonBundle.get("entry");
-                    for (int i = 0; i < entry.size(); i++) {
-                        JSONObject resource = (JSONObject) entry.get(i);
-                        JSONObject urt = (JSONObject) resource.get("resource");
-                        completeUrl = urt.get("url").toString();
-                        profileUrl = completeUrl.substring(0, completeUrl.indexOf(resourceType));
-                        if (currentUrl.isEmpty()) {
-                            currentUrl = profileUrl;
-                            urtList.add(urt);
-                        } else if (profileUrl.equals(currentUrl)) {
-                            urtList.add(urt);
+        for (String resourceType: profileResources) {
+            url = localhost + "/" + sandboxId + "/data/" + resourceType + "?_count=50";
+            next = true;
+            while(next) {
+                ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+                if (response.hasBody()) {
+                    String jsonString = response.getBody();
+                    try {
+                        JSONObject jsonBundle = (JSONObject) jsonParser.parse(jsonString);
+                        JSONArray  linkArray = (JSONArray) jsonBundle.get("link");
+                        if (linkArray.size() >= 2) {
+                            if (((JSONObject) linkArray.get(1)).get("relation").toString().equals("next")) {
+                                next = true;
+                                url = ((JSONObject) linkArray.get(1)).get("url").toString();
+                            } else {
+                                next = false;
+                            }
                         } else {
-                            resourceAndUrl.put(currentUrl, urtList);
-                            currentUrl = profileUrl;
+                            next = false;
                         }
+
+                        JSONArray entry = (JSONArray) jsonBundle.get("entry");
+                        for (int i = 0; i < entry.size(); i++) {
+                            JSONObject resource = (JSONObject) ((JSONObject) entry.get(i)).get("resource");
+                            completeUrl = resource.get("url").toString();
+                            profileUrl = completeUrl.substring(0, completeUrl.indexOf(resourceType));
+                            if (currentUrl.isEmpty()) {
+                                currentUrl = profileUrl;
+                                urtList.add(resource);
+                            } else if (profileUrl.equals(currentUrl)) {
+                                urtList.add(resource);
+                            } else {
+                                urlAndResources.put(currentUrl, urtList);
+                                currentUrl = profileUrl;
+                            }
+                        }
+                        urlAndResources.put(currentUrl, urtList);
+                    } catch (Exception e) {
+                        logger.error(e.getMessage());
                     }
-                    resourceAndUrl.put(currentUrl, urtList);
-                } catch (Exception e) {
-                    logger.error(e.getMessage());
                 }
             }
         }
-        return resourceAndUrl;
+        return urlAndResources;
     }
 
-    public void saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId) throws IOException {
-
-        String authToken = request.getHeader("Authorization");
-        if (authToken == null) {
-            logger.error("User is unauthorized to upload the profile");
+    private JSONObject parseJsonObject (ResponseEntity<String> response) {
+        JSONParser jsonParser = new JSONParser();
+        JSONObject jsonBundle = new JSONObject();
+        if (response.hasBody()) {
+            String jsonString = response.getBody();
+            try {
+                jsonBundle = (JSONObject) jsonParser.parse(jsonString);
+            } catch (Exception e) {
+                logger.error(e.getMessage());
+            }
         }
-        authToken = authToken.substring(7);
+        return jsonBundle;
+    }
+
+
+    public void saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId) throws IOException {
+        String authToken = request.getHeader("Authorization").substring(7);
 
         String fileName = "";
         String beginsWith = "";
@@ -152,7 +146,7 @@ public class ProfileServiceImpl implements ProfileService {
                     HttpHeaders headers = new HttpHeaders();
                     headers.set("Authorization", "BEARER " + authToken);
                     headers.set("Content-Type", "application/json");
-                    String url = "http://localhost:" + port + "/" + sandboxId + "/data/" + jsonObject.get("resourceType").toString() + "/" + jsonObject.get("id").toString();
+                    String url = localhost + "/" + sandboxId + "/data/" + jsonObject.get("resourceType").toString() + "/" + jsonObject.get("id").toString();
                     HttpEntity entity = new HttpEntity(jsonBody, headers);
 
                     try {
@@ -162,6 +156,14 @@ public class ProfileServiceImpl implements ProfileService {
                     }
                 }
             }
+        }
+    }
+}
+
+//if (((JSONObject) jsonBundle.get("link")).get("relation").equals("next")) {
+
+
+
 
 //            if (fileName.endsWith(".xml")) {
 //                beginsWith = fileName.substring(0, fileName.indexOf("-"));
@@ -193,7 +195,7 @@ public class ProfileServiceImpl implements ProfileService {
 //                        headers.set("Authorization", "BEARER " + authToken);
 //                        headers.set("Content-Type", "application/xml");
 //
-//                        String url = "http://localhost:" + port + "/" + sandboxId + "/data/" +  beginsWith + "/" + element.getAttribute("id value");
+//                        String url = localhost + "/" + sandboxId + "/data/" +  beginsWith + "/" + element.getAttribute("id value");
 //                        HttpEntity entity = new HttpEntity(stringBuilder.toString(), headers);
 //                        try {
 //                            restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
@@ -205,14 +207,6 @@ public class ProfileServiceImpl implements ProfileService {
 //                    }
 //                }
 //            }
-        }
-    }
-    private String getBearerToken(HttpServletRequest request) {
 
-        String authToken = request.getHeader("Authorization");
-        if (authToken == null) {
-            return null;
-        }
-        return authToken.substring(7);
-    }
-}
+
+
