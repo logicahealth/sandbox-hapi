@@ -9,6 +9,5 @@ import java.util.zip.ZipFile;
 
 public interface ProfileService {
     void saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId) throws IOException;
-    HashMap<String, HashMap<String, String>> getAllUploadedProfilesOriginal(HttpServletRequest request, String sandboxId);
     HashMap<String, List<JSONObject>> getAllUploadedProfiles(HttpServletRequest request, String sandboxId);
 }
