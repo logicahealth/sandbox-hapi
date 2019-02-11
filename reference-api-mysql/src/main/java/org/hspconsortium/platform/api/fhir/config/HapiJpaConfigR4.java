@@ -20,7 +20,7 @@ public class HapiJpaConfigR4 extends BaseJavaConfigR4 {
     }
 
     @Bean(autowire = Autowire.BY_TYPE)
-    @Override
+//    @Override
     public ISearchCoordinatorSvc searchCoordinatorSvc() {
         return new MultiTenantSearchCoordinatorSvcImpl();
     }

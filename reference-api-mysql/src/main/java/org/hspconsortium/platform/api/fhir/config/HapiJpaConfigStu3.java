@@ -30,7 +30,7 @@ public class HapiJpaConfigStu3 extends BaseJavaConfigDstu3 {
     }
 
     @Bean(autowire = Autowire.BY_TYPE)
-    @Override
+//    @Override
     public ISearchCoordinatorSvc searchCoordinatorSvc() {
         return new MultiTenantSearchCoordinatorSvcImpl();
     }
