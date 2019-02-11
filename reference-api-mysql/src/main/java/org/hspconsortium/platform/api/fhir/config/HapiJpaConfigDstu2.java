@@ -18,7 +18,7 @@ public class HapiJpaConfigDstu2 extends BaseJavaConfigDstu2 {
 //    }
 
     @Bean(autowire = Autowire.BY_TYPE)
-    @Override
+//    @Override
     public ISearchCoordinatorSvc searchCoordinatorSvc() {
         return new MultiTenantSearchCoordinatorSvcImpl();
     }

@@ -1,12 +1,16 @@
 package org.hspconsortium.platform.api.oauth2;
 
+import org.springframework.boot.autoconfigure.security.oauth2.client.OAuth2ClientProperties;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.provider.OAuth2Authentication;
-import org.springframework.security.oauth2.provider.OAuth2Request;
+//import org.springframework.security.oauth2.provider.OAuth2Authentication;
+//import org.springframework.security.oauth2.provider.OAuth2Request;
 
 import java.util.Map;
 
-public class HspcOAuth2Authentication extends OAuth2Authentication {
+
+public class HspcOAuth2Authentication extends OAuth2ClientProperties {
+
+
 
     Map<String, String> launchContextParams;
     String userId;
