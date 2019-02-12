@@ -19,6 +19,8 @@ import java.io.*;
 import java.util.*;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
+
+import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
 
 
@@ -34,15 +36,11 @@ public class ProfileServiceImpl implements ProfileService {
     @Value("${hspc.platform.api.fhir.profileResources}")
     private String[] profileResources;
 
-    @Value("${hspc.platform.api.fhir.profileResourcesUpload}")
-    private String[] profileResoucesUpload;
-
     public HashMap<String, List<JSONObject>> getAllUploadedProfiles(HttpServletRequest request, String sandboxId) {
         String authToken = request.getHeader("Authorization").substring(7);
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "BEARER " + authToken);
-        String jsonBody = "{\"sandbox\": \""+ sandboxId + "\"}";
-        HttpEntity entity = new HttpEntity(jsonBody, headers);
+        HttpEntity entity = new HttpEntity(headers);
 
         HashMap<String, List<JSONObject>> urlAndResources = new HashMap<>();
 
@@ -65,22 +63,25 @@ public class ProfileServiceImpl implements ProfileService {
                     try {
                         JSONObject jsonBundle = (JSONObject) jsonParser.parse(jsonString);
                         JSONArray  linkArray = (JSONArray) jsonBundle.get("link");
+                        next = false;
                         if (linkArray.size() >= 2) {
-                            if (((JSONObject) linkArray.get(1)).get("relation").toString().equals("next")) {
-                                next = true;
-                                url = ((JSONObject) linkArray.get(1)).get("url").toString();
-                            } else {
-                                next = false;
+                            for (int i = 0; i < linkArray.size(); i++) {
+                                if (((JSONObject) linkArray.get(i)).get("relation").toString().equals("next")) {
+                                    next = true;
+                                    url = ((JSONObject) linkArray.get(i)).get("url").toString();
+                                }
                             }
-                        } else {
-                            next = false;
                         }
 
                         JSONArray entry = (JSONArray) jsonBundle.get("entry");
                         for (int i = 0; i < entry.size(); i++) {
                             JSONObject resource = (JSONObject) ((JSONObject) entry.get(i)).get("resource");
                             completeUrl = resource.get("url").toString();
-                            profileUrl = completeUrl.substring(0, completeUrl.indexOf(resourceType));
+                            if (completeUrl.contains(resourceType)) {
+                                profileUrl = completeUrl.substring(0, completeUrl.indexOf(resourceType));
+                            } else {
+                                profileUrl = completeUrl;
+                            }
                             if (currentUrl.isEmpty()) {
                                 currentUrl = profileUrl;
                                 urtList.add(resource);
@@ -89,9 +90,13 @@ public class ProfileServiceImpl implements ProfileService {
                             } else {
                                 urlAndResources.put(currentUrl, urtList);
                                 currentUrl = profileUrl;
+                                urtList.clear();
+                                urtList.add(resource);
+                                urlAndResources.put(currentUrl, urtList);
+                                //TODO: not adding SD and another CS if the current url has changed.
+                                // it only added one resource to the QICore, where it should be adding 3
                             }
                         }
-                        urlAndResources.put(currentUrl, urtList);
                     } catch (Exception e) {
                         logger.error(e.getMessage());
                     }
@@ -101,69 +106,52 @@ public class ProfileServiceImpl implements ProfileService {
         return urlAndResources;
     }
 
-    private JSONObject parseJsonObject (ResponseEntity<String> response) {
-        JSONParser jsonParser = new JSONParser();
-        JSONObject jsonBundle = new JSONObject();
-        if (response.hasBody()) {
-            String jsonString = response.getBody();
-            try {
-                jsonBundle = (JSONObject) jsonParser.parse(jsonString);
-            } catch (Exception e) {
-                logger.error(e.getMessage());
-            }
-        }
-        return jsonBundle;
-    }
-
-
-    public void saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId) throws IOException {
+    public HashMap<List<String>, List<String>> saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId) throws IOException {
+        HashMap<List<String>, List<String>> successAndFailureList = new HashMap<>();
         String authToken = request.getHeader("Authorization").substring(7);
-
         String fileName = "";
-        String beginsWith = "";
-
+        String resourceType = "";
+        String resourceName = "";
+        List<String> resourceSaved = new ArrayList<>();
+        List<String> resourceNotSaved = new ArrayList<>();
         Enumeration zipFileEntries = zipFile.entries();
 
         while(zipFileEntries.hasMoreElements()) {
             ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
             fileName = entry.getName();
-            if (fileName.contains("/")) {
-                fileName = fileName.substring(fileName.indexOf("/") + 1);
-            }
             if (fileName.endsWith(".json")) {
-                beginsWith = fileName.substring(0, fileName.indexOf("-"));
-                if(beginsWith.equals("StructureDefinition") || (beginsWith.equals("ValueSet")) || (beginsWith.equals("CodeSystem"))) {
-                    InputStream inputStream = zipFile.getInputStream(entry);
-                    JSONParser jsonParser = new JSONParser();
-                    JSONObject jsonObject = new JSONObject();
-                    try {
-                        jsonObject = (JSONObject)jsonParser.parse(new InputStreamReader(inputStream, "UTF-8"));
-                    }
-                    catch (Exception e) {
-                        logger.error("Unsupported file: " + fileName);
-                    }
-                    String jsonBody = jsonObject.toString();
-                    HttpHeaders headers = new HttpHeaders();
-                    headers.set("Authorization", "BEARER " + authToken);
-                    headers.set("Content-Type", "application/json");
-                    String url = localhost + "/" + sandboxId + "/data/" + jsonObject.get("resourceType").toString() + "/" + jsonObject.get("id").toString();
-                    HttpEntity entity = new HttpEntity(jsonBody, headers);
+                InputStream inputStream = zipFile.getInputStream(entry);
+                JSONParser jsonParser = new JSONParser();
+                try {
+                    JSONObject jsonObject = (JSONObject)jsonParser.parse(new InputStreamReader(inputStream, "UTF-8"));
+                    resourceType = jsonObject.get("resourceType").toString();
+                    resourceName = jsonObject.get("name").toString();
 
-                    try {
-                        restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
-                    } catch (HttpClientErrorException e) {
-                        logger.error("File not saved: " + fileName);
+                    if (Arrays.stream(profileResources).anyMatch(resourceType::equals)) {
+                        String jsonBody = jsonObject.toString();
+                        HttpHeaders headers = new HttpHeaders();
+                        headers.set("Authorization", "BEARER " + authToken);
+                        headers.set("Content-Type", "application/json");
+                        String url = localhost + "/" + sandboxId + "/data/" + resourceType + "/" + jsonObject.get("id").toString();
+                        HttpEntity entity = new HttpEntity(jsonBody, headers);
+                        try {
+                            restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
+                            resourceSaved.add(resourceType + " - " + resourceName);
+                        } catch (HttpServerErrorException e) {
+                            resourceNotSaved.add(resourceType + " - " + resourceName);
+                            logger.error("Resource not saved: " + resourceType + ". " + e.getMessage());
+                        }
                     }
+                }
+                catch (Exception e) {
+                    logger.error("Content of the " + resourceType + " is not supported. " + e.getMessage());
                 }
             }
         }
+        successAndFailureList.put(resourceSaved, resourceNotSaved);
+        return successAndFailureList;
     }
 }
-
-//if (((JSONObject) jsonBundle.get("link")).get("relation").equals("next")) {
-
-
-
 
 //            if (fileName.endsWith(".xml")) {
 //                beginsWith = fileName.substring(0, fileName.indexOf("-"));
