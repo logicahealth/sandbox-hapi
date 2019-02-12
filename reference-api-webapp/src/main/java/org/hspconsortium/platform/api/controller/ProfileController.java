@@ -38,10 +38,11 @@ public class ProfileController {
     }
 
     @PostMapping(value = "/uploadProfile")
-    public void uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, String sandboxId) throws IOException {
+    public HashMap<List<String>, List<String>> uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, String sandboxId) throws IOException {
         if(!sandboxService.verifyUser(request, sandboxId)) {
             throw new UnauthorizedUserException("User not authorized");
         }
+        HashMap<List<String>, List<String>> list = new HashMap<>();
         // Save file to temp
         File zip = File.createTempFile(UUID.randomUUID().toString(), "temp");
         FileOutputStream o = new FileOutputStream(zip);
@@ -50,13 +51,14 @@ public class ProfileController {
 
         try {
             ZipFile zipFile = new ZipFile(zip);
-            profileService.saveZipFile(zipFile, request, sandboxId);
+            list = profileService.saveZipFile(zipFile, request, sandboxId);
         } catch (ZipException e) {
             e.printStackTrace();
         }
         finally {
             zip.delete();
         }
+        return list;
     }
 }
 
