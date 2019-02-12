@@ -89,6 +89,7 @@ public class DataSourceRepository {
         Connection conn = null;
         try {
             //verify for a valid datasource
+            ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getPoolProperties().setMaxActive(2);
             conn = dataSource.getConnection();
             conn.isValid(2);
 
