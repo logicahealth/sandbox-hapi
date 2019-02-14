@@ -95,10 +95,10 @@
             <version>3.0.7.RELEASE</version>
         </dependency>
 
-        <!--<dependency>-->
-            <!--<groupId>org.javassist</groupId>-->
-            <!--<artifactId>javassist</artifactId>-->
-        <!--</dependency>-->
+        <dependency>
+            <groupId>org.javassist</groupId>
+            <artifactId>javassist</artifactId>
+        </dependency>
 
         <!-- Hibernate -->
         <dependency>
