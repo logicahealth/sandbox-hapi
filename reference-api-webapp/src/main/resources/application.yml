@@ -13,6 +13,9 @@ spring:
     tomcat:
       initialSize: 1
       maxActive: 5
+  main:
+    allow-bean-definition-overriding: true
+
 
 hibernate:
   search:
