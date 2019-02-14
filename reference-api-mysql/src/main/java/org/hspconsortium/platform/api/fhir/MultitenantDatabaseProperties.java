@@ -70,4 +70,16 @@ public class MultitenantDatabaseProperties extends DatabaseProperties {
 		baseProperties.setSchema(Collections.singletonList("information_schema"));
 		return baseProperties;
 	}
+
+	public void setDataSourceCacheSize(int dataSourceCacheSize) {
+		this.dataSourceCacheSize = dataSourceCacheSize;
+	}
+
+	public void setDefaultTenantId(String defaultTenantId) {
+		this.defaultTenantId = defaultTenantId;
+	}
+
+	public void setTemplateSandboxes(String[] templateSandboxes) {
+		this.templateSandboxes = templateSandboxes;
+	}
 }
