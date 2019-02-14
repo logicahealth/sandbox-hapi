@@ -86,13 +86,7 @@
         <dependency>
             <groupId>org.thymeleaf</groupId>
             <artifactId>thymeleaf</artifactId>
-            <version>3.0.7.RELEASE</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.thymeleaf</groupId>
-            <artifactId>thymeleaf-spring4</artifactId>
-            <version>3.0.7.RELEASE</version>
+            <version>3.0.11.RELEASE</version>
         </dependency>
 
         <dependency>
@@ -128,7 +122,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>6.0.11.Final</version>
+            <version>${hibernate-validator.version}</version>
         </dependency>
         <dependency>
             <groupId>org.aspectj</groupId>
