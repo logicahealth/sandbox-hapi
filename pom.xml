@@ -28,7 +28,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- spring boot properties -->
         <hibernate.version>5.4.1.Final</hibernate.version> <!-- defaults is 5.0.12.Final -->
-        <hibernate-validator.version>5.4.1.Final</hibernate-validator.version> <!-- default is 5.3.5.Final -->
+        <!--<hibernate-validator.version>5.4.1.Final</hibernate-validator.version> &lt;!&ndash; default is 5.3.5.Final &ndash;&gt;-->
         <thymeleaf.version>3.0.11.RELEASE</thymeleaf.version> <!-- default is 2.1.5.RELEASE -->
         <!-- end spring boot hibernate properties -->
         <thymeleaf-extras-springsecurity4.version>3.0.2.RELEASE</thymeleaf-extras-springsecurity4.version>

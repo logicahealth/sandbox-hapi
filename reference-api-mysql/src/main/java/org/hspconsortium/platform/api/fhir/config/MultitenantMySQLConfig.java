@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
@@ -64,7 +65,7 @@ public class MultitenantMySQLConfig extends MySQLConfig {
     }
 
     @Autowired
-    protected Properties jpaProperties(DataSource dataSource) {
+    protected Properties jpaProperties(@Lazy DataSource dataSource) {
         Properties multitenantProperties = super.jpaProperties(dataSource);
         multitenantProperties.put(Environment.MULTI_TENANT, MultiTenancyStrategy.DATABASE);
         multitenantProperties.put(Environment.MULTI_TENANT_CONNECTION_PROVIDER, multiTenantConnectionProvider);
