@@ -29,7 +29,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.util.Version;
-import org.flywaydb.core.Flyway;
+//import org.flywaydb.core.Flyway;
 import org.hibernate.cfg.Environment;
 import org.hspconsortium.platform.api.fhir.DatabaseProperties;
 import org.hspconsortium.platform.api.fhir.util.TAR;
@@ -85,8 +85,8 @@ public class MySQLConfig {
     @Value("${hspc.platform.api.fhir.allowExternalReferences:true}")
     private boolean allowExternalReferences;
 
-    @Value("${flyway.locations}")
-    private String flywayLocations;
+//    @Value("${flyway.locations}")
+//    private String flywayLocations;
 
     @Autowired
     private JpaProperties jpaProperties;
@@ -133,10 +133,10 @@ public class MySQLConfig {
 
         // migrate the database manually because of a circular bean problem
         // with multi-tenant datasources
-        Flyway flyway = new Flyway();
-        flyway.setLocations(flywayLocations);
-        flyway.setDataSource(dataSource);
-        flyway.migrate();
+//        Flyway flyway = new Flyway();
+//        flyway.setLocations(flywayLocations);
+//        flyway.setDataSource(dataSource);
+//        flyway.migrate();
 
         return dataSource;
     }

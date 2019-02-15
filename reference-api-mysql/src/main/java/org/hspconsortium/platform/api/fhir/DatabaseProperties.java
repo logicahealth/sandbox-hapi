@@ -38,12 +38,12 @@ public class DatabaseProperties {
 	@NestedConfigurationProperty
 	private DataSourceProperties db;
 
-	@Value("${flyway.locations}")
-	private String flywayLocations;
-
-	public String getFlywayLocations() {
-		return flywayLocations;
-	}
+//	@Value("${flyway.locations}")
+//	private String flywayLocations;
+//
+//	public String getFlywayLocations() {
+//		return flywayLocations;
+//	}
 
 	public DataSourceProperties getDb() {
 		return db;
