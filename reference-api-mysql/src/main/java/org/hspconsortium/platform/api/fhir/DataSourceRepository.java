@@ -21,6 +21,7 @@
 package org.hspconsortium.platform.api.fhir;
 
 import com.github.benmanes.caffeine.cache.Caffeine;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.hspconsortium.platform.api.fhir.model.DataSet;
 import org.hspconsortium.platform.api.fhir.model.Sandbox;
 import org.hspconsortium.platform.api.fhir.service.SandboxService;
@@ -43,6 +44,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Component
 public class DataSourceRepository {
@@ -51,7 +54,7 @@ public class DataSourceRepository {
 
     private MultitenantDatabaseProperties multitenancyProperties;
 
-    private CaffeineCache datasourceCache;
+    private ConcurrentMap<String, DataSource> datasourceCache;
 
     private SandboxService sandboxService;
 
@@ -59,22 +62,23 @@ public class DataSourceRepository {
     public DataSourceRepository(MultitenantDatabaseProperties multitenancyProperties, SandboxService sandboxService) {
         this.multitenancyProperties = multitenancyProperties;
         this.sandboxService = sandboxService;
+        datasourceCache = new ConcurrentHashMap<>(this.multitenancyProperties.getDataSourceCacheSize());
 
-        Cache<Object, Object> cacheBuilder =
-                Caffeine
-                        .newBuilder()
-                        .maximumSize(this.multitenancyProperties.getDataSourceCacheSize())
-                        .build();
+//        LoadingCache<String, Object> cacheBuilder =
+//                Caffeine
+//                        .newBuilder()
+//                        .maximumSize(this.multitenancyProperties.getDataSourceCacheSize())
+//                        .build();
 
-        datasourceCache = new CaffeineCache("datasourceCache", cacheBuilder);
+//        datasourceCache = new CaffeineCache("datasourceCache", cacheBuilder);
     }
 
     public DataSource getDataSource(String hspcSchemaVersion, String tenantIdentifier) {
         String key = tenantIdentifier + "~" + hspcSchemaVersion;
 
-        org.springframework.cache.Cache.ValueWrapper valueWrapper = datasourceCache.get(key);
-        if (valueWrapper != null) {
-            return (DataSource) valueWrapper.get();
+//        org.springframework.cache.Cache.ValueWrapper valueWrapper = datasourceCache.get(key);
+        if (datasourceCache.containsKey(key)) {
+            return datasourceCache.get(key);
         }
 
         DataSource dataSource = createDataSource(hspcSchemaVersion, tenantIdentifier);
