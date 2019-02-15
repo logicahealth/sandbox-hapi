@@ -21,6 +21,7 @@
 package org.hspconsortium.platform.api.fhir.config;
 
 import ca.uhn.fhir.jpa.dao.DaoConfig;
+import ca.uhn.fhir.jpa.model.entity.ModelConfig;
 import ca.uhn.fhir.jpa.search.LuceneSearchMappingFactory;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
@@ -113,6 +114,11 @@ public class MySQLConfig {
         return retVal;
     }
 
+    @Bean
+    public ModelConfig modelConfig() {
+        return daoConfig().getModelConfig();
+    }
+
     @Primary
     @Bean//(name = {"dataSource"})
     @Profile("default")
@@ -170,7 +176,6 @@ public class MySQLConfig {
             ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getPoolProperties().setTestOnBorrow(true);
             ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getPoolProperties().setValidationQuery("SELECT 1");
         }
-
         // try it out
         try {
             Connection connection = dataSource.getConnection();
@@ -186,7 +191,8 @@ public class MySQLConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean retVal = new LocalContainerEntityManagerFactoryBean();
         retVal.setDataSource(dataSource);
-        retVal.setPackagesToScan("ca.uhn.fhir.jpa.entity");
+        String[] packageLocations = {"ca.uhn.fhir.jpa.entity", "ca.uhn.fhir.jpa.model.entity"};
+        retVal.setPackagesToScan(packageLocations);
         retVal.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         retVal.setJpaProperties(jpaProperties(dataSource));
         retVal.afterPropertiesSet();
