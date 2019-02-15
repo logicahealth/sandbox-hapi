@@ -9,10 +9,6 @@ spring:
     name: HSPC Reference API
   profiles:
     active: multitenant,dstu2
-  datasource:
-    tomcat:
-      initialSize: 1
-      maxActive: 5
   main:
     allow-bean-definition-overriding: true
 

@@ -33,10 +33,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.context.annotation.Profile;
-import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.annotation.*;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 import javax.annotation.Resource;
