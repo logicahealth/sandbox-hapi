@@ -89,10 +89,10 @@
             <version>3.0.11.RELEASE</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.javassist</groupId>
-            <artifactId>javassist</artifactId>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.javassist</groupId>-->
+            <!--<artifactId>javassist</artifactId>-->
+        <!--</dependency>-->
 
         <!-- Hibernate -->
         <dependency>
@@ -122,7 +122,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>${hibernate-validator.version}</version>
+            <version>5.4.2.Final</version>
         </dependency>
         <dependency>
             <groupId>org.aspectj</groupId>

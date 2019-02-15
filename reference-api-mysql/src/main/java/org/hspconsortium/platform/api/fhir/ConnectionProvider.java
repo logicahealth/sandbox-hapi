@@ -24,6 +24,7 @@ import org.apache.commons.lang3.Validate;
 import org.hibernate.engine.jdbc.connections.spi.AbstractDataSourceBasedMultiTenantConnectionProviderImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -39,6 +40,7 @@ public class ConnectionProvider extends AbstractDataSourceBasedMultiTenantConnec
 
     @Autowired(required = true)
     @Qualifier("noSchemaDataSource")
+    @Lazy
     public DataSource noSchemaDataSource;
 
     @Override

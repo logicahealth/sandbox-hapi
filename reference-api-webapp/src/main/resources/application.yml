@@ -57,7 +57,7 @@ hspc:
           starterSchemaScriptPattern: db/mysql/hspc_%s_%s_%s_dataset.sql
           # Comma-separated list of scripts to run in order
           initializationScripts: db/mysql/V1__convert_hapi_3.2.0_to_3.3.0.sql
-        datasource:
+        data-source:
           cache:
             size: 10
         defaultTenantId: ${hspc.platform.api.sandbox.name}
