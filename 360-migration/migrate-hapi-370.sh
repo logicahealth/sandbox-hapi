@@ -23,8 +23,10 @@
 MYSQL_USER=$1
 MYSQL_PASS=$2
 ENVIRONMENT=$3
-BEARER_TOKEN=$4
-JASYPT_PASSWORD=$5 || ""
+FULL_NAME=$4
+FHIR_VERSION=$5
+BEARER_TOKEN=$6
+JASYPT_PASSWORD=$7 || ""
 HOST="127.0.0.1:3306"
 
 case "${ENVIRONMENT}" in
@@ -52,12 +54,7 @@ esac
 #    SANDBOX_NAME=${FULL_NAME:7}
 #	echo "$SANDBOX_NAME"
 #done
-FULL_NAME="hspc_5_blah5"
-SANDBOX_NAME="blah5"
-echo "Running Pre-Reindexing sql scripts for $SANDBOX_NAME"
-echo "USE $FULL_NAME" | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs
-mysql --user="$MYSQL_USER" --password="$MYSQL_PASS" --database="$FULL_NAME" < preReindexing.sql
-fhirVersion="stu3"
+SANDBOX_NAME=${FULL_NAME:7}
 PORT="8075"
 case "${fhirVersion}" in
     dstu2)
@@ -88,7 +85,7 @@ esac
 #        kill "$(lsof -t -i:${PORT})"
 #    fi
 
-./run-fhir-server.sh ${fhirVersion} $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
+./run-fhir-server.sh $FHIR_VERSION $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
 
 STARTED=0
 sleep 60
@@ -98,7 +95,7 @@ until [  $STARTED -eq 1 ]; do
     if [[ ! -z "$(lsof -t -i:$PORT)" ]]; then
         let STARTED=1
     else
-        ./run-fhir-server.sh ${fhirVersion} $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
+        ./run-fhir-server.sh $FHIR_VERSION $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
     fi
     sleep 60
 done
