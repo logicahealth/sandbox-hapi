@@ -52,8 +52,8 @@ esac
 #    SANDBOX_NAME=${FULL_NAME:7}
 #	echo "$SANDBOX_NAME"
 #done
-FULL_NAME="hspc_5_blah"
-SANDBOX_NAME="blah"
+FULL_NAME="hspc_5_blah5"
+SANDBOX_NAME="blah5"
 echo "Running Pre-Reindexing sql scripts for $SANDBOX_NAME"
 echo "USE $FULL_NAME" | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs
 mysql --user="$MYSQL_USER" --password="$MYSQL_PASS" --database="$FULL_NAME" < preReindexing.sql
@@ -83,23 +83,24 @@ case "${ENVIRONMENT}" in
         ;;
 esac
 
-if [[ ! -z "$(lsof -t -i:$PORT)" ]]; then
-        echo "Killing port $PORT."
-        kill "$(lsof -t -i:${PORT})"
-    fi
+#if [[ ! -z "$(lsof -t -i:$PORT)" ]]; then
+#        echo "Killing port $PORT."
+#        kill "$(lsof -t -i:${PORT})"
+#    fi
 
 ./run-fhir-server.sh ${fhirVersion} $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
 
 STARTED=0
-sleep 20
+sleep 60
 
 OUTPUT=""
 until [  $STARTED -eq 1 ]; do
     if [[ ! -z "$(lsof -t -i:$PORT)" ]]; then
         let STARTED=1
-        echo "$(lsof -t -i:$PORT)"
+    else
+        ./run-fhir-server.sh ${fhirVersion} $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
     fi
-    sleep 3
+    sleep 60
 done
 
 echo "Running server on port $PORT."
@@ -115,21 +116,20 @@ until [  $STARTED -eq 1 ]; do
 done
 
 FINISHED=0
-SQL_STRING="SELECT COUNT(*) FROM $FULL_NAME.HFJ_SPIDX_TOKEN WHERE HASH VALUE IS NULL;"
+SQL_STRING="SELECT COUNT(*) FROM $FULL_NAME.HFJ_SPIDX_TOKEN WHERE HASH_IDENTITY IS NULL;"
 SQL_STRING2="SELECT COUNT(*) FROM $FULL_NAME.HFJ_RES_REINDEX_JOB;"
 
 until [  $FINISHED -eq 1 ]; do
-    if [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)"  != "0" && "$(echo $SQL_STRING2 | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)"  == "0" ]]; then
-        echo "curl --header \"Authorization: BEARER ${BEARER_TOKEN}\" \"$FHIR_HOST/$SANDBOX_NAME/data/\$mark-all-resources-for-reindexing\""
+    if [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)" != "0" && "$(echo $SQL_STRING2 | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)" == "0" ]]; then
+        curl -X GET --header "Authorization: BEARER ${BEARER_TOKEN}" "$FHIR_HOST/$SANDBOX_NAME/data/\$mark-all-resources-for-reindexing"
 
-    elif [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)"  == "0" && "$(echo $SQL_STRING2 | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)"  == "0" ]]; then
+    elif [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)" == "0" && "$(echo $SQL_STRING2 | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)" == "0" ]]; then
         let FINISHED=1
     fi
-    echo "Attempting..."
-    sleep 5
+    sleep 15
 done
 
-mysql --user="$MYSQL_USER" --password="$MYSQL_PASS" --database="$FULL_NAME" < postReindexing.sql
+#mysql --user="$MYSQL_USER" --password="$MYSQL_PASS" --database="$FULL_NAME" < postReindexing.sql
 
 hapi-fhir-3.7.0-cli/hapi-fhir-cli migrate-database -d MYSQL_5_7 -u "jdbc:mysql://$HOST/$FULL_NAME?serverTimezone=America/Denver" -n "$MYSQL_USER" -p "$MYSQL_PASS" -f V3_4_0 -t V3_7_0
 
