@@ -122,7 +122,7 @@ hspc:
   platform:
     api:
       sandbox:
-        name: ${SANDBOX_NAME:blah}
+        name: ${SANDBOX_NAME:blah4}
 server:
   port: ${API_PORT:8076}
 
