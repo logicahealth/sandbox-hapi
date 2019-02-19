@@ -38,9 +38,10 @@ The reference-api-oauth2 library configures OAuth2/OpenID Connect security for a
 ## reference-api-mysql
 The reference-api-mysql library configures a MySQL FHIR resource repository to be used by the reference-api-webapp library.
 
-### How do I get set up?
+### How do I set up?
+This project uses Java 8.  Please make sure that your Project SDK is set to use Java 8.
 
-#### Preconditions
+#### Step 1: Preconditions
     For secured configuration, the reference-api server must register a client with the reference-authorization server.
     From MySQL
     mysql> use oic;
@@ -48,26 +49,31 @@ The reference-api-mysql library configures a MySQL FHIR resource repository to b
     * note this script is included with the complete installation of the reference-impl (optional)
     * alse need to create the hspc_4_hspc4 schema in mysql-local along with the oic one mentioned above. Check the Application.yml to make sure name has not changed.
 
-#### Maven Build
+#### Step 2: Maven Build
+In the terminal, run the following command:
 
     mvn package
     
-#### Run locally
+#### Step 3: Run locally or Run on docker
+###### Local installation
 
     ./run-local.sh
 
-#### Docker Install
+###### OR Docker Installation
+
+Run the following commands one line at a time:
 
     cd docker/nginx
     ./build.sh
     cd ..
     ./build.sh
     docker-compose up
-    
+  
+The set up process is complete now.  You are now able to run the project. 
 The service is available at (see default ports): 
     http://localhost:8075/
     
-#### Datatbase Migration
+#### Datatbase Migration (optional)
 If you wish to migrate sandboxes from previous HAPI versions, see reference-api-mysql/src/main/resources/db/mysql for the appropriate migration scripts.
 
 ## Open Mode ##
