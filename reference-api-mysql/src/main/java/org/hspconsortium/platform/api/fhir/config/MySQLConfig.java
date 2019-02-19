@@ -154,8 +154,8 @@ public class MySQLConfig {
 
         String urlNoSchema = null;
         for (String schema : db.getSchema()) {
-            if (db.getUrl().contains(schema.toLowerCase())) {
-                urlNoSchema = db.getUrl().substring(0, db.getUrl().indexOf(schema.toLowerCase()));
+            if (db.getUrl().toLowerCase().contains(schema.toLowerCase())) {
+                urlNoSchema = db.getUrl().toLowerCase().substring(0, db.getUrl().toLowerCase().indexOf(schema.toLowerCase()));
                 break;
             }
         }
