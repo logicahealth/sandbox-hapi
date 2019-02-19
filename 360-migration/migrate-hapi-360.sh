@@ -52,8 +52,8 @@ esac
 #    SANDBOX_NAME=${FULL_NAME:7}
 #	echo "$SANDBOX_NAME"
 #done
-FULL_NAME="hspc_5_360"
-SANDBOX_NAME="360"
+FULL_NAME="hspc_5_blah4"
+SANDBOX_NAME="blah4"
 echo "Running Pre-Reindexing sql scripts for $SANDBOX_NAME"
 echo "USE $FULL_NAME" | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs
 mysql --user="$MYSQL_USER" --password="$MYSQL_PASS" --database="$FULL_NAME" < preReindexing.sql
