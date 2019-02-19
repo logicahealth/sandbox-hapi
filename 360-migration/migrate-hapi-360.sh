@@ -52,8 +52,8 @@ esac
 #    SANDBOX_NAME=${FULL_NAME:7}
 #	echo "$SANDBOX_NAME"
 #done
-FULL_NAME="hspc_5_blah4"
-SANDBOX_NAME="blah4"
+FULL_NAME="hspc_5_blah"
+SANDBOX_NAME="blah"
 echo "Running Pre-Reindexing sql scripts for $SANDBOX_NAME"
 echo "USE $FULL_NAME" | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs
 mysql --user="$MYSQL_USER" --password="$MYSQL_PASS" --database="$FULL_NAME" < preReindexing.sql
@@ -114,12 +114,16 @@ until [  $STARTED -eq 1 ]; do
     sleep 1
 done
 
-STARTED=0
-SQL_STRING="SELECT SP_INDEX_STATUS FROM $FULL_NAME.HFJ_RESOURCE WHERE RES_ID = (SELECT MAX(RES_ID) FROM $FULL_NAME.HFJ_RESOURCE);"
+FINISHED=0
+SQL_STRING="SELECT COUNT(*) FROM $FULL_NAME.HFJ_SPIDX_TOKEN WHERE HASH VALUE IS NULL;"
+SQL_STRING2="SELECT COUNT(*) FROM $FULL_NAME.HFJ_RES_REINDEX_JOB;"
 
-until [  $STARTED -eq 1 ]; do
-    if [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)" != "NULL" ]]; then
-        let STARTED=1
+until [  $FINISHED -eq 1 ]; do
+    if [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)"  != "0" && "$(echo $SQL_STRING2 | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)"  == "0" ]]; then
+        echo "curl --header \"Authorization: BEARER ${BEARER_TOKEN}\" \"$FHIR_HOST/$SANDBOX_NAME/data/\$mark-all-resources-for-reindexing\""
+
+    elif [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)"  == "0" && "$(echo $SQL_STRING2 | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)"  == "0" ]]; then
+        let FINISHED=1
     fi
     echo "Attempting..."
     sleep 5
@@ -129,25 +133,25 @@ mysql --user="$MYSQL_USER" --password="$MYSQL_PASS" --database="$FULL_NAME" < po
 
 hapi-fhir-3.6.0-cli/hapi-fhir-cli migrate-database -d MYSQL_5_7 -u "jdbc:mysql://$HOST/$FULL_NAME?serverTimezone=America/Denver" -n "$MYSQL_USER" -p "$MYSQL_PASS" -f V3_4_0 -t V3_6_0
 
-declare -A my_dict
-FOUND=0
-IFS="$( echo -e '\t' )"
-mysql -u$MYSQL_USER -p$MYSQL_PASS -e "SELECT * FROM $FULL_NAME.HFJ_SPIDX_STRING WHERE HASH_IDENTITY is null;" |
-    while read SP_ID SP_MISSING SP_NAME RES_ID RES_TYPE SP_UPDATED SP_VALUE_EXACT SP_VALUE_NORMALIZED HASH_EXACT HASH_NORM_PREFIX HASH_IDENTITY; do
-
-    for key in ${!my_dict[@]}; do
-        if [[ ${key} == $RES_TYPE && ${my_dict[${key}]} == *",$SP_NAME,"* ]]; then
-            let FOUND=1
-        fi
-    done
-
-    if [[ $FOUND -eq 0 ]]; then
-        my_dict[$RES_TYPE]+=",$SP_NAME,"
-        HASH=$(curl --silent "http://localhost:8076/$SANDBOX_NAME/sandbox/hash/$RES_TYPE,$SP_NAME" --header "Authorization: BEARER ${BEARER_TOKEN}")
-        mysql -u$MYSQL_USER -p$MYSQL_PASS -e "UPDATE $FULL_NAME.HFJ_SPIDX_STRING SET HASH_IDENTITY='$HASH' WHERE RES_TYPE='$RES_TYPE' AND SP_NAME='$SP_NAME';"
-    fi
-    let FOUND=0
-done
+#declare -A my_dict
+#FOUND=0
+#IFS="$( echo -e '\t' )"
+#mysql -u$MYSQL_USER -p$MYSQL_PASS -e "SELECT * FROM $FULL_NAME.HFJ_SPIDX_STRING WHERE HASH_IDENTITY is null;" |
+#    while read SP_ID SP_MISSING SP_NAME RES_ID RES_TYPE SP_UPDATED SP_VALUE_EXACT SP_VALUE_NORMALIZED HASH_EXACT HASH_NORM_PREFIX HASH_IDENTITY; do
+#
+#    for key in ${!my_dict[@]}; do
+#        if [[ ${key} == $RES_TYPE && ${my_dict[${key}]} == *",$SP_NAME,"* ]]; then
+#            let FOUND=1
+#        fi
+#    done
+#
+#    if [[ $FOUND -eq 0 ]]; then
+#        my_dict[$RES_TYPE]+=",$SP_NAME,"
+#        HASH=$(curl --silent "http://localhost:8076/$SANDBOX_NAME/sandbox/hash/$RES_TYPE,$SP_NAME" --header "Authorization: BEARER ${BEARER_TOKEN}")
+#        mysql -u$MYSQL_USER -p$MYSQL_PASS -e "UPDATE $FULL_NAME.HFJ_SPIDX_STRING SET HASH_IDENTITY='$HASH' WHERE RES_TYPE='$RES_TYPE' AND SP_NAME='$SP_NAME';"
+#    fi
+#    let FOUND=0
+#done
 
 echo "Killing port $PORT"
 kill "$(lsof -t -i:${PORT})"
