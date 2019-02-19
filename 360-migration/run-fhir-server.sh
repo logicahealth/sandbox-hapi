@@ -25,7 +25,7 @@ sandbox_name="hspc5"
 profile=$1
 environment=$2
 sandbox_name=$3
-jasypt_password=$4
+jasypt_password=$4 || ""
 
 echo "using $1 profile..."
 
