@@ -33,12 +33,25 @@ jar="../reference-api-webapp/target/hspc-reference-api-webapp-*.jar"
 
 set -x
 
-echo "running..."
-#-Djasypt.encryptor.password=${jasypt_password} \
-java \
-  -Dspring.profiles.active=${profile},multitenant,${environment} \
-  -Xms256M \
-  -Xmx512M \
-  -DnameForShutdown=1 \
-  -Dhspc.platform.api.sandbox.name=${sandbox_name} \
-  -jar ${jar} &> output.log &
+if [[ "$environment" == "local" ]]; then
+    java \
+        -Dspring.profiles.active=${profile},multitenant \
+        -Xms256M \
+        -Xmx512M \
+        -DnameForShutdown=1 \
+        -Dhspc.platform.api.sandbox.name=${sandbox_name} \
+        -jar ${jar} &> output.log &
+
+  else
+    java \
+      -Dspring.profiles.active=${profile},multitenant,${environment} \
+      -Xms256M \
+      -Xmx512M \
+      -DnameForShutdown=1 \
+      -Dhspc.platform.api.sandbox.name=${sandbox_name} \
+      -Djasypt.encryptor.password=${jasypt_password} \
+      -jar ${jar} &> output.log &
+fi
+
+
+
