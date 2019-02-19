@@ -131,7 +131,7 @@ done
 
 mysql --user="$MYSQL_USER" --password="$MYSQL_PASS" --database="$FULL_NAME" < postReindexing.sql
 
-hapi-fhir-3.6.0-cli/hapi-fhir-cli migrate-database -d MYSQL_5_7 -u "jdbc:mysql://$HOST/$FULL_NAME?serverTimezone=America/Denver" -n "$MYSQL_USER" -p "$MYSQL_PASS" -f V3_4_0 -t V3_6_0
+hapi-fhir-3.7.0-cli/hapi-fhir-cli migrate-database -d MYSQL_5_7 -u "jdbc:mysql://$HOST/$FULL_NAME?serverTimezone=America/Denver" -n "$MYSQL_USER" -p "$MYSQL_PASS" -f V3_4_0 -t V3_7_0
 
 #declare -A my_dict
 #FOUND=0
@@ -153,6 +153,6 @@ hapi-fhir-3.6.0-cli/hapi-fhir-cli migrate-database -d MYSQL_5_7 -u "jdbc:mysql:/
 #    let FOUND=0
 #done
 
-echo "Killing port $PORT"
-kill "$(lsof -t -i:${PORT})"
+echo "Shutting down sever"
+ps ax | grep nameForShutdown | grep -v grep | awk '{print $1}' | xargs kill
 

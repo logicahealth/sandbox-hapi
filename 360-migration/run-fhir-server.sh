@@ -39,5 +39,6 @@ java \
   -Dspring.profiles.active=${profile},multitenant,${environment} \
   -Xms256M \
   -Xmx512M \
+  -DnameForShutdown=1 \
   -Dhspc.platform.api.sandbox.name=${sandbox_name} \
   -jar ${jar} &> output.log &
