@@ -69,7 +69,7 @@ Run the following commands one line at a time:
     ./build.sh
     docker-compose up
   
-The set up process is complete now.  You are now able to run the project. 
+The set up process is complete and your project is running now. 
 The service is available at (see default ports): 
     http://localhost:8075/
     
