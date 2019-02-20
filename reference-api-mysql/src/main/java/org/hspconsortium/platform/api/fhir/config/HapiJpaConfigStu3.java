@@ -62,5 +62,19 @@ public class HapiJpaConfigStu3 extends BaseJavaConfigDstu3 {
                 return super.create(theResource, theIfNoneExist, theRequestDetails);
             });
         }
+
+        @Override
+        public DaoMethodOutcome update(ValueSet theResource, RequestDetails theRequestDetails) {
+            return new TransactionTemplate(myTxManager).execute(t -> {
+                return super.update(theResource, theRequestDetails);
+            });
+        }
+
+        @Override
+        public DaoMethodOutcome update(ValueSet theResource, String theIfNoneExist, RequestDetails theRequestDetails) {
+            return new TransactionTemplate(myTxManager).execute(t -> {
+                return super.update(theResource, theIfNoneExist, theRequestDetails);
+            });
+        }
     }
 }
