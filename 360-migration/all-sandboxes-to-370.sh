@@ -59,20 +59,17 @@ do
             FHIR_VERSION="stu3"
             ;;
     esac
-    echo $FHIR_VERSION
+    mysql --user="$MYSQL_USER" --password="$MYSQL_PASS" --database="$FULL_NAME" < preReindexing.sql
 	SQL_STRING="SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA ='$FULL_NAME' and TABLE_NAME='HFJ_SPIDX_TOKEN' and COLUMN_NAME='HASH_IDENTITY'"
 	SQL_STRING2="SELECT COUNT(*) FROM $FULL_NAME.HFJ_RESOURCE;"
 	if [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)" != "0" ]]; then
-        SQL_STRING="SELECT COUNT(*) FROM $FULL_NAME.HFJ_SPIDX_TOKEN WHERE HASH_IDENTITY IS NULL;"
-        if [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)" != "0" ]]; then
+        SQL_STRING3="SELECT COUNT(*) FROM $FULL_NAME.HFJ_SPIDX_TOKEN WHERE HASH_IDENTITY IS NULL;"
+        if [[ "$(echo $SQL_STRING3 | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)" != "0" ]]; then
            ./migrate-hapi-370.sh $MYSQL_USER $MYSQL_PASS $ENVIRONMENT $FULL_NAME $FHIR_VERSION $BEARER_TOKEN $JASYPT_PASSWORD
         fi
     elif [[ "$(echo $SQL_STRING2 | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)" != "0" ]]; then
         echo "Running Pre-Reindexing sql scripts for $SANDBOX_NAME"
         echo "USE $FULL_NAME" | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs
-        mysql --user="$MYSQL_USER" --password="$MYSQL_PASS" --database="$FULL_NAME" < preReindexing.sql
         ./migrate-hapi-370.sh $MYSQL_USER $MYSQL_PASS $ENVIRONMENT $SANDBOX_NAME $FHIR_VERSION $BEARER_TOKEN $JASYPT_PASSWORD
-    else
-        mysql --user="$MYSQL_USER" --password="$MYSQL_PASS" --database="$FULL_NAME" < preReindexing.sql
     fi
 done
