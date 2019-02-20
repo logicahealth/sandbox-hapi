@@ -43,11 +43,11 @@ This project uses Java 8.  Please make sure that your Project SDK is set to use 
 
 #### Step 1: Preconditions
     For secured configuration, the reference-api server must register a client with the reference-authorization server.
+    This can only be done after setting up the reference-auth server with it's "oic" schema. 
     From MySQL
     mysql> use oic;
     mysql> source {install path}/reference-api-mysql/src/main/resources/db/openidconnect/mysql/resource-server-client.sql;
     * note this script is included with the complete installation of the reference-impl (optional)
-    * alse need to create the hspc_4_hspc4 schema in mysql-local along with the oic one mentioned above. Check the Application.yml to make sure name has not changed.
 
 #### Step 2: Maven Build
 In the terminal, run the following command:
@@ -75,6 +75,7 @@ The service is available at (see default ports):
     
 #### Datatbase Migration (optional)
 If you wish to migrate sandboxes from previous HAPI versions, see reference-api-mysql/src/main/resources/db/mysql for the appropriate migration scripts.
+This is no longer relevant after 3.4.0.
 
 ## Open Mode ##
 When the HSPC Reference API server is run in open mode, no security is applied.  This is very convenient for development, allowing resources to be read and written without authentication.  See reference-api-webapp/src/main/resources/application.yml.
