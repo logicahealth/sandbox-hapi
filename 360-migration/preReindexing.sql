@@ -56,6 +56,16 @@ theTable AND column_name = theColumnName) = 0) THEN
  END IF;
 END !!
 
+DELIMITER **
+
+DROP PROCEDURE IF EXISTS add_reindex_value **
+CREATE PROCEDURE add_reindex_value()
+BEGIN
+ IF((SELECT COUNT(*) FROM SEQ_RES_REINDEX_JOB) = 0 ) THEN
+   INSERT INTO SEQ_RES_REINDEX_JOB(next_val) VALUES (1);
+ END IF;
+END **
+
 DELIMITER ;
 
 CALL drop_index_if_exists('HFJ_FORCED_ID', 'IDX_FORCEDID_TYPE_FORCEDID');
@@ -109,4 +119,6 @@ CALL add_column_if_not_exists('HFJ_SEARCH', 'OPTLOCK_VERSION', 'INTEGER NULL');
 CREATE TABLE IF NOT EXISTS HFJ_RES_REINDEX_JOB (PID bigint not null, JOB_DELETED bit not null, RES_TYPE varchar(255), SUSPENDED_UNTIL datetime(6), UPDATE_THRESHOLD_HIGH datetime(6) not null, UPDATE_THRESHOLD_LOW datetime(6), REINDEX_COUNT int(11) NULL, primary key (PID));
 
 CREATE TABLE IF NOT EXISTS SEQ_RES_REINDEX_JOB (`next_val` bigint(20) DEFAULT NULL);
-INSERT INTO SEQ_RES_REINDEX_JOB(next_val) VALUES (1);
+CALL add_reindex_value();
+
+
