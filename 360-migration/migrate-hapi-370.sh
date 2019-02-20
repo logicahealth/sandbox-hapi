@@ -95,6 +95,7 @@ until [  $STARTED -eq 1 ]; do
     if [[ ! -z "$(lsof -t -i:$PORT)" ]]; then
         let STARTED=1
     else
+        ps ax | grep nameForShutdown | grep -v grep | awk '{print $1}' | xargs kill
         ./run-fhir-server.sh $FHIR_VERSION $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
     fi
     sleep 60
