@@ -52,9 +52,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
@@ -167,13 +165,9 @@ public class MultiTenantSearchCoordinatorSvcImpl implements ISearchCoordinatorSv
                 public List<Long> doInTransaction(TransactionStatus theStatus) {
                     List<Long> resultPids = new ArrayList();
                     Page<Long> searchResults = MultiTenantSearchCoordinatorSvcImpl.this.mySearchResultDao.findWithSearchUuid(search, page);
-                    Iterator var4 = searchResults.iterator();
-
-                    while (var4.hasNext()) {
-                        Long next = (Long) var4.next();
+                    for (Long next : searchResults) {
                         resultPids.add(next);
                     }
-
                     return resultPids;
                 }
             });
@@ -357,14 +351,35 @@ public class MultiTenantSearchCoordinatorSvcImpl implements ISearchCoordinatorSv
             return null;
         } else {
             int pageIndex = theFromIndex / pageSize;
-            Pageable page = PageRequest.of(pageIndex, pageSize);
-//            {
-//                private static final long serialVersionUID = 1L;
-//
-//                public int getOffset() {
-//                    return theFromIndex;
-//                }
-//            };
+            Pageable page = new AbstractPageRequest(pageIndex, pageSize) {
+                private static final long serialVersionUID = 1L;
+
+                @Override
+                public long getOffset() {
+                    return theFromIndex;
+                }
+
+                @Override
+                public Sort getSort() {
+                    return Sort.unsorted();
+                }
+
+                @Override
+                public Pageable next() {
+                    return null;
+                }
+
+                @Override
+                public Pageable previous() {
+                    return null;
+                }
+
+                @Override
+                public Pageable first() {
+                    return null;
+                }
+            };
+
             return page;
         }
     }
@@ -579,9 +594,7 @@ public class MultiTenantSearchCoordinatorSvcImpl implements ISearchCoordinatorSv
                         nextResult.setOrder(MultiTenantSearchCoordinatorSvcImpl.SearchTask.this.myCountSaved++);
                         resultsToSave.add(nextResult);
                     }
-                    for (SearchResult searchResult: resultsToSave) {
-                        MultiTenantSearchCoordinatorSvcImpl.this.mySearchResultDao.save(searchResult);
-                    }
+                    MultiTenantSearchCoordinatorSvcImpl.this.mySearchResultDao.saveAll(resultsToSave);
 
                     synchronized (MultiTenantSearchCoordinatorSvcImpl.SearchTask.this.mySyncedPids) {
                         int numSyncedThisPass = MultiTenantSearchCoordinatorSvcImpl.SearchTask.this.myUnsyncedPids.size();
