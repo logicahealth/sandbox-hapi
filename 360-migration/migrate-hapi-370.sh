@@ -55,8 +55,7 @@ esac
 #	echo "$SANDBOX_NAME"
 #done
 SANDBOX_NAME=${FULL_NAME:7}
-PORT="8075"
-case "${fhirVersion}" in
+case "$FHIR_VERSION" in
     dstu2)
         PORT="8075"
         ;;
@@ -88,17 +87,17 @@ esac
 ./run-fhir-server.sh $FHIR_VERSION $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
 
 STARTED=0
-sleep 60
 
 OUTPUT=""
 until [  $STARTED -eq 1 ]; do
+sleep 60
     if [[ ! -z "$(lsof -t -i:$PORT)" ]]; then
         let STARTED=1
     else
         ps ax | grep nameForShutdown | grep -v grep | awk '{print $1}' | xargs kill
         ./run-fhir-server.sh $FHIR_VERSION $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
     fi
-    sleep 60
+
 done
 
 echo "Running server on port $PORT."
