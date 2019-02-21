@@ -48,9 +48,9 @@ import org.hspconsortium.platform.api.conformance.HspcConformanceProviderStu3;
 import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryDstu2Impl;
 import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryR4;
 import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryStu3;
-//import org.opencds.cqf.cql.terminology.TerminologyProvider;
-//import org.opencds.cqf.interceptors.TransactionInterceptor;
-//import org.opencds.cqf.providers.*;
+import org.opencds.cqf.cql.terminology.TerminologyProvider;
+import org.opencds.cqf.interceptors.TransactionInterceptor;
+import org.opencds.cqf.providers.*;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletException;
@@ -138,11 +138,11 @@ public class HapiFhirServlet extends RestfulServer {
             confProvider.setImplementationDescription("HSPC Reference API Server - STU3");
             setServerConformanceProvider(confProvider);
             // CQF implementation
-//            JpaDataProvider provider = new JpaDataProvider(beans);
-//            TerminologyProvider terminologyProvider = new JpaTerminologyProvider(myAppCtx.getBean("terminologyService", IHapiTerminologySvcDstu3.class), getFhirContext(), (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet"));
-//            provider.setTerminologyProvider(terminologyProvider);
-//            resolveResourceProviders(provider);
-//            setResourceProviders(provider.getCollectionProviders());
+            JpaDataProvider provider = new JpaDataProvider(beans);
+            TerminologyProvider terminologyProvider = new JpaTerminologyProvider(myAppCtx.getBean("terminologyService", IHapiTerminologySvcDstu3.class), getFhirContext(), (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet"));
+            provider.setTerminologyProvider(terminologyProvider);
+            resolveResourceProviders(provider);
+            setResourceProviders(provider.getCollectionProviders());
         } else if (fhirVersionEnum == FhirVersionEnum.R4) {
             IFhirSystemDao<org.hl7.fhir.r4.model.Bundle, org.hl7.fhir.r4.model.Meta> systemDao = myAppCtx.getBean("mySystemDaoR4", IFhirSystemDao.class);
             HspcConformanceProviderR4 confProvider = new HspcConformanceProviderR4(
@@ -286,121 +286,121 @@ public class HapiFhirServlet extends RestfulServer {
         throw new NullPointerException("Tenant does not exist in path: " + servletPath);
     }
 
-//    private void resolveResourceProviders(JpaDataProvider provider) throws ServletException {
-//        // Bundle processing
-//        FHIRBundleResourceProvider bundleProvider = new FHIRBundleResourceProvider(provider);
-//        BundleResourceProvider jpaBundleProvider = (BundleResourceProvider) provider.resolveResourceProvider("Bundle");
-//        bundleProvider.setDao(jpaBundleProvider.getDao());
-//        bundleProvider.setContext(jpaBundleProvider.getContext());
-//
-//        try {
-//            unregister(jpaBundleProvider, provider.getCollectionProviders());
-//        } catch (Exception e) {
-//            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-//        }
-//
-//        register(bundleProvider, provider.getCollectionProviders());
-//
-//        // ValueSet processing
-//        FHIRValueSetResourceProvider valueSetProvider = new FHIRValueSetResourceProvider(provider);
-//        ValueSetResourceProvider jpaValueSetProvider = (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet");
-//        valueSetProvider.setDao(jpaValueSetProvider.getDao());
-//        valueSetProvider.setContext(jpaValueSetProvider.getContext());
-//
-//        try {
-//            unregister(jpaValueSetProvider, provider.getCollectionProviders());
-//        } catch (Exception e) {
-//            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-//        }
-//
-//        register(valueSetProvider, provider.getCollectionProviders());
-//        TransactionInterceptor transactionInterceptor = new TransactionInterceptor(valueSetProvider);
-//        registerInterceptor(transactionInterceptor);
-//
-//        // Measure processing
-//        FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(provider);
-//        MeasureResourceProvider jpaMeasureProvider = (MeasureResourceProvider) provider.resolveResourceProvider("Measure");
-//        measureProvider.setDao(jpaMeasureProvider.getDao());
-//        measureProvider.setContext(jpaMeasureProvider.getContext());
-//
-//        try {
-//            unregister(jpaMeasureProvider, provider.getCollectionProviders());
-//        } catch (Exception e) {
-//            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-//        }
-//
-//        register(measureProvider, provider.getCollectionProviders());
-//
-//        // ActivityDefinition processing
-//        FHIRActivityDefinitionResourceProvider actDefProvider = new FHIRActivityDefinitionResourceProvider(provider);
-//        ActivityDefinitionResourceProvider jpaActDefProvider = (ActivityDefinitionResourceProvider) provider.resolveResourceProvider("ActivityDefinition");
-//        actDefProvider.setDao(jpaActDefProvider.getDao());
-//        actDefProvider.setContext(jpaActDefProvider.getContext());
-//
-//        try {
-//            unregister(jpaActDefProvider, provider.getCollectionProviders());
-//        } catch (Exception e) {
-//            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-//        }
-//
-//        register(actDefProvider, provider.getCollectionProviders());
-//
-//        // PlanDefinition processing
-//        FHIRPlanDefinitionResourceProvider planDefProvider = new FHIRPlanDefinitionResourceProvider(provider);
-//        PlanDefinitionResourceProvider jpaPlanDefProvider = (PlanDefinitionResourceProvider) provider.resolveResourceProvider("PlanDefinition");
-//        planDefProvider.setDao(jpaPlanDefProvider.getDao());
-//        planDefProvider.setContext(jpaPlanDefProvider.getContext());
-//
-//        try {
-//            unregister(jpaPlanDefProvider, provider.getCollectionProviders());
-//        } catch (Exception e) {
-//            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-//        }
-//
-//        register(planDefProvider, provider.getCollectionProviders());
-//
-//        // StructureMap processing
-//        FHIRStructureMapResourceProvider structureMapProvider = new FHIRStructureMapResourceProvider(provider);
-//        StructureMapResourceProvider jpaStructMapProvider = (StructureMapResourceProvider) provider.resolveResourceProvider("StructureMap");
-//        structureMapProvider.setDao(jpaStructMapProvider.getDao());
-//        structureMapProvider.setContext(jpaStructMapProvider.getContext());
-//
-//        try {
-//            unregister(jpaStructMapProvider, provider.getCollectionProviders());
-//        } catch (Exception e) {
-//            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-//        }
-//
-//        register(structureMapProvider, provider.getCollectionProviders());
-//
-//        // Patient processing - for bulk data export
-//        BulkDataPatientProvider bulkDataPatientProvider = new BulkDataPatientProvider(provider);
-//        PatientResourceProvider jpaPatientProvider = (PatientResourceProvider) provider.resolveResourceProvider("Patient");
-//        bulkDataPatientProvider.setDao(jpaPatientProvider.getDao());
-//        bulkDataPatientProvider.setContext(jpaPatientProvider.getContext());
-//
-//        try {
-//            unregister(jpaPatientProvider, provider.getCollectionProviders());
-//        } catch (Exception e) {
-//            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-//        }
-//
-//        register(bulkDataPatientProvider, provider.getCollectionProviders());
-//
-//        // Group processing - for bulk data export
-//        BulkDataGroupProvider bulkDataGroupProvider = new BulkDataGroupProvider(provider);
-//        GroupResourceProvider jpaGroupProvider = (GroupResourceProvider) provider.resolveResourceProvider("Group");
-//        bulkDataGroupProvider.setDao(jpaGroupProvider.getDao());
-//        bulkDataGroupProvider.setContext(jpaGroupProvider.getContext());
-//
-//        try {
-//            unregister(jpaGroupProvider, provider.getCollectionProviders());
-//        } catch (Exception e) {
-//            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-//        }
-//
-//        register(bulkDataGroupProvider, provider.getCollectionProviders());
-//    }
+    private void resolveResourceProviders(JpaDataProvider provider) throws ServletException {
+        // Bundle processing
+        FHIRBundleResourceProvider bundleProvider = new FHIRBundleResourceProvider(provider);
+        BundleResourceProvider jpaBundleProvider = (BundleResourceProvider) provider.resolveResourceProvider("Bundle");
+        bundleProvider.setDao(jpaBundleProvider.getDao());
+        bundleProvider.setContext(jpaBundleProvider.getContext());
+
+        try {
+            unregister(jpaBundleProvider, provider.getCollectionProviders());
+        } catch (Exception e) {
+            throw new ServletException("Unable to unregister provider: " + e.getMessage());
+        }
+
+        register(bundleProvider, provider.getCollectionProviders());
+
+        // ValueSet processing
+        FHIRValueSetResourceProvider valueSetProvider = new FHIRValueSetResourceProvider(provider);
+        ValueSetResourceProvider jpaValueSetProvider = (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet");
+        valueSetProvider.setDao(jpaValueSetProvider.getDao());
+        valueSetProvider.setContext(jpaValueSetProvider.getContext());
+
+        try {
+            unregister(jpaValueSetProvider, provider.getCollectionProviders());
+        } catch (Exception e) {
+            throw new ServletException("Unable to unregister provider: " + e.getMessage());
+        }
+
+        register(valueSetProvider, provider.getCollectionProviders());
+        TransactionInterceptor transactionInterceptor = new TransactionInterceptor(valueSetProvider);
+        registerInterceptor(transactionInterceptor);
+
+        // Measure processing
+        FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(provider);
+        MeasureResourceProvider jpaMeasureProvider = (MeasureResourceProvider) provider.resolveResourceProvider("Measure");
+        measureProvider.setDao(jpaMeasureProvider.getDao());
+        measureProvider.setContext(jpaMeasureProvider.getContext());
+
+        try {
+            unregister(jpaMeasureProvider, provider.getCollectionProviders());
+        } catch (Exception e) {
+            throw new ServletException("Unable to unregister provider: " + e.getMessage());
+        }
+
+        register(measureProvider, provider.getCollectionProviders());
+
+        // ActivityDefinition processing
+        FHIRActivityDefinitionResourceProvider actDefProvider = new FHIRActivityDefinitionResourceProvider(provider);
+        ActivityDefinitionResourceProvider jpaActDefProvider = (ActivityDefinitionResourceProvider) provider.resolveResourceProvider("ActivityDefinition");
+        actDefProvider.setDao(jpaActDefProvider.getDao());
+        actDefProvider.setContext(jpaActDefProvider.getContext());
+
+        try {
+            unregister(jpaActDefProvider, provider.getCollectionProviders());
+        } catch (Exception e) {
+            throw new ServletException("Unable to unregister provider: " + e.getMessage());
+        }
+
+        register(actDefProvider, provider.getCollectionProviders());
+
+        // PlanDefinition processing
+        FHIRPlanDefinitionResourceProvider planDefProvider = new FHIRPlanDefinitionResourceProvider(provider);
+        PlanDefinitionResourceProvider jpaPlanDefProvider = (PlanDefinitionResourceProvider) provider.resolveResourceProvider("PlanDefinition");
+        planDefProvider.setDao(jpaPlanDefProvider.getDao());
+        planDefProvider.setContext(jpaPlanDefProvider.getContext());
+
+        try {
+            unregister(jpaPlanDefProvider, provider.getCollectionProviders());
+        } catch (Exception e) {
+            throw new ServletException("Unable to unregister provider: " + e.getMessage());
+        }
+
+        register(planDefProvider, provider.getCollectionProviders());
+
+        // StructureMap processing
+        FHIRStructureMapResourceProvider structureMapProvider = new FHIRStructureMapResourceProvider(provider);
+        StructureMapResourceProvider jpaStructMapProvider = (StructureMapResourceProvider) provider.resolveResourceProvider("StructureMap");
+        structureMapProvider.setDao(jpaStructMapProvider.getDao());
+        structureMapProvider.setContext(jpaStructMapProvider.getContext());
+
+        try {
+            unregister(jpaStructMapProvider, provider.getCollectionProviders());
+        } catch (Exception e) {
+            throw new ServletException("Unable to unregister provider: " + e.getMessage());
+        }
+
+        register(structureMapProvider, provider.getCollectionProviders());
+
+        // Patient processing - for bulk data export
+        BulkDataPatientProvider bulkDataPatientProvider = new BulkDataPatientProvider(provider);
+        PatientResourceProvider jpaPatientProvider = (PatientResourceProvider) provider.resolveResourceProvider("Patient");
+        bulkDataPatientProvider.setDao(jpaPatientProvider.getDao());
+        bulkDataPatientProvider.setContext(jpaPatientProvider.getContext());
+
+        try {
+            unregister(jpaPatientProvider, provider.getCollectionProviders());
+        } catch (Exception e) {
+            throw new ServletException("Unable to unregister provider: " + e.getMessage());
+        }
+
+        register(bulkDataPatientProvider, provider.getCollectionProviders());
+
+        // Group processing - for bulk data export
+        BulkDataGroupProvider bulkDataGroupProvider = new BulkDataGroupProvider(provider);
+        GroupResourceProvider jpaGroupProvider = (GroupResourceProvider) provider.resolveResourceProvider("Group");
+        bulkDataGroupProvider.setDao(jpaGroupProvider.getDao());
+        bulkDataGroupProvider.setContext(jpaGroupProvider.getContext());
+
+        try {
+            unregister(jpaGroupProvider, provider.getCollectionProviders());
+        } catch (Exception e) {
+            throw new ServletException("Unable to unregister provider: " + e.getMessage());
+        }
+
+        register(bulkDataGroupProvider, provider.getCollectionProviders());
+    }
 
     private void register(IResourceProvider provider, Collection<IResourceProvider> providers) {
         providers.add(provider);
