@@ -28,6 +28,7 @@ import org.hspconsortium.platform.api.fhir.multitenant.search.MultiTenantSearchC
 import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
 @Profile("stu3")
@@ -38,8 +39,8 @@ public class HapiJpaConfigStu3 extends BaseJavaConfigDstu3 {
         return new SubscriptionsRequireManualActivationInterceptorDstu3();
     }
 
+    @Primary
     @Bean(autowire = Autowire.BY_TYPE)
-//    @Override
     public ISearchCoordinatorSvc searchCoordinatorSvc() {
         return new MultiTenantSearchCoordinatorSvcImpl();
     }
