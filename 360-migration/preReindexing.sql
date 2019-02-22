@@ -17,7 +17,6 @@
 --  * limitations under the License.
 --  * #L%
 --
-DELIMITER $$
 
 DROP PROCEDURE IF EXISTS drop_index_if_exists $$
 CREATE PROCEDURE drop_index_if_exists(in theTable varchar(128), in theIndexName varchar(128) )
