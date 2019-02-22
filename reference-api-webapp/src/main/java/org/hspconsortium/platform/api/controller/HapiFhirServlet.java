@@ -141,7 +141,7 @@ public class HapiFhirServlet extends RestfulServer {
             JpaDataProvider provider = new JpaDataProvider(beans);
             TerminologyProvider terminologyProvider = new JpaTerminologyProvider(myAppCtx.getBean("terminologyService", IHapiTerminologySvcDstu3.class), getFhirContext(), (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet"));
             provider.setTerminologyProvider(terminologyProvider);
-            resolveResourceProviders(provider);
+            resolveResourceProviders(provider, systemDao);
             setResourceProviders(provider.getCollectionProviders());
         } else if (fhirVersionEnum == FhirVersionEnum.R4) {
             IFhirSystemDao<org.hl7.fhir.r4.model.Bundle, org.hl7.fhir.r4.model.Meta> systemDao = myAppCtx.getBean("mySystemDaoR4", IFhirSystemDao.class);
@@ -286,7 +286,7 @@ public class HapiFhirServlet extends RestfulServer {
         throw new NullPointerException("Tenant does not exist in path: " + servletPath);
     }
 
-    private void resolveResourceProviders(JpaDataProvider provider) throws ServletException {
+    private void resolveResourceProviders(JpaDataProvider provider, IFhirSystemDao<org.hl7.fhir.dstu3.model.Bundle, Meta> systemDao) throws ServletException {
         // Bundle processing
         FHIRBundleResourceProvider bundleProvider = new FHIRBundleResourceProvider(provider);
         BundleResourceProvider jpaBundleProvider = (BundleResourceProvider) provider.resolveResourceProvider("Bundle");
@@ -318,7 +318,7 @@ public class HapiFhirServlet extends RestfulServer {
         registerInterceptor(transactionInterceptor);
 
         // Measure processing
-        FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(provider);
+        FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(provider, systemDao);
         MeasureResourceProvider jpaMeasureProvider = (MeasureResourceProvider) provider.resolveResourceProvider("Measure");
         measureProvider.setDao(jpaMeasureProvider.getDao());
         measureProvider.setContext(jpaMeasureProvider.getContext());
