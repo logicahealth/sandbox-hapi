@@ -92,6 +92,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.googlecode.json-simple</groupId>
+            <artifactId>json-simple</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+
+        <!--cqf-ruler dependency needs to be commented out for the r4 conversion endpoint to work.-->
+        <dependency>
             <groupId>org.opencds.cqf</groupId>
             <artifactId>cqf-ruler</artifactId>
             <version>0.1.9-SNAPSHOT</version>
