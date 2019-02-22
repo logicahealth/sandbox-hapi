@@ -124,7 +124,7 @@ hspc:
       sandbox:
         name: ${SANDBOX_NAME:hspc6}
 server:
-  port: ${API_PORT:8076}
+  port: ${API_PORT:8078}
 
 ---
 
