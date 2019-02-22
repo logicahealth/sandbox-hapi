@@ -388,18 +388,18 @@ public class HapiFhirServlet extends RestfulServer {
         register(bulkDataPatientProvider, provider.getCollectionProviders());
 
         // Group processing - for bulk data export
-        BulkDataGroupProvider bulkDataGroupProvider = new BulkDataGroupProvider(provider);
-        GroupResourceProvider jpaGroupProvider = (GroupResourceProvider) provider.resolveResourceProvider("Group");
-        bulkDataGroupProvider.setDao(jpaGroupProvider.getDao());
-        bulkDataGroupProvider.setContext(jpaGroupProvider.getContext());
-
-        try {
-            unregister(jpaGroupProvider, provider.getCollectionProviders());
-        } catch (Exception e) {
-            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-        }
-
-        register(bulkDataGroupProvider, provider.getCollectionProviders());
+//        BulkDataGroupProvider bulkDataGroupProvider = new BulkDataGroupProvider(provider);
+//        GroupResourceProvider jpaGroupProvider = (GroupResourceProvider) provider.resolveResourceProvider("Group");
+//        bulkDataGroupProvider.setDao(jpaGroupProvider.getDao());
+//        bulkDataGroupProvider.setContext(jpaGroupProvider.getContext());
+//
+//        try {
+//            unregister(jpaGroupProvider, provider.getCollectionProviders());
+//        } catch (Exception e) {
+//            throw new ServletException("Unable to unregister provider: " + e.getMessage());
+//        }
+//
+//        register(bulkDataGroupProvider, provider.getCollectionProviders());
     }
 
     private void register(IResourceProvider provider, Collection<IResourceProvider> providers) {
