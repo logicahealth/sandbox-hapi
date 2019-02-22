@@ -2,12 +2,12 @@
   "family": "api-v5-stu3-test",
   "containerDefinitions": [
     {
-      "name": "api-v5-stu3-test",
+      "name": "api-v5-stu3-test-370",
       "image": "hspconsortium/api:{{PROJECT_VERSION}}",
       "cpu": 0,
       "portMappings": [
         {
-          "containerPort": 8076,
+          "containerPort": 8072,
           "hostPort": 0,
           "protocol": "tcp"
         }
@@ -16,7 +16,7 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/api-v5-stu3-test",
+          "awslogs-group": "/ecs/api-v5-stu3-test-370",
           "awslogs-region": "us-west-2",
           "awslogs-stream-prefix": "ecs"
         }

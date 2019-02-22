@@ -22,7 +22,7 @@
 
 export PROJECT_NAME="api"
 
-export PROJECT_FULL_NAME="${PROJECT_NAME}-v5-${FHIR_VERSION}-${TARGET_ENV}"
+export PROJECT_FULL_NAME="${PROJECT_NAME}-v5-${FHIR_VERSION}-${TARGET_ENV}-370"
 
 export PROJECT_VERSION=$(mvn -f ../pom.xml -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
 

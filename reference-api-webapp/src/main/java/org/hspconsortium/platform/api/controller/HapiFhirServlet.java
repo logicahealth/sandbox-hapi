@@ -288,18 +288,18 @@ public class HapiFhirServlet extends RestfulServer {
 
     private void resolveResourceProviders(JpaDataProvider provider, IFhirSystemDao<org.hl7.fhir.dstu3.model.Bundle, Meta> systemDao) throws ServletException {
         // Bundle processing
-        FHIRBundleResourceProvider bundleProvider = new FHIRBundleResourceProvider(provider);
-        BundleResourceProvider jpaBundleProvider = (BundleResourceProvider) provider.resolveResourceProvider("Bundle");
-        bundleProvider.setDao(jpaBundleProvider.getDao());
-        bundleProvider.setContext(jpaBundleProvider.getContext());
-
-        try {
-            unregister(jpaBundleProvider, provider.getCollectionProviders());
-        } catch (Exception e) {
-            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-        }
-
-        register(bundleProvider, provider.getCollectionProviders());
+//        FHIRBundleResourceProvider bundleProvider = new FHIRBundleResourceProvider(provider);
+//        BundleResourceProvider jpaBundleProvider = (BundleResourceProvider) provider.resolveResourceProvider("Bundle");
+//        bundleProvider.setDao(jpaBundleProvider.getDao());
+//        bundleProvider.setContext(jpaBundleProvider.getContext());
+//
+//        try {
+//            unregister(jpaBundleProvider, provider.getCollectionProviders());
+//        } catch (Exception e) {
+//            throw new ServletException("Unable to unregister provider: " + e.getMessage());
+//        }
+//
+//        register(bundleProvider, provider.getCollectionProviders());
 
         // ValueSet processing
         FHIRValueSetResourceProvider valueSetProvider = new FHIRValueSetResourceProvider(provider);
