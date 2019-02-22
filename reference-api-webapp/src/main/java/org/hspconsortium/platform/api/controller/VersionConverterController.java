@@ -1,18 +1,13 @@
 package org.hspconsortium.platform.api.controller;
 
 import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.model.api.IResource;
 import ca.uhn.fhir.parser.IParser;
-import com.oracle.javafx.jmx.json.JSONException;
 import org.hl7.fhir.convertors.VersionConvertor_30_40;
-import org.hl7.fhir.dstu3.model.Observation;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,8 +19,10 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.Arrays;
 import java.util.List;
 
-@RestController
-@RequestMapping("/converter")
+// This is unsecured so don't publish this as a restcontroller in production
+// Will only work if the cqf-ruler code and dependency is removed.
+//@RestController
+//@RequestMapping("/converter")
 public class VersionConverterController {
 
 //    @Value("${server.localhost}")
@@ -45,8 +42,9 @@ public class VersionConverterController {
     public void convertStarterSetToR4(HttpServletRequest request) {
 
         // This list is according to the available resources in the starter data set.
-        String[] resources = {"Patient", "Practitioner", "AllergyIntolerance", "Binary", "Condition", "DocumentReference", "Encounter", "FamilyMemberHistory",
-                "ImagingStudy", "Immunization", "List", "MedicationDispense", "MedicationRequest", "Observation", "Procedure"};
+//        String[] resources = {"Patient", "Practitioner", "AllergyIntolerance", "Binary", "Condition", "DocumentReference", "Encounter", "FamilyMemberHistory",
+//                "ImagingStudy", "Immunization", "List", "MedicationDispense", "MedicationRequest", "Observation", "Procedure"};
+        String[] resources = {"Observation"};
         List<String> resourceList = Arrays.asList(resources);
 
         String authToken = request.getHeader("Authorization").substring(7);
@@ -63,9 +61,6 @@ public class VersionConverterController {
                 ResponseEntity<String> response = restTemplate.exchange(masterStu3UrlResource, HttpMethod.GET, entity, String.class);
                 if (response.hasBody()) {
                     String jsonString = response.getBody();
-                    if (masterStu3UrlResource.contains("getpagesoffset=450")) {
-                        logger.info("blah");
-                    }
                     try {
                         JSONObject jsonBundle = (JSONObject) jsonParser.parse(jsonString);
                         JSONArray linkArray = (JSONArray) jsonBundle.get("link");
