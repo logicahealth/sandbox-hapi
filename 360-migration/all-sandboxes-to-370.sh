@@ -26,6 +26,11 @@ ENVIRONMENT=$3
 BEARER_TOKEN=$4
 JASYPT_PASSWORD=$5 || ""
 
+TEMP_SCHEMA="370-migration-schema"
+
+SQL_STRING="CREATE SCHEMA `$TEMP_SCHEMA`;"
+echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs
+
 DB_STARTS_WITH="hspc_5"
 
 echo "Sandbox List" > sandboxes_done.txt
@@ -73,3 +78,6 @@ do
         ./migrate-hapi-370.sh $MYSQL_USER $MYSQL_PASS $ENVIRONMENT $SANDBOX_NAME $FHIR_VERSION $BEARER_TOKEN $JASYPT_PASSWORD
     fi
 done
+
+SQL_STRING="DROP DATABASE `$TEMP_SCHEMA`;"
+echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs
