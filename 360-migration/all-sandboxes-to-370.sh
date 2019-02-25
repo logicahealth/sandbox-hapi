@@ -63,15 +63,12 @@ do
     case "${FHIR_VERSION}" in
         DSTU2)
             FHIR_VERSION="dstu2"
-            FHIR_VERSION_NUMBER="8"
             ;;
         DSTU3)
             FHIR_VERSION="stu3"
-            FHIR_VERSION_NUMBER="9"
             ;;
         R4)
             FHIR_VERSION="r4"
-            FHIR_VERSION_NUMBER="10"
             ;;
     esac
     if [[ $FHIR_VERSION != "r4" ]]; then
@@ -105,6 +102,21 @@ do
         SQL_STRING="UPDATE hspc_8_$SANDBOX_NAME.hspc_tenant_info SET hspc_schema_version='8' WHERE tenant_id='$SANDBOX_NAME';"
         echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
 
+        SQL_STRING="SELECT api_endpoint_index FROM sandman.sandbox WHERE sandbox_id='$SANDBOX_NAME';"
+        FHIR_VERSION_NUMBER = $(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs)
+        case "${FHIR_VERSION_NUMBER}" in
+        5)
+            FHIR_VERSION_NUMBER="8"
+            ;;
+        6)
+            FHIR_VERSION_NUMBER="9"
+            ;;
+        7)
+            FHIR_VERSION_NUMBER="10"
+            ;;
+        esac
+
+        echo $FHIR_VERSION_NUMBER
         SQL_STRING="UPDATE sandman.sandbox SET api_endpoint_index='$FHIR_VERSION_NUMBER' WHERE sandbox_id='$SANDBOX_NAME';"
         echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
 
