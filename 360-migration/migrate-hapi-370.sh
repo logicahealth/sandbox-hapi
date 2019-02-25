@@ -27,17 +27,17 @@ FULL_NAME=$4
 FHIR_VERSION=$5
 BEARER_TOKEN=$6
 JASYPT_PASSWORD=$7 || ""
-HOST="127.0.0.1:3306"
+MYSQL_URL="127.0.0.1:3306"
 
 case "${ENVIRONMENT}" in
     local)
-        HOST="127.0.0.1:3306"
+        MYSQL_URL="127.0.0.1:3306"
         ;;
     test)
-        HOST="sandboxdb-test.hspconsortium.org"
+        MYSQL_URL="sandboxdb-test.hspconsortium.org"
         ;;
     prod)
-        HOST="sandboxdb.hspconsortium.org"
+        MYSQL_URL="sandboxdb.hspconsortium.org"
         ;;
 esac
 
@@ -68,11 +68,6 @@ case "${ENVIRONMENT}" in
         FHIR_HOST="https://api-v5-$FHIR_VERSION.hspconsortium.org"
         ;;
 esac
-
-#if [[ ! -z "$(lsof -t -i:$PORT)" ]]; then
-#        echo "Killing port $PORT."
-#        kill "$(lsof -t -i:${PORT})"
-#    fi
 
 ./run-fhir-server.sh $FHIR_VERSION $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
 
@@ -118,7 +113,7 @@ done
 
 #mysql --user="$MYSQL_USER" --password="$MYSQL_PASS" --database="$FULL_NAME" < postReindexing.sql
 
-hapi-fhir-3.7.0-cli/hapi-fhir-cli migrate-database -d MYSQL_5_7 -u "jdbc:mysql://$HOST/$FULL_NAME?serverTimezone=America/Denver" -n "$MYSQL_USER" -p "$MYSQL_PASS" -f V3_4_0 -t V3_7_0
+hapi-fhir-3.7.0-cli/hapi-fhir-cli migrate-database -d MYSQL_5_7 -u "jdbc:mysql://$MYSQL_URL/$FULL_NAME?serverTimezone=America/Denver" -n "$MYSQL_USER" -p "$MYSQL_PASS" -f V3_4_0 -t V3_7_0
 
 SQL_STRING="UPDATE sandman.sandbox SET api_endpoint_index='$INDEX' WHERE sandbox_id='$SANDBOX_NAME'";
 echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs
