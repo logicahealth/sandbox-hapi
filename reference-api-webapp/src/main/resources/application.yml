@@ -109,9 +109,9 @@ hspc:
   platform:
     api:
       sandbox:
-        name: ${SANDBOX_NAME:hspc8}
+        name: ${SANDBOX_NAME:hspc5}
 server:
-  port: ${API_PORT:8071}
+  port: ${API_PORT:8075}
 
 ---
 
@@ -122,9 +122,9 @@ hspc:
   platform:
     api:
       sandbox:
-        name: ${SANDBOX_NAME:hspc9}
+        name: ${SANDBOX_NAME:hspc6}
 server:
-  port: ${API_PORT:8072}
+  port: ${API_PORT:8076}
 
 ---
 
@@ -135,6 +135,6 @@ hspc:
   platform:
     api:
       sandbox:
-        name: ${SANDBOX_NAME:hspc10}
+        name: ${SANDBOX_NAME:hspc7}
 server:
-  port: ${API_PORT:8073}
+  port: ${API_PORT:8077}
