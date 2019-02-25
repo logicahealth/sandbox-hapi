@@ -17,9 +17,9 @@
 --  * limitations under the License.
 --  * #L%
 --
-
+DELIMITER $$
 DROP PROCEDURE IF EXISTS drop_index_if_exists $$
-CREATE PROCEDURE drop_index_if_exists(in theTable varchar(128), in theIndexName varchar(128) )
+CREATE PROCEDURE drop_index_if_exists(in theTable varchar(128), in theIndexName varchar(128))
 BEGIN
  IF((SELECT COUNT(*) AS index_exists FROM information_schema.statistics WHERE TABLE_SCHEMA = DATABASE() and table_name =
 theTable AND index_name = theIndexName) > 0) THEN

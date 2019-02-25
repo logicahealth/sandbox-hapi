@@ -26,7 +26,7 @@ ENVIRONMENT=$3
 BEARER_TOKEN=$4
 JASYPT_PASSWORD=$5 || ""
 
-TEMP_SCHEMA="370MigrationSchema"
+TEMP_SCHEMA="hspc_5_370MigrationSchema"
 
 case "${ENVIRONMENT}" in
     local)
@@ -40,9 +40,10 @@ case "${ENVIRONMENT}" in
         ;;
 esac
 
-DB_STARTS_WITH="hspc_5"
-
 echo "Sandbox List" > sandboxes_done.txt
+
+SQL_STRING="DROP DATABASE IF EXISTS $TEMP_SCHEMA;"
+echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
 
 SQL_STRING="SELECT SCHEMA_NAME AS db FROM information_schema.SCHEMATA WHERE SCHEMA_NAME NOT IN ('mysql', 'information_schema') AND SCHEMA_NAME LIKE 'hspc_5%';"
 # Pipe the SQL into mysql
@@ -53,10 +54,8 @@ array=($(echo "$DBS" | tr ',' '\n'))
 # Display your result
 for FULL_NAME in "${array[@]}"
 do
-    SQL_STRING="CREATE SCHEMA IF NOT EXISTS $TEMP_SCHEMA;"
-    echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
     SANDBOX_NAME=${FULL_NAME:7}
-	echo "$SANDBOX_NAME" >> sandboxes_done.txt
+
 	STARTED=0
 	SQL_STRING="SELECT RES_VERSION FROM $FULL_NAME.HFJ_RESOURCE WHERE RES_ID=1;"
     # Pipe the SQL into mysql
@@ -75,27 +74,34 @@ do
             FHIR_VERSION="stu3"
             ;;
     esac
-    echo "Running Pre-Reindexing sql scripts for $SANDBOX_NAME"
-    mysqldump --host=$HOST --protocol=tcp --user=$MYSQL_USER --password=$MYSQL_PASS --hex-blob=TRUE --port=3306 --default-character-set=utf8 --skip-triggers "$FULL_NAME" > temp-dump.sql
-    mysql --user=$MYSQL_USER --password=$MYSQL_PASS --host=$HOST --port=3306 $TEMP_SCHEMA < temp-dump.sql
-    mysql --user=$MYSQL_USER --password=$MYSQL_PASS --host=$HOST --port=3306 --database=$TEMP_SCHEMA < preReindexing.sql
-	SQL_STRING="SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA ='$FULL_NAME' and TABLE_NAME='HFJ_SPIDX_TOKEN' and COLUMN_NAME='HASH_IDENTITY'"
-	SQL_STRING2="SELECT COUNT(*) FROM $FULL_NAME.HFJ_RESOURCE;"
-	if [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs)" != "0" ]]; then
-        SQL_STRING3="SELECT COUNT(*) FROM $FULL_NAME.HFJ_SPIDX_TOKEN WHERE HASH_IDENTITY IS NULL;"
-        if [[ "$(echo $SQL_STRING3 | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs)" != "0" ]]; then
-           ./migrate-hapi-370.sh $MYSQL_USER $MYSQL_PASS $ENVIRONMENT $TEMP_SCHEMA $FHIR_VERSION $BEARER_TOKEN $JASYPT_PASSWORD
+    if [[ $FHIR_VERSION != "r4" ]]; then
+        SQL_STRING="DROP DATABASE IF EXISTS $TEMP_SCHEMA;"
+        echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
+        SQL_STRING="CREATE SCHEMA $TEMP_SCHEMA;"
+        echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
+        echo "$SANDBOX_NAME" >> sandboxes_done.txt
+        mysqldump --host=$HOST --protocol=tcp --user=$MYSQL_USER --password=$MYSQL_PASS --hex-blob=TRUE --port=3306 --default-character-set=utf8 --skip-triggers "$FULL_NAME" > temp-dump.sql
+        mysql --user=$MYSQL_USER --password=$MYSQL_PASS --host=$HOST --port=3306 $TEMP_SCHEMA < temp-dump.sql
+        echo "Running Pre-Reindexing sql scripts for $SANDBOX_NAME"
+        mysql --user=$MYSQL_USER --password=$MYSQL_PASS --host=$HOST --port=3306 $TEMP_SCHEMA < preReindexing.sql
+        SQL_STRING="SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA ='$FULL_NAME' and TABLE_NAME='HFJ_SPIDX_TOKEN' and COLUMN_NAME='HASH_IDENTITY'"
+        SQL_STRING2="SELECT COUNT(*) FROM $FULL_NAME.HFJ_RESOURCE;"
+        if [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs)" != "0" ]]; then
+            SQL_STRING3="SELECT COUNT(*) FROM $FULL_NAME.HFJ_SPIDX_TOKEN WHERE HASH_IDENTITY IS NULL;"
+            if [[ "$(echo $SQL_STRING3 | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs)" != "0" ]]; then
+               ./migrate-hapi-370.sh $MYSQL_USER $MYSQL_PASS $ENVIRONMENT $TEMP_SCHEMA $FHIR_VERSION $BEARER_TOKEN $JASYPT_PASSWORD
+            fi
+        elif [[ "$(echo $SQL_STRING2 | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs)" != "0" ]]; then
+            echo "USE $FULL_NAME" | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
+            ./migrate-hapi-370.sh $MYSQL_USER $MYSQL_PASS $ENVIRONMENT $TEMP_SCHEMA $FHIR_VERSION $BEARER_TOKEN $JASYPT_PASSWORD
         fi
-    elif [[ "$(echo $SQL_STRING2 | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs)" != "0" ]]; then
-        echo "USE $FULL_NAME" | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
-        ./migrate-hapi-370.sh $MYSQL_USER $MYSQL_PASS $ENVIRONMENT $TEMP_SCHEMA $FHIR_VERSION $BEARER_TOKEN $JASYPT_PASSWORD
+
+        mysqldump --host=$HOST --protocol=tcp --user=$MYSQL_USER --password=$MYSQL_PASS --hex-blob=TRUE --port=3306 --default-character-set=utf8 --skip-triggers "$TEMP_SCHEMA" > temp-dump.sql
+        SQL_STRING="DROP DATABASE $FULL_NAME; CREATE SCHEMA hspc_8_$SANDBOX_NAME;"
+        echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
+        mysql --user=$MYSQL_USER --password=$MYSQL_PASS --host=$HOST --port=3306 "hspc_8_$SANDBOX_NAME" < temp-dump.sql
+
+        SQL_STRING="DROP DATABASE $TEMP_SCHEMA;"
+        echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
     fi
-
-    mysqldump --host=$HOST --protocol=tcp --user=$MYSQL_USER --password=$MYSQL_PASS --hex-blob=TRUE --port=3306 --default-character-set=utf8 --skip-triggers "$TEMP_SCHEMA" > temp-dump.sql
-    SQL_STRING="DROP DATABASE $FULL_NAME; CREATE SCHEMA $FULL_NAME;"
-    echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
-    mysql --user=$MYSQL_USER --password=$MYSQL_PASS --host=$HOST --port=3306 $FULL_NAME < temp-dump.sql
-
-    SQL_STRING="DROP DATABASE `$TEMP_SCHEMA`;"
-    echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
 done
