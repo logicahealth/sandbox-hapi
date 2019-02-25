@@ -1,9 +1,1 @@
 Sandbox List
-4Smart
-MasterDstu2Empty
-MasterDstu2Smart
-MasterR4Empty
-MasterR4Smart
-MasterStu3Empty
-MasterStu3Smart
-TwoUsers
