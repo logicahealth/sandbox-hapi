@@ -33,7 +33,7 @@ public class DatabaseProperties {
 	public static final String SANDBOX_SCHEMA_SNAPSHOT_DELIMITER = "$";
 	public static final String SANDBOX_SCHEMA_NAMING = "%s" + SANDBOX_SCHEMA_DELIMITER + "%s" + SANDBOX_SCHEMA_DELIMITER + "%s";
 	public static final String SANDBOX_SCHEMA_PREFIX = "hspc";
-	public static final String DEFAULT_HSPC_SCHEMA_VERSION = "5";
+	public static final String DEFAULT_HSPC_SCHEMA_VERSION = "8";
 
 	@NestedConfigurationProperty
 	private DataSourceProperties db;
