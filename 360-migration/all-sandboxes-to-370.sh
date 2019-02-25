@@ -103,7 +103,7 @@ do
         echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
 
         SQL_STRING="SELECT api_endpoint_index FROM sandman.sandbox WHERE sandbox_id='$SANDBOX_NAME';"
-        FHIR_VERSION_NUMBER = $(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs)
+        FHIR_VERSION_NUMBER=$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs)
         case "${FHIR_VERSION_NUMBER}" in
         5)
             FHIR_VERSION_NUMBER="8"
