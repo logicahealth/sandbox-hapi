@@ -63,15 +63,15 @@ do
     case "${FHIR_VERSION}" in
         DSTU2)
             FHIR_VERSION="dstu2"
+            FHIR_VERSION_NUMBER="8"
             ;;
         DSTU3)
             FHIR_VERSION="stu3"
+            FHIR_VERSION_NUMBER="9"
             ;;
         R4)
             FHIR_VERSION="r4"
-            ;;
-        *)
-            FHIR_VERSION="stu3"
+            FHIR_VERSION_NUMBER="10"
             ;;
     esac
     if [[ $FHIR_VERSION != "r4" ]]; then
@@ -99,7 +99,14 @@ do
         mysqldump --host=$HOST --protocol=tcp --user=$MYSQL_USER --password=$MYSQL_PASS --hex-blob=TRUE --port=3306 --default-character-set=utf8 --skip-triggers "$TEMP_SCHEMA" > temp-dump.sql
         SQL_STRING="DROP DATABASE $FULL_NAME; CREATE SCHEMA hspc_8_$SANDBOX_NAME;"
         echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
+
         mysql --user=$MYSQL_USER --password=$MYSQL_PASS --host=$HOST --port=3306 "hspc_8_$SANDBOX_NAME" < temp-dump.sql
+
+        SQL_STRING="UPDATE hspc_8_$SANDBOX_NAME.hspc_tenant_info SET hspc_schema_version='8' WHERE tenant_id='$SANDBOX_NAME';"
+        echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
+
+        SQL_STRING="UPDATE sandman.sandbox SET api_endpoint_index='$FHIR_VERSION_NUMBER' WHERE sandbox_id='$SANDBOX_NAME';"
+        echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
 
         SQL_STRING="DROP DATABASE $TEMP_SCHEMA;"
         echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
