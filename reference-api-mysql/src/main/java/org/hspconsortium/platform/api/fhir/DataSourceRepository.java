@@ -154,17 +154,17 @@ public class DataSourceRepository {
     public void createTemplateDataSources(String hspcSchemaVersion, String mainTenant) {
         List<String> defaultTenants = new ArrayList<>();
         switch(mainTenant) {
-            case "hspc5":
+            case "hspc8":
                 defaultTenants.add("MasterDstu2Empty");
                 defaultTenants.add("MasterDstu2Smart");
                 createSpecifiedDataSources(hspcSchemaVersion, defaultTenants);
                 return;
-            case "hspc6":
+            case "hspc9":
                 defaultTenants.add("MasterStu3Empty");
                 defaultTenants.add("MasterStu3Smart");
                 createSpecifiedDataSources(hspcSchemaVersion, defaultTenants);
                 return;
-            case "hspc7":
+            case "hspc10":
                 defaultTenants.add("MasterR4Empty");
                 defaultTenants.add("MasterR4Smart");
                 createSpecifiedDataSources(hspcSchemaVersion, defaultTenants);

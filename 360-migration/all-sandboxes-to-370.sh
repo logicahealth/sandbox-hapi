@@ -26,7 +26,7 @@ ENVIRONMENT=$3
 BEARER_TOKEN=$4
 JASYPT_PASSWORD=$5 || ""
 
-TEMP_SCHEMA="hspc_5_370MigrationSchema"
+TEMP_SCHEMA="hspc_8_370MigrationSchema"
 
 case "${ENVIRONMENT}" in
     local)
@@ -41,9 +41,6 @@ case "${ENVIRONMENT}" in
 esac
 
 echo "Sandbox List" > sandboxes_done.txt
-
-SQL_STRING="DROP DATABASE IF EXISTS $TEMP_SCHEMA;"
-echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
 
 SQL_STRING="SELECT SCHEMA_NAME AS db FROM information_schema.SCHEMATA WHERE SCHEMA_NAME NOT IN ('mysql', 'information_schema') AND SCHEMA_NAME LIKE 'hspc_5%';"
 # Pipe the SQL into mysql
@@ -116,7 +113,6 @@ do
             ;;
         esac
 
-        echo $FHIR_VERSION_NUMBER
         SQL_STRING="UPDATE sandman.sandbox SET api_endpoint_index='$FHIR_VERSION_NUMBER' WHERE sandbox_id='$SANDBOX_NAME';"
         echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
 
