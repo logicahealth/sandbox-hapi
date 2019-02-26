@@ -23,9 +23,13 @@ The following default port assignments exist
 | 8072        | STU3 1.6            | HSPC_2         | legacy |
 | 8073        | STU3 1.8            | HSPC_3         | legacy |
 | 8074        | STU3 3.0.1          | HSPC_4         | legacy |
-| 8075        | DSTU2               | HSPC_5         | active |
-| 8076        | STU3                | HSPC_5         | active |
-| 8077        | R4                  | HSPC_5         | active |
+| 8075        | DSTU2               | HSPC_5         | legacy |
+| 8076        | STU3                | HSPC_5         | legacy |
+| 8077        | R4                  | HSPC_5         | legacy |
+| 8078        | DSTU2               | HSPC_6         | active |
+| 8079        | STU3                | HSPC_6         | active |
+| 8070       | R4                  | HSPC_6         | active |
+
 
 # Libraries
 
@@ -65,7 +69,7 @@ The reference-api-mysql library configures a MySQL FHIR resource repository to b
     docker-compose up
     
 The service is available at (see default ports): 
-    http://localhost:8075/
+    http://localhost:8078/
     
 #### Datatbase Migration
 If you wish to migrate sandboxes from previous HAPI versions, see reference-api-mysql/src/main/resources/db/mysql for the appropriate migration scripts.
@@ -75,8 +79,8 @@ When the HSPC Reference API server is run in open mode, no security is applied. 
 * hsp.platform.api.security.mode=open
 
 ### Sample Operations ###
-* http://localhost:8075/hspc5/open/Patient
-* http://localhost:8075/hspc5/open/Observation
+* http://localhost:8078/hspc8/open/Patient
+* http://localhost:8078/hspc8/open/Observation
 
 ## Secured Mode ##
 When the HSPC Reference API server is run in secured mode, authentication is required for most endpoints with the exception of the conformance statement.  See reference-api-webapp/src/main/resources/application.yml.
