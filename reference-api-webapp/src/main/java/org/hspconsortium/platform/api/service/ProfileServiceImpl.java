@@ -130,14 +130,17 @@ public class ProfileServiceImpl implements ProfileService {
                     if (resourceType.equals("StructureDefinition")) {
                         fhirVersion = jsonObject.get("fhirVersion").toString();
                         if (apiEndpoint.equals("5") && !fhirVersion.equals("1.0.2")) { // 5=DSTU2
-                            resourceNotSaved.add(resourceType + " - " + resourceName + " - Incompatible FHIR Version");
-                            break;
+                            throw new RuntimeException("Profile's FHIR version is incompatible with your current sandbox's FHIR version. The profile was not saved.");
+//                            resourceNotSaved.add(resourceType + " - " + resourceName + " - Incompatible FHIR Version");
+//                            break;
                         } else if (apiEndpoint.equals("6")&& !fhirVersion.equals("3.0.1")) { // 6=STU3
-                            resourceNotSaved.add(resourceType + " - " + resourceName + " - Incompatible FHIR Version");
-                            break;
+                            throw new RuntimeException("Profile's FHIR version is incompatible with your current sandbox's FHIR version. The profile was not saved.");
+//                            resourceNotSaved.add(resourceType + " - " + resourceName + " - Incompatible FHIR Version");
+//                            break;
                         } else if (apiEndpoint.equals("7") && !fhirVersion.equals("4.0.0")) { // 7=R4
-                            resourceNotSaved.add(resourceType + " - " + resourceName + " - Incompatible FHIR Version");
-                            break;
+                            throw new RuntimeException("Profile's FHIR version is incompatible with your current sandbox's FHIR version. The profile was not saved.");
+//                           resourceNotSaved.add(resourceType + " - " + resourceName + " - Incompatible FHIR Version");
+//                           break;
                         }
                     }
                     if (Arrays.stream(profileResources).anyMatch(resourceType::equals)) {
@@ -155,10 +158,7 @@ public class ProfileServiceImpl implements ProfileService {
                         }
                     }
                 } catch (Exception e) {
-                    resourceNotSaved.add("Error parsing the JSON file: " + fileName);
-                    successAndFailureList.put(resourceSaved, resourceNotSaved);
-                    return successAndFailureList;
-//                    logger.error(e.getMessage());
+                    throw new RuntimeException(e.getMessage());
                 }
             }
         }
