@@ -106,12 +106,13 @@ public class ProfileServiceImpl implements ProfileService {
         return urlAndResources;
     }
 
-    public HashMap<List<String>, List<String>> saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId) throws IOException {
+    public HashMap<List<String>, List<String>> saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId, String apiEndpoint) throws IOException {
         HashMap<List<String>, List<String>> successAndFailureList = new HashMap<>();
         String authToken = request.getHeader("Authorization").substring(7);
         String fileName = "";
         String resourceType = "";
         String resourceName = "";
+        String fhirVersion = "";
         List<String> resourceSaved = new ArrayList<>();
         List<String> resourceNotSaved = new ArrayList<>();
         Enumeration zipFileEntries = zipFile.entries();
@@ -126,7 +127,19 @@ public class ProfileServiceImpl implements ProfileService {
                     JSONObject jsonObject = (JSONObject)jsonParser.parse(new InputStreamReader(inputStream, "UTF-8"));
                     resourceType = jsonObject.get("resourceType").toString();
                     resourceName = jsonObject.get("name").toString();
-
+                    if (resourceType.equals("StructureDefinition")) {
+                        fhirVersion = jsonObject.get("fhirVersion").toString();
+                        if (apiEndpoint.equals("5") && !fhirVersion.equals("1.0.2")) { // 5=DSTU2
+                            resourceNotSaved.add(resourceType + " - " + resourceName + " - Incompatible FHIR Version");
+                            break;
+                        } else if (apiEndpoint.equals("6")&& !fhirVersion.equals("3.0.1")) { // 6=STU3
+                            resourceNotSaved.add(resourceType + " - " + resourceName + " - Incompatible FHIR Version");
+                            break;
+                        } else if (apiEndpoint.equals("7") && !fhirVersion.equals("4.0.0")) { // 7=R4
+                            resourceNotSaved.add(resourceType + " - " + resourceName + " - Incompatible FHIR Version");
+                            break;
+                        }
+                    }
                     if (Arrays.stream(profileResources).anyMatch(resourceType::equals)) {
                         String jsonBody = jsonObject.toString();
                         HttpHeaders headers = new HttpHeaders();
@@ -138,13 +151,14 @@ public class ProfileServiceImpl implements ProfileService {
                             restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
                             resourceSaved.add(resourceType + " - " + resourceName);
                         } catch (HttpServerErrorException e) {
-                            resourceNotSaved.add(resourceType + " - " + resourceName);
-                            logger.error("Resource not saved: " + resourceType + ". " + e.getMessage());
+                            resourceNotSaved.add(resourceType + " - " + resourceName + " Bad JSON");
                         }
                     }
-                }
-                catch (Exception e) {
-                    logger.error("Content of the " + resourceType + " is not supported. " + e.getMessage());
+                } catch (Exception e) {
+                    resourceNotSaved.add("Error parsing the JSON file: " + fileName);
+                    successAndFailureList.put(resourceSaved, resourceNotSaved);
+                    return successAndFailureList;
+//                    logger.error(e.getMessage());
                 }
             }
         }
