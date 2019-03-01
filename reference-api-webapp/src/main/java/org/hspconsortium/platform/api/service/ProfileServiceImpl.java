@@ -36,19 +36,6 @@ public class ProfileServiceImpl implements ProfileService {
     @Value("${hspc.platform.api.fhir.profileResources}")
     private String[] profileResources;
 
-    public String deleteSelectedSD(HttpServletRequest request, String sandboxId, String structureDefinitionID) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "Bearer " + request);
-        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
-        //TODO: Check with Jacob about the URL
-        try {
-            restTemplate.exchange(localhost + "/" + sandboxId + "/data/" + structureDefinitionID, HttpMethod.DELETE, httpEntity, String.class);
-        } catch (HttpServerErrorException e) {
-            return "Trouble deleting the StructureDefinition: " + structureDefinitionID;
-        }
-        return "Deleted StructureDefinition:" + structureDefinitionID;
-    }
-
     public HashMap<String, List<JSONObject>> getAllUploadedProfiles(HttpServletRequest request, String sandboxId) {
         String authToken = request.getHeader("Authorization").substring(7);
         HttpHeaders headers = new HttpHeaders();
