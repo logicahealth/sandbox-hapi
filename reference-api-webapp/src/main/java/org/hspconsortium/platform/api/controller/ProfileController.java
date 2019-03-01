@@ -60,14 +60,5 @@ public class ProfileController {
         }
         return list;
     }
-
-    @DeleteMapping(value = "/deleteSelectedSD", params = {"sandboxId", "structureDefinitionID"})
-    public String deleteSelectedSD(HttpServletRequest request, @RequestParam(value = "sandboxId") String sandboxId, @RequestParam(value = "structureDefinitionID") String structureDefinitionID) {
-        if(!sandboxService.verifyUser(request, sandboxId)) {
-            throw new UnauthorizedUserException("User not authorized");
-        }
-        String deletedMessage = profileService.deleteSelectedSD(request, sandboxId, structureDefinitionID);
-        return deletedMessage;
-    }
 }
 
