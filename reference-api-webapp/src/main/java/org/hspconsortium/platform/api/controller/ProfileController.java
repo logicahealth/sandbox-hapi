@@ -5,6 +5,9 @@ import org.hspconsortium.platform.api.fhir.service.ProfileService;
 import org.hspconsortium.platform.api.fhir.service.SandboxService;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -37,28 +40,57 @@ public class ProfileController {
         return profileService.getAllUploadedProfiles(request, sandboxId);
     }
 
+//    @PostMapping(value = "/uploadProfile")
+//    public HashMap<List<String>, List<String>> uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, String sandboxId) throws IOException {
+//        if(!sandboxService.verifyUser(request, sandboxId)) {
+//            throw new UnauthorizedUserException("User not authorized");
+//        }
+//        HashMap<List<String>, List<String>> list = new HashMap<>();
+//        // Save file to temp
+//        File zip = File.createTempFile(UUID.randomUUID().toString(), "temp");
+//        FileOutputStream o = new FileOutputStream(zip);
+//        IOUtil.copy(file.getInputStream(), o);
+//        o.close();
+//
+//        try {
+//            ZipFile zipFile = new ZipFile(zip);
+//            list = profileService.saveZipFile(zipFile, request, sandboxId);
+//        } catch (ZipException e) {
+//            e.printStackTrace();
+//        }
+//        finally {
+//            zip.delete();
+//        }
+//        return list;
+//    }
+
     @PostMapping(value = "/uploadProfile")
-    public HashMap<List<String>, List<String>> uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, String sandboxId) throws IOException {
+    public ResponseEntity<Object> uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, String sandboxId) throws IOException {
         if(!sandboxService.verifyUser(request, sandboxId)) {
             throw new UnauthorizedUserException("User not authorized");
         }
         HashMap<List<String>, List<String>> list = new HashMap<>();
-        // Save file to temp
-        File zip = File.createTempFile(UUID.randomUUID().toString(), "temp");
-        FileOutputStream o = new FileOutputStream(zip);
-        IOUtil.copy(file.getInputStream(), o);
-        o.close();
+        if (!file.getOriginalFilename().isEmpty()) {
+            // Save file to temp
+            File zip = File.createTempFile(UUID.randomUUID().toString(), "temp");
+            FileOutputStream o = new FileOutputStream(zip);
+            IOUtil.copy(file.getInputStream(), o);
+            o.close();
 
-        try {
-            ZipFile zipFile = new ZipFile(zip);
-            list = profileService.saveZipFile(zipFile, request, sandboxId);
-        } catch (ZipException e) {
-            e.printStackTrace();
+            try {
+                ZipFile zipFile = new ZipFile(zip);
+                list = profileService.saveZipFile(zipFile, request, sandboxId);
+            } catch (ZipException e) {
+                e.printStackTrace();
+            }
+            finally {
+                zip.delete();
+            }
+        } else {
+            return new ResponseEntity<>("Invalid File", HttpStatus.BAD_REQUEST);
         }
-        finally {
-            zip.delete();
-        }
-        return list;
+
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 }
 
