@@ -36,45 +36,45 @@ public class HapiJpaConfigStu3 extends BaseJavaConfigDstu3 {
     }
 
     // Temporary workaround until HAPI fixes ValueSets
-    @Bean(name = "myValueSetDaoDstu3", autowire = Autowire.BY_NAME)
-    @Lazy
-    public IFhirResourceDaoValueSet<org.hl7.fhir.dstu3.model.ValueSet, Coding, CodeableConcept> daoValueSetDstu3() {
-        MyFhirResourceDaoValueSetDstu3 retVal = new MyFhirResourceDaoValueSetDstu3();
-        retVal.setResourceType(org.hl7.fhir.dstu3.model.ValueSet.class);
-        retVal.setContext(fhirContextDstu3());
-        return retVal;
-    }
-
-    public static class MyFhirResourceDaoValueSetDstu3 extends FhirResourceDaoValueSetDstu3  {
-        @Autowired
-        private PlatformTransactionManager myTxManager;
-
-        @Override
-        public DaoMethodOutcome create(ValueSet theResource, RequestDetails theRequestDetails) {
-            return new TransactionTemplate(myTxManager).execute(t -> {
-                return super.create(theResource, theRequestDetails);
-            });
-        }
-
-        @Override
-        public DaoMethodOutcome create(ValueSet theResource, String theIfNoneExist, RequestDetails theRequestDetails) {
-            return new TransactionTemplate(myTxManager).execute(t -> {
-                return super.create(theResource, theIfNoneExist, theRequestDetails);
-            });
-        }
-
-        @Override
-        public DaoMethodOutcome update(ValueSet theResource, RequestDetails theRequestDetails) {
-            return new TransactionTemplate(myTxManager).execute(t -> {
-                return super.update(theResource, theRequestDetails);
-            });
-        }
-
-        @Override
-        public DaoMethodOutcome update(ValueSet theResource, String theIfNoneExist, RequestDetails theRequestDetails) {
-            return new TransactionTemplate(myTxManager).execute(t -> {
-                return super.update(theResource, theIfNoneExist, theRequestDetails);
-            });
-        }
-    }
+//    @Bean(name = "myValueSetDaoDstu3", autowire = Autowire.BY_NAME)
+//    @Lazy
+//    public IFhirResourceDaoValueSet<org.hl7.fhir.dstu3.model.ValueSet, Coding, CodeableConcept> daoValueSetDstu3() {
+//        MyFhirResourceDaoValueSetDstu3 retVal = new MyFhirResourceDaoValueSetDstu3();
+//        retVal.setResourceType(org.hl7.fhir.dstu3.model.ValueSet.class);
+//        retVal.setContext(fhirContextDstu3());
+//        return retVal;
+//    }
+//
+//    public static class MyFhirResourceDaoValueSetDstu3 extends FhirResourceDaoValueSetDstu3  {
+//        @Autowired
+//        private PlatformTransactionManager myTxManager;
+//
+//        @Override
+//        public DaoMethodOutcome create(ValueSet theResource, RequestDetails theRequestDetails) {
+//            return new TransactionTemplate(myTxManager).execute(t -> {
+//                return super.create(theResource, theRequestDetails);
+//            });
+//        }
+//
+//        @Override
+//        public DaoMethodOutcome create(ValueSet theResource, String theIfNoneExist, RequestDetails theRequestDetails) {
+//            return new TransactionTemplate(myTxManager).execute(t -> {
+//                return super.create(theResource, theIfNoneExist, theRequestDetails);
+//            });
+//        }
+//
+//        @Override
+//        public DaoMethodOutcome update(ValueSet theResource, RequestDetails theRequestDetails) {
+//            return new TransactionTemplate(myTxManager).execute(t -> {
+//                return super.update(theResource, theRequestDetails);
+//            });
+//        }
+//
+//        @Override
+//        public DaoMethodOutcome update(ValueSet theResource, String theIfNoneExist, RequestDetails theRequestDetails) {
+//            return new TransactionTemplate(myTxManager).execute(t -> {
+//                return super.update(theResource, theIfNoneExist, theRequestDetails);
+//            });
+//        }
+//    }
 }
