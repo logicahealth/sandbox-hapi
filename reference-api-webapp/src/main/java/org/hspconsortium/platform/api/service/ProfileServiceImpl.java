@@ -11,6 +11,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 
@@ -35,6 +36,8 @@ public class ProfileServiceImpl implements ProfileService {
 
     @Value("${hspc.platform.api.fhir.profileResources}")
     private String[] profileResources;
+
+    private boolean taskRunning = false;
 
     public HashMap<String, List<JSONObject>> getAllUploadedProfiles(HttpServletRequest request, String sandboxId) {
         String authToken = request.getHeader("Authorization").substring(7);
@@ -106,6 +109,10 @@ public class ProfileServiceImpl implements ProfileService {
         return urlAndResources;
     }
 
+    public boolean getTaskRunning() {
+        return taskRunning;
+    }
+    @Async
     public HashMap<List<String>, List<String>> saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId) throws IOException {
         HashMap<List<String>, List<String>> successAndFailureList = new HashMap<>();
         String authToken = request.getHeader("Authorization").substring(7);
@@ -117,6 +124,7 @@ public class ProfileServiceImpl implements ProfileService {
         Enumeration zipFileEntries = zipFile.entries();
 
         while(zipFileEntries.hasMoreElements()) {
+            taskRunning = true;
             ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
             fileName = entry.getName();
             if (fileName.endsWith(".json")) {
@@ -149,6 +157,7 @@ public class ProfileServiceImpl implements ProfileService {
             }
         }
         successAndFailureList.put(resourceSaved, resourceNotSaved);
+        taskRunning = false;
         return successAndFailureList;
     }
 }
