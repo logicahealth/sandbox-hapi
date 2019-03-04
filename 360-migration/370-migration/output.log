@@ -7,96 +7,194 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::        (v2.1.1.RELEASE)
 
-2019-03-04 14:52:04.514 [main] INFO  o.h.p.a.HSPCReferenceApiMultitenantApplication [StartupInfoLogger.java:50] Starting HSPCReferenceApiMultitenantApplication v2.4.0-SNAPSHOT on Jacobs-MacBook-Pro.local with PID 8945 (/Users/jacobcrump/HSPC_projects/reference-api/360-migration/370-migration/hspc-reference-api-webapp-2.4.0-SNAPSHOT.jar started by jacobcrump in /Users/jacobcrump/HSPC_projects/reference-api/360-migration/370-migration)
-2019-03-04 14:52:04.518 [main] INFO  o.h.p.a.HSPCReferenceApiMultitenantApplication [SpringApplication.java:679] The following profiles are active: eyJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJzYW5kX21hbiIsImlzcyI6Imh0dHA6XC9cL2xvY2FsaG9zdDo4MDYwXC8iLCJleHAiOjE1NTE4MTQ5NzksImlhdCI6MTU1MTcyODU3OSwianRpIjoiMjQyNzBjMzQtMTE5NC00MTk4LWEzMDAtY2MxYmY2NWUyNzhhIn0.kmQd17V947bpZwC0hBm0LynLWlpwpOiZIFtuyAhMZDw6qa6bngkuLAMwWnv052up3arY1eiJO2bQWuGQ9oPhVfAkqlmKpuyhdTjuut2yfB2PdOIIqv1Yw26-lIG996MWWnxJX5Fh-xyn8oDpddi9QHlytpGwYr5Xwo1qa4gZ5oCk-nxNtU48cMA9bItEjkQFIXpMdJ7BnwSisRsNHd30BgDTBFXew6afbrS4ZsKiBYaJRUV08nFjsEG4a4KVGw-EdvqcYoODA7iOG-4H9nz-GQgCdwyAtANmHxAeqB0fya3v4THNIS7inZ1AkUOvokEV2Q_xtPKAutD7vi6fr4zSkg,multitenant
-2019-03-04 14:52:06.544 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [RepositoryConfigurationDelegate.java:126] Bootstrapping Spring Data repositories in DEFAULT mode.
-2019-03-04 14:52:06.652 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [RepositoryConfigurationDelegate.java:182] Finished Spring Data repository scanning in 97ms. Found 0 repository interfaces.
-2019-03-04 14:52:07.224 [main] INFO  c.u.j.c.EnableEncryptablePropertiesBeanFactoryPostProcessor [EnableEncryptablePropertiesBeanFactoryPostProcessor.java:48] Post-processing PropertySource instances
-2019-03-04 14:52:07.337 [main] INFO  c.u.j.EncryptablePropertySourceConverter [EncryptablePropertySourceConverter.java:38] Converting PropertySource configurationProperties [org.springframework.boot.context.properties.source.ConfigurationPropertySourcesPropertySource] to AOP Proxy
-2019-03-04 14:52:07.338 [main] INFO  c.u.j.EncryptablePropertySourceConverter [EncryptablePropertySourceConverter.java:38] Converting PropertySource servletConfigInitParams [org.springframework.core.env.PropertySource$StubPropertySource] to EncryptablePropertySourceWrapper
-2019-03-04 14:52:07.338 [main] INFO  c.u.j.EncryptablePropertySourceConverter [EncryptablePropertySourceConverter.java:38] Converting PropertySource servletContextInitParams [org.springframework.core.env.PropertySource$StubPropertySource] to EncryptablePropertySourceWrapper
-2019-03-04 14:52:07.338 [main] INFO  c.u.j.EncryptablePropertySourceConverter [EncryptablePropertySourceConverter.java:38] Converting PropertySource systemProperties [org.springframework.core.env.MapPropertySource] to EncryptableMapPropertySourceWrapper
-2019-03-04 14:52:07.338 [main] INFO  c.u.j.EncryptablePropertySourceConverter [EncryptablePropertySourceConverter.java:38] Converting PropertySource systemEnvironment [org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor$OriginAwareSystemEnvironmentPropertySource] to EncryptableMapPropertySourceWrapper
-2019-03-04 14:52:07.339 [main] INFO  c.u.j.EncryptablePropertySourceConverter [EncryptablePropertySourceConverter.java:38] Converting PropertySource random [org.springframework.boot.env.RandomValuePropertySource] to EncryptablePropertySourceWrapper
-2019-03-04 14:52:07.339 [main] INFO  c.u.j.EncryptablePropertySourceConverter [EncryptablePropertySourceConverter.java:38] Converting PropertySource applicationConfig: [classpath:/application.yml] (document #0) [org.springframework.boot.env.OriginTrackedMapPropertySource] to EncryptableMapPropertySourceWrapper
-2019-03-04 14:52:07.339 [main] INFO  c.u.j.EncryptablePropertySourceConverter [EncryptablePropertySourceConverter.java:38] Converting PropertySource class path resource [config/multitenant-mysql.properties] [org.springframework.core.io.support.ResourcePropertySource] to EncryptableMapPropertySourceWrapper
-2019-03-04 14:52:07.339 [main] INFO  c.u.j.EncryptablePropertySourceConverter [EncryptablePropertySourceConverter.java:38] Converting PropertySource class path resource [config/mysql.properties] [org.springframework.core.env.CompositePropertySource] to EncryptableEnumerablePropertySourceWrapper
-2019-03-04 14:52:07.601 [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [PostProcessorRegistrationDelegate.java:330] Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$d98a89d6] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
-2019-03-04 14:52:07.721 [main] INFO  c.u.j.r.DefaultLazyPropertyResolver [DefaultLazyPropertyResolver.java:34] Property Resolver custom Bean not found with name 'encryptablePropertyResolver'. Initializing Default Property Resolver
-2019-03-04 14:52:07.724 [main] INFO  c.u.j.d.DefaultLazyPropertyDetector [DefaultLazyPropertyDetector.java:31] Property Detector custom Bean not found with name 'encryptablePropertyDetector'. Initializing Default Property Detector
-2019-03-04 14:52:07.730 [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [PostProcessorRegistrationDelegate.java:330] Bean 'metadataRepositoryConfig' of type [org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
-2019-03-04 14:52:07.735 [main] INFO  o.h.p.a.s.TenantInfoRequestMatcher [TenantInfoRequestMatcher.java:52] Configuring TenantInfoRequestMatcher
-2019-03-04 14:52:07.741 [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [PostProcessorRegistrationDelegate.java:330] Bean 'tenantInfoRequestMatcher' of type [org.hspconsortium.platform.api.security.TenantInfoRequestMatcher] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
-2019-03-04 14:52:07.742 [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [PostProcessorRegistrationDelegate.java:330] Bean 'multitenantOAuth2ResourceConfig' of type [org.hspconsortium.platform.api.security.MultitenantOAuth2ResourceConfig$$EnhancerBySpringCGLIB$$3d14f918] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
-2019-03-04 14:52:08.241 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer [TomcatWebServer.java:90] Tomcat initialized with port(s): 8075 (http)
-2019-03-04 14:52:08.263 [main] INFO  o.a.coyote.http11.Http11NioProtocol [DirectJDKLog.java:173] Initializing ProtocolHandler ["http-nio-8075"]
-2019-03-04 14:52:08.280 [main] INFO  o.a.catalina.core.StandardService [DirectJDKLog.java:173] Starting service [Tomcat]
-2019-03-04 14:52:08.280 [main] INFO  o.a.catalina.core.StandardEngine [DirectJDKLog.java:173] Starting Servlet Engine: Apache Tomcat/9.0.13
-2019-03-04 14:52:08.295 [main] INFO  o.a.c.core.AprLifecycleListener [DirectJDKLog.java:173] The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path: [/Users/jacobcrump/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:.]
-2019-03-04 14:52:08.403 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] [DirectJDKLog.java:173] Initializing Spring embedded WebApplicationContext
-2019-03-04 14:52:08.403 [main] INFO  o.s.web.context.ContextLoader [ServletWebServerApplicationContext.java:296] Root WebApplicationContext: initialization completed in 3718 ms
-2019-03-04 14:52:09.115 [main] INFO  o.h.p.api.fhir.config.MySQLConfig [MySQLConfig.java:229] loadIndexFiles()
+2019-03-04 15:20:36.464 [main] INFO  o.h.p.a.HSPCReferenceApiMultitenantApplication [StartupInfoLogger.java:50] Starting HSPCReferenceApiMultitenantApplication v2.4.0-SNAPSHOT on Jacobs-MacBook-Pro.local with PID 9451 (/Users/jacobcrump/HSPC_projects/reference-api/360-migration/370-migration/hspc-reference-api-webapp-2.4.0-SNAPSHOT.jar started by jacobcrump in /Users/jacobcrump/HSPC_projects/reference-api/360-migration/370-migration)
+2019-03-04 15:20:36.469 [main] INFO  o.h.p.a.HSPCReferenceApiMultitenantApplication [SpringApplication.java:679] The following profiles are active: stu3,multitenant
+2019-03-04 15:20:38.398 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [RepositoryConfigurationDelegate.java:126] Bootstrapping Spring Data repositories in DEFAULT mode.
+2019-03-04 15:20:38.672 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [RepositoryConfigurationDelegate.java:182] Finished Spring Data repository scanning in 264ms. Found 32 repository interfaces.
+2019-03-04 15:20:40.132 [main] INFO  c.u.j.c.EnableEncryptablePropertiesBeanFactoryPostProcessor [EnableEncryptablePropertiesBeanFactoryPostProcessor.java:48] Post-processing PropertySource instances
+2019-03-04 15:20:40.241 [main] INFO  c.u.j.EncryptablePropertySourceConverter [EncryptablePropertySourceConverter.java:38] Converting PropertySource configurationProperties [org.springframework.boot.context.properties.source.ConfigurationPropertySourcesPropertySource] to AOP Proxy
+2019-03-04 15:20:40.242 [main] INFO  c.u.j.EncryptablePropertySourceConverter [EncryptablePropertySourceConverter.java:38] Converting PropertySource servletConfigInitParams [org.springframework.core.env.PropertySource$StubPropertySource] to EncryptablePropertySourceWrapper
+2019-03-04 15:20:40.242 [main] INFO  c.u.j.EncryptablePropertySourceConverter [EncryptablePropertySourceConverter.java:38] Converting PropertySource servletContextInitParams [org.springframework.core.env.PropertySource$StubPropertySource] to EncryptablePropertySourceWrapper
+2019-03-04 15:20:40.243 [main] INFO  c.u.j.EncryptablePropertySourceConverter [EncryptablePropertySourceConverter.java:38] Converting PropertySource systemProperties [org.springframework.core.env.MapPropertySource] to EncryptableMapPropertySourceWrapper
+2019-03-04 15:20:40.243 [main] INFO  c.u.j.EncryptablePropertySourceConverter [EncryptablePropertySourceConverter.java:38] Converting PropertySource systemEnvironment [org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor$OriginAwareSystemEnvironmentPropertySource] to EncryptableMapPropertySourceWrapper
+2019-03-04 15:20:40.243 [main] INFO  c.u.j.EncryptablePropertySourceConverter [EncryptablePropertySourceConverter.java:38] Converting PropertySource random [org.springframework.boot.env.RandomValuePropertySource] to EncryptablePropertySourceWrapper
+2019-03-04 15:20:40.243 [main] INFO  c.u.j.EncryptablePropertySourceConverter [EncryptablePropertySourceConverter.java:38] Converting PropertySource applicationConfig: [classpath:/application.yml] (document #2) [org.springframework.boot.env.OriginTrackedMapPropertySource] to EncryptableMapPropertySourceWrapper
+2019-03-04 15:20:40.243 [main] INFO  c.u.j.EncryptablePropertySourceConverter [EncryptablePropertySourceConverter.java:38] Converting PropertySource applicationConfig: [classpath:/application.yml] (document #0) [org.springframework.boot.env.OriginTrackedMapPropertySource] to EncryptableMapPropertySourceWrapper
+2019-03-04 15:20:40.244 [main] INFO  c.u.j.EncryptablePropertySourceConverter [EncryptablePropertySourceConverter.java:38] Converting PropertySource class path resource [config/multitenant-mysql.properties] [org.springframework.core.io.support.ResourcePropertySource] to EncryptableMapPropertySourceWrapper
+2019-03-04 15:20:40.244 [main] INFO  c.u.j.EncryptablePropertySourceConverter [EncryptablePropertySourceConverter.java:38] Converting PropertySource class path resource [config/mysql.properties] [org.springframework.core.env.CompositePropertySource] to EncryptableEnumerablePropertySourceWrapper
+2019-03-04 15:20:40.524 [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [PostProcessorRegistrationDelegate.java:330] Bean 'org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration' of type [org.springframework.transaction.annotation.ProxyTransactionManagementConfiguration$$EnhancerBySpringCGLIB$$511ddfca] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-03-04 15:20:40.574 [main] INFO  c.u.j.r.DefaultLazyPropertyResolver [DefaultLazyPropertyResolver.java:34] Property Resolver custom Bean not found with name 'encryptablePropertyResolver'. Initializing Default Property Resolver
+2019-03-04 15:20:40.579 [main] INFO  c.u.j.d.DefaultLazyPropertyDetector [DefaultLazyPropertyDetector.java:31] Property Detector custom Bean not found with name 'encryptablePropertyDetector'. Initializing Default Property Detector
+2019-03-04 15:20:40.587 [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [PostProcessorRegistrationDelegate.java:330] Bean 'metadataRepositoryConfig' of type [org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryConfig] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-03-04 15:20:40.596 [main] INFO  o.h.p.a.s.TenantInfoRequestMatcher [TenantInfoRequestMatcher.java:52] Configuring TenantInfoRequestMatcher
+2019-03-04 15:20:40.602 [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [PostProcessorRegistrationDelegate.java:330] Bean 'tenantInfoRequestMatcher' of type [org.hspconsortium.platform.api.security.TenantInfoRequestMatcher] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-03-04 15:20:40.604 [main] INFO  o.s.c.s.PostProcessorRegistrationDelegate$BeanPostProcessorChecker [PostProcessorRegistrationDelegate.java:330] Bean 'multitenantOAuth2ResourceConfig' of type [org.hspconsortium.platform.api.security.MultitenantOAuth2ResourceConfig$$EnhancerBySpringCGLIB$$b4a84f0c] is not eligible for getting processed by all BeanPostProcessors (for example: not eligible for auto-proxying)
+2019-03-04 15:20:41.149 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer [TomcatWebServer.java:90] Tomcat initialized with port(s): 8079 (http)
+2019-03-04 15:20:41.168 [main] INFO  o.a.coyote.http11.Http11NioProtocol [DirectJDKLog.java:173] Initializing ProtocolHandler ["http-nio-8079"]
+2019-03-04 15:20:41.183 [main] INFO  o.a.catalina.core.StandardService [DirectJDKLog.java:173] Starting service [Tomcat]
+2019-03-04 15:20:41.184 [main] INFO  o.a.catalina.core.StandardEngine [DirectJDKLog.java:173] Starting Servlet Engine: Apache Tomcat/9.0.13
+2019-03-04 15:20:41.196 [main] INFO  o.a.c.core.AprLifecycleListener [DirectJDKLog.java:173] The APR based Apache Tomcat Native library which allows optimal performance in production environments was not found on the java.library.path: [/Users/jacobcrump/Library/Java/Extensions:/Library/Java/Extensions:/Network/Library/Java/Extensions:/System/Library/Java/Extensions:/usr/lib/java:.]
+2019-03-04 15:20:41.302 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] [DirectJDKLog.java:173] Initializing Spring embedded WebApplicationContext
+2019-03-04 15:20:41.302 [main] INFO  o.s.web.context.ContextLoader [ServletWebServerApplicationContext.java:296] Root WebApplicationContext: initialization completed in 4666 ms
+2019-03-04 15:20:42.103 [main] INFO  o.h.p.api.fhir.config.MySQLConfig [MySQLConfig.java:229] loadIndexFiles()
 Loading class `com.mysql.jdbc.Driver'. This is deprecated. The new driver class is `com.mysql.cj.jdbc.Driver'. The driver is automatically registered via the SPI and manual loading of the driver class is generally unnecessary.
-2019-03-04 14:52:10.102 [main] INFO  o.h.p.api.fhir.config.MySQLConfig [MySQLConfig.java:229] loadIndexFiles()
-2019-03-04 14:52:10.162 [main] INFO  o.h.jpa.internal.util.LogHelper [LogHelper.java:31] HHH000204: Processing PersistenceUnitInfo [name: default]
-2019-03-04 14:52:10.363 [main] INFO  org.hibernate.Version [Version.java:46] HHH000412: Hibernate Core {5.4.1.Final}
-2019-03-04 14:52:10.707 [main] INFO  o.h.annotations.common.Version [JavaReflectionManager.java:49] HCANN000001: Hibernate Commons Annotations {5.1.0.Final}
-2019-03-04 14:52:11.310 [main] INFO  org.hibernate.dialect.Dialect [Dialect.java:158] HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
-2019-03-04 14:52:12.515 [main] INFO  org.hibernate.search.engine.Version [Version.java:27] HSEARCH000034: Hibernate Search 5.11.1.Final
-2019-03-04 14:52:13.443 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator [JtaPlatformInitiator.java:52] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
-2019-03-04 14:52:13.622 [main] INFO  o.h.s.s.impl.DirectoryProviderHelper [DirectoryProviderHelper.java:139] HSEARCH000041: Index directory not found, creating: 'target/hspc-reference-api/lucenefiles'
-2019-03-04 14:52:13.624 [main] INFO  o.h.s.s.impl.DirectoryProviderHelper [DirectoryProviderHelper.java:139] HSEARCH000041: Index directory not found, creating: 'target/hspc-reference-api/lucenefiles/ca.uhn.fhir.jpa.model.entity.ResourceIndexedSearchParamString'
-2019-03-04 14:52:13.874 [main] INFO  o.h.s.s.impl.DirectoryProviderHelper [DirectoryProviderHelper.java:139] HSEARCH000041: Index directory not found, creating: 'target/hspc-reference-api/lucenefiles/ca.uhn.fhir.jpa.model.entity.ResourceTable'
-2019-03-04 14:52:13.888 [main] INFO  o.h.s.s.impl.DirectoryProviderHelper [DirectoryProviderHelper.java:139] HSEARCH000041: Index directory not found, creating: 'target/hspc-reference-api/lucenefiles/ca.uhn.fhir.jpa.entity.TermConcept'
-2019-03-04 14:52:13.989 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean [AbstractEntityManagerFactoryBean.java:415] Initialized JPA EntityManagerFactory for persistence unit 'default'
-2019-03-04 14:52:14.013 [main] INFO  o.h.jpa.internal.util.LogHelper [LogHelper.java:31] HHH000204: Processing PersistenceUnitInfo [name: default]
-2019-03-04 14:52:14.370 [main] INFO  org.hibernate.dialect.Dialect [Dialect.java:158] HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
-2019-03-04 14:52:14.630 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator [JtaPlatformInitiator.java:52] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
-2019-03-04 14:52:14.704 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean [AbstractEntityManagerFactoryBean.java:415] Initialized JPA EntityManagerFactory for persistence unit 'default'
-2019-03-04 14:52:14.716 [main] WARN  o.s.b.w.s.c.AnnotationConfigServletWebServerApplicationContext [AbstractApplicationContext.java:554] Exception encountered during context initialization - cancelling refresh attempt: org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'profileServiceImpl': Injection of autowired dependencies failed; nested exception is java.lang.IllegalArgumentException: Could not resolve placeholder 'server.localhost' in value "${server.localhost}"
-2019-03-04 14:52:14.716 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean [AbstractEntityManagerFactoryBean.java:597] Closing JPA EntityManagerFactory for persistence unit 'default'
-2019-03-04 14:52:14.734 [main] INFO  o.a.catalina.core.StandardService [DirectJDKLog.java:173] Stopping service [Tomcat]
-2019-03-04 14:52:14.754 [main] INFO  o.s.b.a.l.ConditionEvaluationReportLoggingListener [ConditionEvaluationReportLoggingListener.java:142] 
+2019-03-04 15:20:43.242 [main] INFO  o.h.p.api.fhir.config.MySQLConfig [MySQLConfig.java:229] loadIndexFiles()
+2019-03-04 15:20:43.292 [main] INFO  o.h.jpa.internal.util.LogHelper [LogHelper.java:31] HHH000204: Processing PersistenceUnitInfo [name: default]
+2019-03-04 15:20:43.450 [main] INFO  org.hibernate.Version [Version.java:46] HHH000412: Hibernate Core {5.4.1.Final}
+2019-03-04 15:20:43.783 [main] INFO  o.h.annotations.common.Version [JavaReflectionManager.java:49] HCANN000001: Hibernate Commons Annotations {5.1.0.Final}
+2019-03-04 15:20:44.378 [main] INFO  org.hibernate.dialect.Dialect [Dialect.java:158] HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2019-03-04 15:20:45.347 [main] INFO  org.hibernate.search.engine.Version [Version.java:27] HSEARCH000034: Hibernate Search 5.11.1.Final
+2019-03-04 15:20:46.252 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator [JtaPlatformInitiator.java:52] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2019-03-04 15:20:46.716 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean [AbstractEntityManagerFactoryBean.java:415] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2019-03-04 15:20:46.735 [main] INFO  o.h.jpa.internal.util.LogHelper [LogHelper.java:31] HHH000204: Processing PersistenceUnitInfo [name: default]
+2019-03-04 15:20:47.105 [main] INFO  org.hibernate.dialect.Dialect [Dialect.java:158] HHH000400: Using dialect: org.hibernate.dialect.MySQL5Dialect
+2019-03-04 15:20:47.330 [main] INFO  o.h.e.t.j.p.i.JtaPlatformInitiator [JtaPlatformInitiator.java:52] HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2019-03-04 15:20:47.397 [main] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean [AbstractEntityManagerFactoryBean.java:415] Initialized JPA EntityManagerFactory for persistence unit 'default'
+2019-03-04 15:20:47.493 [main] INFO  ca.uhn.fhir.util.VersionUtil [VersionUtil.java:72] HAPI FHIR version 3.7.0 - Rev f2560071c8
+2019-03-04 15:20:47.547 [main] INFO  ca.uhn.fhir.context.FhirContext [FhirContext.java:171] Creating new FHIR context for FHIR version [DSTU3]
+2019-03-04 15:20:50.778 [main] INFO  o.h.p.api.fhir.DataSourceRepository [DataSourceRepository.java:87] Tenant '370MigrationSchema' maps to 'jdbc:mysql://localhost:3306/hspc_8_370MigrationSchema' database url.
+2019-03-04 15:20:52.000 [main] INFO  ca.uhn.fhir.context.FhirContext [FhirContext.java:171] Creating new FHIR context for FHIR version [DSTU3]
+2019-03-04 15:20:52.005 [main] INFO  ca.uhn.fhir.context.FhirContext [FhirContext.java:171] Creating new FHIR context for FHIR version [DSTU3]
+2019-03-04 15:20:52.193 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:1383] Registration of provider [ca.uhn.fhir.jpa.provider.dstu3.TerminologyUploaderProviderDstu3] will be delayed until FHIR server startup
+2019-03-04 15:20:52.194 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:1065] Initializing HAPI FHIR restful server running in DSTU3 mode
+2019-03-04 15:20:52.223 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:1431] Added 117 resource provider(s). Total 117
+2019-03-04 15:20:52.223 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.AccountResourceProvider
+2019-03-04 15:20:52.303 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.AdverseEventResourceProvider
+2019-03-04 15:20:52.307 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.AllergyIntoleranceResourceProvider
+2019-03-04 15:20:52.311 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.AppointmentResourceProvider
+2019-03-04 15:20:52.315 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.AppointmentResponseResourceProvider
+2019-03-04 15:20:52.324 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.AuditEventResourceProvider
+2019-03-04 15:20:52.328 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.BasicResourceProvider
+2019-03-04 15:20:52.332 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.BinaryResourceProvider
+2019-03-04 15:20:52.336 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.BodySiteResourceProvider
+2019-03-04 15:20:52.338 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.BundleResourceProvider
+2019-03-04 15:20:52.342 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.CapabilityStatementResourceProvider
+2019-03-04 15:20:52.346 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.CarePlanResourceProvider
+2019-03-04 15:20:52.351 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.CareTeamResourceProvider
+2019-03-04 15:20:52.355 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ChargeItemResourceProvider
+2019-03-04 15:20:52.361 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ClaimResourceProvider
+2019-03-04 15:20:52.364 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ClaimResponseResourceProvider
+2019-03-04 15:20:52.367 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ClinicalImpressionResourceProvider
+2019-03-04 15:20:52.370 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.CodeSystemResourceProvider
+2019-03-04 15:20:52.374 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.CommunicationResourceProvider
+2019-03-04 15:20:52.378 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.CommunicationRequestResourceProvider
+2019-03-04 15:20:52.381 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.CompartmentDefinitionResourceProvider
+2019-03-04 15:20:52.384 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.CompositionResourceProvider
+2019-03-04 15:20:52.387 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ConceptMapResourceProvider
+2019-03-04 15:20:52.390 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ConditionResourceProvider
+2019-03-04 15:20:52.393 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ConsentResourceProvider
+2019-03-04 15:20:52.396 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ContractResourceProvider
+2019-03-04 15:20:52.399 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.CoverageResourceProvider
+2019-03-04 15:20:52.401 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.DataElementResourceProvider
+2019-03-04 15:20:52.403 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.DetectedIssueResourceProvider
+2019-03-04 15:20:52.406 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.DeviceResourceProvider
+2019-03-04 15:20:52.408 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.DeviceComponentResourceProvider
+2019-03-04 15:20:52.409 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.DeviceMetricResourceProvider
+2019-03-04 15:20:52.411 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.DeviceRequestResourceProvider
+2019-03-04 15:20:52.414 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.DeviceUseStatementResourceProvider
+2019-03-04 15:20:52.416 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.DiagnosticReportResourceProvider
+2019-03-04 15:20:52.418 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.DocumentManifestResourceProvider
+2019-03-04 15:20:52.420 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.DocumentReferenceResourceProvider
+2019-03-04 15:20:52.423 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.EligibilityRequestResourceProvider
+2019-03-04 15:20:52.425 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.EligibilityResponseResourceProvider
+2019-03-04 15:20:52.426 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.EncounterResourceProvider
+2019-03-04 15:20:52.429 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.EndpointResourceProvider
+2019-03-04 15:20:52.431 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.EnrollmentRequestResourceProvider
+2019-03-04 15:20:52.432 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.EnrollmentResponseResourceProvider
+2019-03-04 15:20:52.434 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.EpisodeOfCareResourceProvider
+2019-03-04 15:20:52.437 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ExpansionProfileResourceProvider
+2019-03-04 15:20:52.439 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ExplanationOfBenefitResourceProvider
+2019-03-04 15:20:52.442 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.FamilyMemberHistoryResourceProvider
+2019-03-04 15:20:52.445 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.FlagResourceProvider
+2019-03-04 15:20:52.447 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.GoalResourceProvider
+2019-03-04 15:20:52.449 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.GraphDefinitionResourceProvider
+2019-03-04 15:20:52.452 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.GroupResourceProvider
+2019-03-04 15:20:52.455 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.GuidanceResponseResourceProvider
+2019-03-04 15:20:52.456 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.HealthcareServiceResourceProvider
+2019-03-04 15:20:52.458 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ImagingManifestResourceProvider
+2019-03-04 15:20:52.460 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ImagingStudyResourceProvider
+2019-03-04 15:20:52.462 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ImmunizationResourceProvider
+2019-03-04 15:20:52.464 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ImmunizationRecommendationResourceProvider
+2019-03-04 15:20:52.466 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ImplementationGuideResourceProvider
+2019-03-04 15:20:52.468 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider
+2019-03-04 15:20:52.470 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.LinkageResourceProvider
+2019-03-04 15:20:52.472 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ListResourceResourceProvider
+2019-03-04 15:20:52.477 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.LocationResourceProvider
+2019-03-04 15:20:52.480 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.MeasureReportResourceProvider
+2019-03-04 15:20:52.481 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.MediaResourceProvider
+2019-03-04 15:20:52.483 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.MedicationResourceProvider
+2019-03-04 15:20:52.485 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.MedicationAdministrationResourceProvider
+2019-03-04 15:20:52.493 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.MedicationDispenseResourceProvider
+2019-03-04 15:20:52.496 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.MedicationRequestResourceProvider
+2019-03-04 15:20:52.500 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.MedicationStatementResourceProvider
+2019-03-04 15:20:52.502 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.MessageDefinitionResourceProvider
+2019-03-04 15:20:52.504 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.MessageHeaderResourceProvider
+2019-03-04 15:20:52.506 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.NamingSystemResourceProvider
+2019-03-04 15:20:52.508 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.NutritionOrderResourceProvider
+2019-03-04 15:20:52.510 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ObservationResourceProvider
+2019-03-04 15:20:52.513 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.OperationDefinitionResourceProvider
+2019-03-04 15:20:52.515 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.OperationOutcomeResourceProvider
+2019-03-04 15:20:52.517 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.OrganizationResourceProvider
+2019-03-04 15:20:52.519 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ParametersResourceProvider
+2019-03-04 15:20:52.521 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.PaymentNoticeResourceProvider
+2019-03-04 15:20:52.523 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.PaymentReconciliationResourceProvider
+2019-03-04 15:20:52.525 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.PersonResourceProvider
+2019-03-04 15:20:52.527 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.PractitionerResourceProvider
+2019-03-04 15:20:52.529 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.PractitionerRoleResourceProvider
+2019-03-04 15:20:52.531 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ProcedureResourceProvider
+2019-03-04 15:20:52.533 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ProcedureRequestResourceProvider
+2019-03-04 15:20:52.535 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ProcessRequestResourceProvider
+2019-03-04 15:20:52.537 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ProcessResponseResourceProvider
+2019-03-04 15:20:52.538 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ProvenanceResourceProvider
+2019-03-04 15:20:52.540 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.QuestionnaireResourceProvider
+2019-03-04 15:20:52.544 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.QuestionnaireResponseResourceProvider
+2019-03-04 15:20:52.547 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ReferralRequestResourceProvider
+2019-03-04 15:20:52.550 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.RelatedPersonResourceProvider
+2019-03-04 15:20:52.552 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.RequestGroupResourceProvider
+2019-03-04 15:20:52.554 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ResearchStudyResourceProvider
+2019-03-04 15:20:52.556 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ResearchSubjectResourceProvider
+2019-03-04 15:20:52.558 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.RiskAssessmentResourceProvider
+2019-03-04 15:20:52.559 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ScheduleResourceProvider
+2019-03-04 15:20:52.561 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.SearchParameterResourceProvider
+2019-03-04 15:20:52.564 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.SequenceResourceProvider
+2019-03-04 15:20:52.566 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.ServiceDefinitionResourceProvider
+2019-03-04 15:20:52.569 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.SlotResourceProvider
+2019-03-04 15:20:52.573 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.SpecimenResourceProvider
+2019-03-04 15:20:52.576 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.StructureDefinitionResourceProvider
+2019-03-04 15:20:52.580 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.SubscriptionResourceProvider
+2019-03-04 15:20:52.582 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.SubstanceResourceProvider
+2019-03-04 15:20:52.584 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.SupplyDeliveryResourceProvider
+2019-03-04 15:20:52.586 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.SupplyRequestResourceProvider
+2019-03-04 15:20:52.589 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.TaskResourceProvider
+2019-03-04 15:20:52.591 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.TestReportResourceProvider
+2019-03-04 15:20:52.593 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.TestScriptResourceProvider
+2019-03-04 15:20:52.595 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.rp.dstu3.VisionPrescriptionResourceProvider
+2019-03-04 15:20:52.597 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class org.opencds.cqf.providers.FHIRValueSetResourceProvider
+2019-03-04 15:20:52.600 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class org.opencds.cqf.providers.FHIRMeasureResourceProvider
+2019-03-04 15:20:52.608 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class org.opencds.cqf.providers.FHIRActivityDefinitionResourceProvider
+2019-03-04 15:20:52.611 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class org.opencds.cqf.providers.FHIRPlanDefinitionResourceProvider
+2019-03-04 15:20:52.617 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class org.opencds.cqf.providers.FHIRStructureMapResourceProvider
+2019-03-04 15:20:52.619 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class org.opencds.cqf.providers.BulkDataPatientProvider
+2019-03-04 15:20:52.669 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:1437] Added 2 plain provider(s). Total 2
+2019-03-04 15:20:52.670 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3
+2019-03-04 15:20:52.673 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.jpa.provider.dstu3.TerminologyUploaderProviderDstu3
+2019-03-04 15:20:52.675 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class org.hl7.fhir.dstu3.hapi.rest.server.ServerProfileProvider
+2019-03-04 15:20:52.675 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class org.hspconsortium.platform.api.conformance.HspcConformanceProviderStu3
+2019-03-04 15:20:52.690 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:348] Scanning type for RESTful methods: class ca.uhn.fhir.rest.server.PageProvider
+2019-03-04 15:20:52.692 [main] INFO  c.uhn.fhir.rest.server.RestfulServer [RestfulServer.java:1118] A FHIR has been lit on this server
+2019-03-04 15:20:52.763 [main] INFO  o.s.s.c.ScheduledExecutorFactoryBean [ExecutorConfigurationSupport.java:171] Initializing ExecutorService
+2019-03-04 15:20:52.765 [main] INFO  o.s.s.c.ScheduledExecutorFactoryBean [ExecutorConfigurationSupport.java:171] Initializing ExecutorService 'scheduledExecutorService'
+2019-03-04 15:20:53.058 [main] INFO  o.s.b.a.s.s.UserDetailsServiceAutoConfiguration [UserDetailsServiceAutoConfiguration.java:86] 
 
-Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled.
-2019-03-04 14:52:14.757 [main] ERROR o.s.boot.SpringApplication [SpringApplication.java:858] Application run failed
-org.springframework.beans.factory.BeanCreationException: Error creating bean with name 'profileServiceImpl': Injection of autowired dependencies failed; nested exception is java.lang.IllegalArgumentException: Could not resolve placeholder 'server.localhost' in value "${server.localhost}"
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:380)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.populateBean(AbstractAutowireCapableBeanFactory.java:1378)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.doCreateBean(AbstractAutowireCapableBeanFactory.java:575)
-	at org.springframework.beans.factory.support.AbstractAutowireCapableBeanFactory.createBean(AbstractAutowireCapableBeanFactory.java:498)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.lambda$doGetBean$0(AbstractBeanFactory.java:320)
-	at org.springframework.beans.factory.support.DefaultSingletonBeanRegistry.getSingleton(DefaultSingletonBeanRegistry.java:222)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.doGetBean(AbstractBeanFactory.java:318)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.getBean(AbstractBeanFactory.java:199)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.preInstantiateSingletons(DefaultListableBeanFactory.java:846)
-	at org.springframework.context.support.AbstractApplicationContext.finishBeanFactoryInitialization(AbstractApplicationContext.java:863)
-	at org.springframework.context.support.AbstractApplicationContext.refresh(AbstractApplicationContext.java:546)
-	at org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext.refresh(ServletWebServerApplicationContext.java:142)
-	at org.springframework.boot.SpringApplication.refresh(SpringApplication.java:775)
-	at org.springframework.boot.SpringApplication.refreshContext(SpringApplication.java:397)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:316)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1260)
-	at org.springframework.boot.SpringApplication.run(SpringApplication.java:1248)
-	at org.hspconsortium.platform.api.HSPCReferenceApiMultitenantApplication.main(HSPCReferenceApiMultitenantApplication.java:43)
-	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
-	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
-	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
-	at java.lang.reflect.Method.invoke(Method.java:498)
-	at org.springframework.boot.loader.MainMethodRunner.run(MainMethodRunner.java:48)
-	at org.springframework.boot.loader.Launcher.launch(Launcher.java:87)
-	at org.springframework.boot.loader.Launcher.launch(Launcher.java:50)
-	at org.springframework.boot.loader.JarLauncher.main(JarLauncher.java:51)
-Caused by: java.lang.IllegalArgumentException: Could not resolve placeholder 'server.localhost' in value "${server.localhost}"
-	at org.springframework.util.PropertyPlaceholderHelper.parseStringValue(PropertyPlaceholderHelper.java:172)
-	at org.springframework.util.PropertyPlaceholderHelper.replacePlaceholders(PropertyPlaceholderHelper.java:124)
-	at org.springframework.core.env.AbstractPropertyResolver.doResolvePlaceholders(AbstractPropertyResolver.java:237)
-	at org.springframework.core.env.AbstractPropertyResolver.resolveRequiredPlaceholders(AbstractPropertyResolver.java:211)
-	at org.springframework.context.support.PropertySourcesPlaceholderConfigurer.lambda$processProperties$0(PropertySourcesPlaceholderConfigurer.java:175)
-	at org.springframework.beans.factory.support.AbstractBeanFactory.resolveEmbeddedValue(AbstractBeanFactory.java:851)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.doResolveDependency(DefaultListableBeanFactory.java:1185)
-	at org.springframework.beans.factory.support.DefaultListableBeanFactory.resolveDependency(DefaultListableBeanFactory.java:1164)
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor$AutowiredFieldElement.inject(AutowiredAnnotationBeanPostProcessor.java:593)
-	at org.springframework.beans.factory.annotation.InjectionMetadata.inject(InjectionMetadata.java:90)
-	at org.springframework.beans.factory.annotation.AutowiredAnnotationBeanPostProcessor.postProcessProperties(AutowiredAnnotationBeanPostProcessor.java:374)
-	... 25 common frames omitted
+Using generated security password: 0b176cdb-78ab-4199-933b-0d21da37857b
+
+2019-03-04 15:20:53.504 [main] INFO  o.s.s.web.DefaultSecurityFilterChain [DefaultSecurityFilterChain.java:43] Creating filter chain: any request, [org.hspconsortium.platform.api.oauth2.InvalidMediaTypeFilter@566d0c69, org.hspconsortium.platform.api.oauth2.CorsFilter@388b401d, org.springframework.security.web.context.request.async.WebAsyncManagerIntegrationFilter@7b8fcdf2, org.springframework.security.web.context.SecurityContextPersistenceFilter@11ee671f, org.springframework.security.web.header.HeaderWriterFilter@147059f8, org.springframework.security.web.authentication.logout.LogoutFilter@1c43e84e, org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationProcessingFilter@3a239dac, org.springframework.security.web.savedrequest.RequestCacheAwareFilter@57df09a7, org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestFilter@14b9df65, org.springframework.security.web.authentication.AnonymousAuthenticationFilter@54d2f5d3, org.springframework.security.web.session.SessionManagementFilter@838e109, org.springframework.security.web.access.ExceptionTranslationFilter@57e57dc5, org.springframework.security.web.access.intercept.FilterSecurityInterceptor@5d00b469]
+2019-03-04 15:20:53.871 [main] WARN  o.s.b.a.o.j.JpaBaseConfiguration$JpaWebConfiguration$JpaWebMvcConfiguration [JpaBaseConfiguration.java:234] spring.jpa.open-in-view is enabled by default. Therefore, database queries may be performed during view rendering. Explicitly configure spring.jpa.open-in-view to disable this warning
+2019-03-04 15:20:54.061 [main] WARN  o.s.b.a.t.ThymeleafAutoConfiguration$DefaultTemplateResolverConfiguration [ThymeleafAutoConfiguration.java:108] Cannot find template location: classpath:/templates/ (please add some templates or check your Thymeleaf configuration)
+2019-03-04 15:20:54.687 [main] INFO  o.s.b.a.e.web.EndpointLinksResolver [EndpointLinksResolver.java:59] Exposing 2 endpoint(s) beneath base path '/actuator'
+2019-03-04 15:20:54.875 [main] INFO  o.a.coyote.http11.Http11NioProtocol [DirectJDKLog.java:173] Starting ProtocolHandler ["http-nio-8079"]
+2019-03-04 15:20:54.912 [main] INFO  o.a.tomcat.util.net.NioSelectorPool [DirectJDKLog.java:173] Using a shared selector for servlet write/read
+2019-03-04 15:20:54.937 [main] INFO  o.s.b.w.e.tomcat.TomcatWebServer [TomcatWebServer.java:204] Tomcat started on port(s): 8079 (http) with context path ''
+2019-03-04 15:20:54.941 [main] INFO  o.h.p.a.HSPCReferenceApiMultitenantApplication [StartupInfoLogger.java:59] Started HSPCReferenceApiMultitenantApplication in 39.267 seconds (JVM running for 40.091)
+2019-03-04 15:20:55.189 [scheduledExecutorService-2] INFO  c.u.f.j.s.r.BaseSearchParamRegistry [BaseSearchParamRegistry.java:294] Refreshed search parameter cache in 296ms
+                                                                                                                                                                               2019-03-04 15:20:14.816 [Thread-8] INFO  o.s.o.j.LocalContainerEntityManagerFactoryBean [AbstractEntityManagerFactoryBean.java:597] Closing JPA EntityManagerFactory for persistence unit 'default'
