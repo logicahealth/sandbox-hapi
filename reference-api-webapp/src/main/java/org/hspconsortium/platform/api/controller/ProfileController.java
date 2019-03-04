@@ -38,7 +38,7 @@ public class ProfileController {
     }
 
     @PostMapping(value = "/uploadProfile")
-    public HashMap<List<String>, List<String>> uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, String sandboxId) throws IOException {
+    public HashMap<List<String>, List<String>> uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, String sandboxId, String apiEndpoint) throws IOException {
         if(!sandboxService.verifyUser(request, sandboxId)) {
             throw new UnauthorizedUserException("User not authorized");
         }
@@ -51,7 +51,7 @@ public class ProfileController {
 
         try {
             ZipFile zipFile = new ZipFile(zip);
-            list = profileService.saveZipFile(zipFile, request, sandboxId);
+            list = profileService.saveZipFile(zipFile, request, sandboxId, apiEndpoint);
         } catch (ZipException e) {
             e.printStackTrace();
         }
