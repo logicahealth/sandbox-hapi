@@ -109,38 +109,27 @@ public class ProfileServiceImpl implements ProfileService {
     public HashMap<List<String>, List<String>> saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId, String apiEndpoint) throws IOException {
         HashMap<List<String>, List<String>> successAndFailureList = new HashMap<>();
         String authToken = request.getHeader("Authorization").substring(7);
-        String fileName = "";
-        String resourceType = "";
-        String resourceName = "";
-        String fhirVersion = "";
         List<String> resourceSaved = new ArrayList<>();
         List<String> resourceNotSaved = new ArrayList<>();
         Enumeration zipFileEntries = zipFile.entries();
-
         while(zipFileEntries.hasMoreElements()) {
             ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
-            fileName = entry.getName();
+            String fileName = entry.getName();
             if (fileName.endsWith(".json")) {
                 InputStream inputStream = zipFile.getInputStream(entry);
                 JSONParser jsonParser = new JSONParser();
                 try {
                     JSONObject jsonObject = (JSONObject)jsonParser.parse(new InputStreamReader(inputStream, "UTF-8"));
-                    resourceType = jsonObject.get("resourceType").toString();
-                    resourceName = jsonObject.get("name").toString();
+                    String resourceType = jsonObject.get("resourceType").toString();
+                    String resourceName = jsonObject.get("name").toString();
                     if (resourceType.equals("StructureDefinition")) {
-                        fhirVersion = jsonObject.get("fhirVersion").toString();
-                        if (apiEndpoint.equals("5") && !fhirVersion.equals("1.0.2")) { // 5=DSTU2
-                            throw new RuntimeException("Profile's FHIR version is incompatible with your current sandbox's FHIR version. The profile was not saved.");
-//                            resourceNotSaved.add(resourceType + " - " + resourceName + " - Incompatible FHIR Version");
-//                            break;
-                        } else if (apiEndpoint.equals("6")&& !fhirVersion.equals("3.0.1")) { // 6=STU3
-                            throw new RuntimeException("Profile's FHIR version is incompatible with your current sandbox's FHIR version. The profile was not saved.");
-//                            resourceNotSaved.add(resourceType + " - " + resourceName + " - Incompatible FHIR Version");
-//                            break;
-                        } else if (apiEndpoint.equals("7") && !fhirVersion.equals("4.0.0")) { // 7=R4
-                            throw new RuntimeException("Profile's FHIR version is incompatible with your current sandbox's FHIR version. The profile was not saved.");
-//                           resourceNotSaved.add(resourceType + " - " + resourceName + " - Incompatible FHIR Version");
-//                           break;
+                        String fhirVersion = jsonObject.get("fhirVersion").toString();
+                        if (apiEndpoint.equals("5") && !fhirVersion.equals("1.0.2")) {
+                            throw new RuntimeException(fileName + " FHIR version is incompatible with your current sandbox's FHIR version. The profile was not saved.");
+                        } else if (apiEndpoint.equals("6")&& !fhirVersion.equals("3.0.1")) {
+                            throw new RuntimeException(fileName + " FHIR version is incompatible with your current sandbox's FHIR version. The profile was not saved.");
+                        } else if (apiEndpoint.equals("7") && !fhirVersion.equals("4.0.0")) {
+                            throw new RuntimeException(fileName + " FHIR version is incompatible with your current sandbox's FHIR version. The profile was not saved.");
                         }
                     }
                     if (Arrays.stream(profileResources).anyMatch(resourceType::equals)) {
@@ -153,8 +142,8 @@ public class ProfileServiceImpl implements ProfileService {
                         try {
                             restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
                             resourceSaved.add(resourceType + " - " + resourceName);
-                        } catch (HttpServerErrorException e) {
-                            resourceNotSaved.add(resourceType + " - " + resourceName + " Bad JSON");
+                        } catch (HttpServerErrorException | HttpClientErrorException e) {
+                            resourceNotSaved.add(resourceType + " - " + resourceName);
                         }
                     }
                 } catch (Exception e) {
