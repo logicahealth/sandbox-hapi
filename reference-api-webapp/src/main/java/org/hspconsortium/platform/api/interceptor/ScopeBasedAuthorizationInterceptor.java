@@ -37,7 +37,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.*;
 
 
-@Component
+//@Component
 public class ScopeBasedAuthorizationInterceptor extends InterceptorAdapter {
 
     public static final String LAUNCH_CONTEXT_PATIENT_PARAM_NAME = "patient";

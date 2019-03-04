@@ -22,15 +22,11 @@ package org.hspconsortium.platform.api.controller;
 
 import org.hspconsortium.platform.api.fhir.DataSourceRepository;
 import org.hspconsortium.platform.api.fhir.model.ResetSecurityCommand;
-import org.hspconsortium.platform.api.fhir.model.Sandbox;
 import org.hspconsortium.platform.api.fhir.service.SandboxService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
 import java.util.HashMap;
@@ -81,5 +77,4 @@ public class SystemController {
     public HashMap<String, Double> memoryAllSandboxesOfUser(@RequestBody List<String> sandboxIds) {
         return dataSourceRepository.memoryAllSandboxesOfUser(sandboxIds);
     }
-
 }
