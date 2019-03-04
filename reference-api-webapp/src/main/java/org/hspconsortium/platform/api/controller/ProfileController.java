@@ -6,7 +6,6 @@ import org.hspconsortium.platform.api.fhir.service.SandboxService;
 import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 import org.springframework.web.bind.annotation.*;
@@ -16,15 +15,14 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 @RestController
 @RequestMapping("/profile")
 public class ProfileController {
+
     @Autowired
     private SandboxService sandboxService;
 
@@ -69,7 +67,6 @@ public class ProfileController {
         if(!sandboxService.verifyUser(request, sandboxId)) {
             throw new UnauthorizedUserException("User not authorized");
         }
-        HashMap<List<String>, List<String>> list = new HashMap<>();
         if (!file.getOriginalFilename().isEmpty()) {
             // Save file to temp
             File zip = File.createTempFile(UUID.randomUUID().toString(), "temp");
@@ -79,7 +76,7 @@ public class ProfileController {
 
             try {
                 ZipFile zipFile = new ZipFile(zip);
-                list = profileService.saveZipFile(zipFile, request, sandboxId);
+                profileService.saveZipFile(zipFile, request, sandboxId);
             } catch (ZipException e) {
                 e.printStackTrace();
             }
@@ -90,7 +87,13 @@ public class ProfileController {
             return new ResponseEntity<>("Invalid File", HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(list, HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/profileUploadStatus")
+    @ResponseBody
+    public boolean fetchStatus() {
+        return profileService.getTaskRunning();
     }
 }
 
