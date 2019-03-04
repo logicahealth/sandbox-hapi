@@ -1,5 +1,6 @@
 server:
-  port: ${API_PORT:8075}
+  localhost: http://localhost:${server.port}
+  port: ${API_PORT:8078}
   tomcat:
     remote_ip_header: x-forwarded-for
     protocol_header: x-forwarded-proto
@@ -11,7 +12,6 @@ spring:
     active: multitenant,dstu2
   main:
     allow-bean-definition-overriding: true
-
 
 hibernate:
   search:
@@ -36,14 +36,14 @@ hspc:
         clientSecret: secret
         scopes: openid,launch,smart/orchestrate_launch
       sandbox:
-        name: ${SANDBOX_NAME:hspc5}
+        name: ${SANDBOX_NAME:hspc8}
       sandboxManagerApi:
         url: http://${SBMA_HOST:localhost}:${SBMA_PORT:12000}
         transactionPath: /analytics/transaction
         userAuthPath: /user/authorize
       fhir:
         db:
-          schema: hspc_8_${hspc.platform.api.sandbox.name}
+          schema: hspc_6_${hspc.platform.api.sandbox.name}
           driver-class-name: com.mysql.jdbc.Driver
           host: ${DB_HOST:localhost}
           url: jdbc:mysql://${hspc.platform.api.fhir.db.host}:${DB_PORT:3306}/${hspc.platform.api.fhir.db.schema}
@@ -53,7 +53,7 @@ hspc:
           starterSchemaScriptPattern: db/mysql/hspc_%s_%s_%s_dataset.sql
           # Comma-separated list of scripts to run in order
           initializationScripts: db/mysql/V1__convert_hapi_3.2.0_to_3.3.0.sql
-        data-source:
+        datasource:
           cache:
             size: 10
         defaultTenantId: ${hspc.platform.api.sandbox.name}
@@ -62,11 +62,12 @@ hspc:
           dialect: org.hibernate.dialect.MySQL5Dialect
         terminology:
           proxy:
-            host: api-v8-stu3.hspconsortium.org/${hspc.platform.api.sandbox.name}
+            host: api-v6-stu3.hspconsortium.org/${hspc.platform.api.sandbox.name}
             contextPath: /open
         contextPath: data
         # remove openContextPath to disable the open endpoint
         openContextPath: open
+        profileResources: StructureDefinition, CodeSystem, ValueSet
     # these values are used for internal calls to the auth server
     authorization:
       protocol: http

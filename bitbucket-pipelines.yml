@@ -58,23 +58,23 @@ pipelines:
             - export FHIR_VERSION="r4"
             - . ci-0-set-properties.sh
             - . ci-3-docker-image.sh
-      - step:
-          name: update the aws task definition
-          script:
-            - export TARGET_ENV=test
-            - cd ci
-            # DSTU2
-            - export FHIR_VERSION="dstu2"
-            - . ci-0-set-properties.sh
-            - . ci-4-aws-task-update.sh
-            # STU3
-            - export FHIR_VERSION="stu3"
-            - . ci-0-set-properties.sh
-            - . ci-4-aws-task-update.sh
-            # R4
-            - export FHIR_VERSION="r4"
-            - . ci-0-set-properties.sh
-            - . ci-4-aws-task-update.sh
+#      - step:
+#          name: update the aws task definition
+#          script:
+#            - export TARGET_ENV=test
+#            - cd ci
+#            # DSTU2
+#            - export FHIR_VERSION="dstu2"
+#            - . ci-0-set-properties.sh
+#            - . ci-4-aws-task-update.sh
+#            # STU3
+#            - export FHIR_VERSION="stu3"
+#            - . ci-0-set-properties.sh
+#            - . ci-4-aws-task-update.sh
+#            # R4
+#            - export FHIR_VERSION="r4"
+#            - . ci-0-set-properties.sh
+#            - . ci-4-aws-task-update.sh
       - step:
           name: update the aws service
           deployment: test
