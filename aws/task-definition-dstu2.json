@@ -1,13 +1,13 @@
 {
-  "family": "api-v5-dstu2-test-370",
+  "family": "api-v8-dstu2-test",
   "containerDefinitions": [
     {
-      "name": "api-v5-dstu2-test-370",
+      "name": "api-v8-dstu2-test",
       "image": "hspconsortium/api:{{PROJECT_VERSION}}",
       "cpu": 0,
       "portMappings": [
         {
-          "containerPort": 8071,
+          "containerPort": 8078,
           "hostPort": 0,
           "protocol": "tcp"
         }
@@ -16,7 +16,7 @@
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
-          "awslogs-group": "/ecs/api-v5-dstu2-test-370",
+          "awslogs-group": "/ecs/api-v8-dstu2-test",
           "awslogs-region": "us-west-2",
           "awslogs-stream-prefix": "ecs"
         }

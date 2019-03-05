@@ -123,7 +123,7 @@ public class MySQLConfig {
     @Bean//(name = {"dataSource"})
     @Profile("default")
     public DataSource dataSource() {
-        DataSourceProperties db = getDatabaseProperties().getDb();
+        DataSourceProperties db = getDatabaseProperties().getDataSource();
         DataSourceBuilder factory = DataSourceBuilder
                 .create(db.getClassLoader())
                 .driverClassName(db.getDriverClassName())
@@ -150,7 +150,7 @@ public class MySQLConfig {
     @Bean(name = {"noSchemaDataSource"})
     public DataSource noSchemaDataSource() {
         // create a datasource that doesn't have a schema in the url
-        DataSourceProperties db = getDatabaseProperties().getDb();
+        DataSourceProperties db = getDatabaseProperties().getDataSource();
 
         String urlNoSchema = null;
         for (String schema : db.getSchema()) {

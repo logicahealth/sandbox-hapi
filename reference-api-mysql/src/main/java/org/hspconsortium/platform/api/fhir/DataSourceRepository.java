@@ -20,8 +20,6 @@
 
 package org.hspconsortium.platform.api.fhir;
 
-import com.github.benmanes.caffeine.cache.Caffeine;
-import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.hspconsortium.platform.api.fhir.model.DataSet;
 import org.hspconsortium.platform.api.fhir.model.Sandbox;
 import org.hspconsortium.platform.api.fhir.service.SandboxService;
@@ -31,8 +29,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.cache.caffeine.CaffeineCache;
-import com.github.benmanes.caffeine.cache.Cache;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -41,7 +37,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -104,8 +99,8 @@ public class DataSourceRepository {
     private DataSource createDataSource(String hspcSchemaVersion, String tenant) {
         final DataSourceProperties dataSourceProperties = this.multitenancyProperties.getDataSource(hspcSchemaVersion, tenant);
         DataSourceBuilder factory = DataSourceBuilder
-                .create(this.multitenancyProperties.getDb().getClassLoader())
-                .driverClassName(this.multitenancyProperties.getDb().getDriverClassName())
+                .create(this.multitenancyProperties.getDataSource().getClassLoader())
+                .driverClassName(this.multitenancyProperties.getDataSource().getDriverClassName())
                 .username(dataSourceProperties.getUsername())
                 .password(dataSourceProperties.getPassword())
                 .url(dataSourceProperties.getUrl());
@@ -177,8 +172,8 @@ public class DataSourceRepository {
         for (String tenant: defaultTenants) {
             final DataSourceProperties dataSourceProperties = this.multitenancyProperties.getDataSource(hspcSchemaVersion, tenant);
             DataSourceBuilder factory = DataSourceBuilder
-                    .create(this.multitenancyProperties.getDb().getClassLoader())
-                    .driverClassName(this.multitenancyProperties.getDb().getDriverClassName())
+                    .create(this.multitenancyProperties.getDataSource().getClassLoader())
+                    .driverClassName(this.multitenancyProperties.getDataSource().getDriverClassName())
                     .username(dataSourceProperties.getUsername())
                     .password(dataSourceProperties.getPassword())
                     .url(dataSourceProperties.getUrl());
@@ -218,8 +213,8 @@ public class DataSourceRepository {
 
         final DataSourceProperties dataSourceProperties = this.multitenancyProperties.getInformationSchemaProperties();
         DataSourceBuilder factory = DataSourceBuilder
-                .create(this.multitenancyProperties.getDb().getClassLoader())
-                .driverClassName(this.multitenancyProperties.getDb().getDriverClassName())
+                .create(this.multitenancyProperties.getDataSource().getClassLoader())
+                .driverClassName(this.multitenancyProperties.getDataSource().getDriverClassName())
                 .username(dataSourceProperties.getUsername())
                 .password(dataSourceProperties.getPassword())
                 .url(dataSourceProperties.getUrl());
@@ -264,8 +259,8 @@ public class DataSourceRepository {
 
         final DataSourceProperties dataSourceProperties = this.multitenancyProperties.getInformationSchemaProperties();
         DataSourceBuilder factory = DataSourceBuilder
-                .create(this.multitenancyProperties.getDb().getClassLoader())
-                .driverClassName(this.multitenancyProperties.getDb().getDriverClassName())
+                .create(this.multitenancyProperties.getDataSource().getClassLoader())
+                .driverClassName(this.multitenancyProperties.getDataSource().getDriverClassName())
                 .username(dataSourceProperties.getUsername())
                 .password(dataSourceProperties.getPassword())
                 .url(dataSourceProperties.getUrl());

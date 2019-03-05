@@ -42,18 +42,17 @@ hspc:
         transactionPath: /analytics/transaction
         userAuthPath: /user/authorize
       fhir:
-        db:
-          schema: hspc_6_${hspc.platform.api.sandbox.name}
-          driver-class-name: com.mysql.jdbc.Driver
+        datasource:
+          schema: hspc_8_${hspc.platform.api.sandbox.name}
+          driverClassName: com.mysql.jdbc.Driver
           host: ${DB_HOST:localhost}
-          url: jdbc:mysql://${hspc.platform.api.fhir.db.host}:${DB_PORT:3306}/${hspc.platform.api.fhir.db.schema}
+          url: jdbc:mysql://${hspc.platform.api.fhir.datasource.host}:${DB_PORT:3306}/${hspc.platform.api.fhir.datasource.schema}
           username: ${DB_USER:root}
           password: ${DB_PASSWORD:password}
           emptySchemaScriptPattern: db/mysql/hspc_%s_schema_empty.sql
           starterSchemaScriptPattern: db/mysql/hspc_%s_%s_%s_dataset.sql
           # Comma-separated list of scripts to run in order
           initializationScripts: db/mysql/V1__convert_hapi_3.2.0_to_3.3.0.sql
-        datasource:
           cache:
             size: 10
         defaultTenantId: ${hspc.platform.api.sandbox.name}
@@ -62,7 +61,7 @@ hspc:
           dialect: org.hibernate.dialect.MySQL5Dialect
         terminology:
           proxy:
-            host: api-v6-stu3.hspconsortium.org/${hspc.platform.api.sandbox.name}
+            host: api-v8-stu3.hspconsortium.org/${hspc.platform.api.sandbox.name}
             contextPath: /open
         contextPath: data
         # remove openContextPath to disable the open endpoint
