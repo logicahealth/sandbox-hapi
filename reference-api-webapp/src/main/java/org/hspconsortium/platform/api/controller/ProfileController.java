@@ -64,12 +64,13 @@ public class ProfileController {
 
     @PostMapping(value = "/uploadProfile")
     public ResponseEntity<Object> uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, String sandboxId) throws IOException {
+        String id = UUID.randomUUID().toString();
         if(!sandboxService.verifyUser(request, sandboxId)) {
             throw new UnauthorizedUserException("User not authorized");
         }
         if (!file.getOriginalFilename().isEmpty()) {
             // Save file to temp
-            File zip = File.createTempFile(UUID.randomUUID().toString(), "temp");
+            File zip = File.createTempFile(id, "temp");
             FileOutputStream o = new FileOutputStream(zip);
             IOUtil.copy(file.getInputStream(), o);
             o.close();
@@ -87,12 +88,12 @@ public class ProfileController {
             return new ResponseEntity<>("Invalid File", HttpStatus.BAD_REQUEST);
         }
 
-        return new ResponseEntity<>(HttpStatus.OK);
+        return new ResponseEntity<>(id, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/profileUploadStatus")
+    @RequestMapping(value = "/profileUploadStatus", params = {"id"})
     @ResponseBody
-    public boolean fetchStatus() {
+    public HashMap<String, Boolean> fetchStatus(@RequestParam(value = "id") String id) {
         return profileService.getTaskRunning();
     }
 }
