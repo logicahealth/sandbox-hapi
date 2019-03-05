@@ -30,4 +30,5 @@ import java.util.zip.ZipFile;
 public interface ProfileService {
     HashMap<List<String>, List<String>> saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId, String apiEndpoint) throws IOException;
     HashMap<String, List<JSONObject>> getAllUploadedProfiles(HttpServletRequest request, String sandboxId);
+    HashMap<String, Boolean> getTaskRunning();
 }
