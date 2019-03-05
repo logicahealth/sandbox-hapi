@@ -61,10 +61,10 @@ public class DatabaseManager {
     @Autowired
     private SnapshotStrategy snapshotStrategy;
 
-    @Value("${hspc.platform.api.fhir.db.username}")
+    @Value("${hspc.platform.api.fhir.datasource.username}")
     private String username;
 
-    @Value("${hspc.platform.api.fhir.db.password}")
+    @Value("${hspc.platform.api.fhir.datasource.password}")
     private String password;
 
     DataSource getNoSchemaDataSource() {

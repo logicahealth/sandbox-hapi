@@ -42,30 +42,35 @@ case "${ENVIRONMENT}" in
 esac
 
 SANDBOX_NAME=${FULL_NAME:7}
+
+
+
 case "$FHIR_VERSION" in
     dstu2)
-        PORT="8075"
+        PORT="8078"
         INDEX="8"
         ;;
     stu3)
-        PORT="8076"
+        PORT="8079"
         INDEX="9"
         ;;
     r4)
-        PORT="8077"
+        PORT="8070"
         INDEX="10"
         ;;
 esac
+
 FHIR_HOST="http://127.0.0.1:$PORT"
+
 case "${ENVIRONMENT}" in
     local)
         FHIR_HOST="http://127.0.0.1:$PORT"
         ;;
     test)
-        FHIR_HOST="https://api-v5-$FHIR_VERSION-test.hspconsortium.org"
+        FHIR_HOST="https://api-v8-$FHIR_VERSION-test.hspconsortium.org"
         ;;
     prod)
-        FHIR_HOST="https://api-v5-$FHIR_VERSION.hspconsortium.org"
+        FHIR_HOST="https://api-v8-$FHIR_VERSION.hspconsortium.org"
         ;;
 esac
 
@@ -120,4 +125,6 @@ echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs
 
 echo "Shutting down sever"
 ps ax | grep nameForShutdown | grep -v grep | awk '{print $1}' | xargs kill
+
+
 
