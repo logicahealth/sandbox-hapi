@@ -109,9 +109,15 @@ public class ProfileServiceImpl implements ProfileService {
         return urlAndResources;
     }
 
-    public boolean getTaskRunning() {
+    public HashMap<String, Boolean> getTaskRunning() {
+        HashMap<String, Boolean> taskRunning = new HashMap<>();
         return taskRunning;
     }
+
+    public void setTaskRunning(boolean taskRunning) {
+        this.taskRunning = taskRunning;
+    }
+
     @Async
     public HashMap<List<String>, List<String>> saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId) throws IOException {
         HashMap<List<String>, List<String>> successAndFailureList = new HashMap<>();
