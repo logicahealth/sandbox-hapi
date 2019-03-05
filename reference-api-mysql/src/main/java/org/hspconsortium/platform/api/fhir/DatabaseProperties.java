@@ -20,7 +20,6 @@
 
 package org.hspconsortium.platform.api.fhir;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
@@ -36,7 +35,7 @@ public class DatabaseProperties {
 	public static final String DEFAULT_HSPC_SCHEMA_VERSION = "8";
 
 	@NestedConfigurationProperty
-	private DataSourceProperties db;
+	private DataSourceProperties dataSource;
 
 //	@Value("${flyway.locations}")
 //	private String flywayLocations;
@@ -45,24 +44,24 @@ public class DatabaseProperties {
 //		return flywayLocations;
 //	}
 
-	public DataSourceProperties getDb() {
-		return db;
-	}
-
-	public void setDb(DataSourceProperties db) {
-		this.db = db;
-	}
-
 	public DataSourceProperties getDataSource() {
+		return dataSource;
+	}
+
+	public void setDataSource(DataSourceProperties dataSource) {
+		this.dataSource = dataSource;
+	}
+
+	public DataSourceProperties getDataSourceInfo() {
 		DataSourceProperties dataSourceProperties = new DataSourceProperties();
-		dataSourceProperties.setUrl(db.getUrl());
-		dataSourceProperties.setUsername(db.getUsername());
-		dataSourceProperties.setPassword(db.getPassword());
-		dataSourceProperties.setSchema(db.getSchema());
-		dataSourceProperties.setData((db.getData()));
-		dataSourceProperties.setBeanClassLoader(db.getClassLoader());
-		dataSourceProperties.setDriverClassName(db.getDriverClassName());
-		dataSourceProperties.setPlatform(db.getPlatform());
+		dataSourceProperties.setUrl(dataSource.getUrl());
+		dataSourceProperties.setUsername(dataSource.getUsername());
+		dataSourceProperties.setPassword(dataSource.getPassword());
+		dataSourceProperties.setSchema(dataSource.getSchema());
+		dataSourceProperties.setData((dataSource.getData()));
+		dataSourceProperties.setBeanClassLoader(dataSource.getClassLoader());
+		dataSourceProperties.setDriverClassName(dataSource.getDriverClassName());
+		dataSourceProperties.setPlatform(dataSource.getPlatform());
 
 		return dataSourceProperties;
 	}

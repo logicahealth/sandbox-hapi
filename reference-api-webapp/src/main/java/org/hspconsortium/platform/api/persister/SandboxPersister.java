@@ -61,22 +61,22 @@ public class SandboxPersister {
         return this;
     }
 
-    @Value("${hspc.platform.api.fhir.db.emptySchemaScriptPattern}")
+    @Value("${hspc.platform.api.fhir.datasource.emptySchemaScriptPattern}")
     private String emptySchemaScriptPattern;
 
-    @Value("${hspc.platform.api.fhir.db.starterSchemaScriptPattern}")
+    @Value("${hspc.platform.api.fhir.datasource.starterSchemaScriptPattern}")
     private String starterSchemaScriptPattern;
 
-    @Value("${hspc.platform.api.fhir.db.initializationScripts}")
+    @Value("${hspc.platform.api.fhir.datasource.initializationScripts}")
     private String[] additionalScripts;
 
-    @Value("${hspc.platform.api.fhir.db.password}")
+    @Value("${hspc.platform.api.fhir.datasource.password}")
     private String dbpassword;
 
-    @Value("${hspc.platform.api.fhir.db.username}")
+    @Value("${hspc.platform.api.fhir.datasource.username}")
     private String dbusername;
 
-    @Value("${hspc.platform.api.fhir.db.host}")
+    @Value("${hspc.platform.api.fhir.datasource.host}")
     private String dbhost;
 
     public static Sandbox sandboxTemplate() {
