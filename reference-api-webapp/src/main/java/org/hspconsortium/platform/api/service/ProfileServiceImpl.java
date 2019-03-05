@@ -126,7 +126,7 @@ public class ProfileServiceImpl implements ProfileService {
                         String fhirVersion = jsonObject.get("fhirVersion").toString();
                         if (apiEndpoint.equals("5") && !fhirVersion.equals("1.0.2")) {
                             throw new RuntimeException(fileName + " FHIR version is incompatible with your current sandbox's FHIR version. The profile was not saved.");
-                        } else if (apiEndpoint.equals("6")&& !fhirVersion.equals("3.0.1")) {
+                        } else if (apiEndpoint.equals("6") && !fhirVersion.equals("3.0.1")) {
                             throw new RuntimeException(fileName + " FHIR version is incompatible with your current sandbox's FHIR version. The profile was not saved.");
                         } else if (apiEndpoint.equals("7") && !fhirVersion.equals("4.0.0")) {
                             throw new RuntimeException(fileName + " FHIR version is incompatible with your current sandbox's FHIR version. The profile was not saved.");
@@ -147,7 +147,7 @@ public class ProfileServiceImpl implements ProfileService {
                         }
                     }
                 } catch (Exception e) {
-                    throw new RuntimeException(e.getMessage());
+
                 }
             }
         }
