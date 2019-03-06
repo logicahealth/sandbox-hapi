@@ -68,7 +68,7 @@ do
             FHIR_VERSION="r4"
             ;;
     esac
-    if [[ $FHIR_VERSION != "r4" ]]; then
+    if [[ $FHIR_VERSION != "r4" && $FULL_VERSION != 'hspc_5_fhirnpi' ]]; then
 
         SQL_STRING="SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA ='$FULL_NAME' and TABLE_NAME='HFJ_SPIDX_TOKEN' and COLUMN_NAME='HASH_IDENTITY'"
         SQL_STRING2="SELECT COUNT(*) FROM $FULL_NAME.HFJ_RESOURCE;"
