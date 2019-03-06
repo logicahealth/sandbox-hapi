@@ -5,11 +5,10 @@ hspc:
       oauth2:
         clientSecret: secret
       fhir:
-        db:
+        datasource:
           host: sandboxdb-test.hspconsortium.org
           username: system
           password: ENC(H5tJdn4wTllfyqSkrkmzRNQNhwl7AZhB)
-        datasource:
           cache:
             size: 5
       sandboxManagerApi:
