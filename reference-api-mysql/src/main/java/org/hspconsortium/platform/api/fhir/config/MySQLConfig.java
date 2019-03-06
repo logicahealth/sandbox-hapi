@@ -126,7 +126,7 @@ public class MySQLConfig {
         DataSourceProperties db = getDatabaseProperties().getDataSource();
         DataSourceBuilder factory = DataSourceBuilder
                 .create(db.getClassLoader())
-                .driverClassName(db.getDriverClassName())
+//                .driverClassName(db.getDriverClassName())
                 .username(db.getUsername())
                 .password(db.getPassword())
                 .url(db.getUrl());
@@ -166,7 +166,7 @@ public class MySQLConfig {
 
         DataSourceBuilder factory = DataSourceBuilder
                 .create(db.getClassLoader())
-                .driverClassName(db.getDriverClassName())
+//                .driverClassName(db.getDriverClassName())
                 .username(db.getUsername())
                 .password(db.getPassword())
                 .url(urlNoSchema);

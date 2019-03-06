@@ -60,7 +60,7 @@ public class DatabaseProperties {
 		dataSourceProperties.setSchema(dataSource.getSchema());
 		dataSourceProperties.setData((dataSource.getData()));
 		dataSourceProperties.setBeanClassLoader(dataSource.getClassLoader());
-		dataSourceProperties.setDriverClassName(dataSource.getDriverClassName());
+//		dataSourceProperties.setDriverClassName(dataSource.getDriverClassName());
 		dataSourceProperties.setPlatform(dataSource.getPlatform());
 
 		return dataSourceProperties;
