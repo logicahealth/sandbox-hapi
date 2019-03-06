@@ -44,7 +44,7 @@ hspc:
       fhir:
         datasource:
           schema: hspc_8_${hspc.platform.api.sandbox.name}
-          driverClassName: com.mysql.jdbc.Driver
+          driverClassName: com.mysql.cj.jdbc.Driver
           host: ${DB_HOST:localhost}
           url: jdbc:mysql://${hspc.platform.api.fhir.datasource.host}:${DB_PORT:3306}/${hspc.platform.api.fhir.datasource.schema}
           username: ${DB_USER:root}

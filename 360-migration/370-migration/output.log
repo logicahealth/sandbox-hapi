@@ -37,7 +37,7 @@
 2019-03-05 12:02:21.294 [main] INFO  o.a.c.c.C.[Tomcat].[localhost].[/] [DirectJDKLog.java:173] Initializing Spring embedded WebApplicationContext
 2019-03-05 12:02:21.294 [main] INFO  o.s.web.context.ContextLoader [ServletWebServerApplicationContext.java:296] Root WebApplicationContext: initialization completed in 5096 ms
 2019-03-05 12:02:22.168 [main] INFO  o.h.p.api.fhir.config.MySQLConfig [MySQLConfig.java:229] loadIndexFiles()
-Loading class `com.mysql.jdbc.Driver'. This is deprecated. The new driver class is `com.mysql.cj.jdbc.Driver'. The driver is automatically registered via the SPI and manual loading of the driver class is generally unnecessary.
+Loading class `com.mysql.cj.jdbc.Driver'. This is deprecated. The new driver class is `com.mysql.cj.jdbc.Driver'. The driver is automatically registered via the SPI and manual loading of the driver class is generally unnecessary.
 2019-03-05 12:02:23.327 [main] INFO  o.h.p.api.fhir.config.MySQLConfig [MySQLConfig.java:229] loadIndexFiles()
 2019-03-05 12:02:23.388 [main] INFO  o.h.jpa.internal.util.LogHelper [LogHelper.java:31] HHH000204: Processing PersistenceUnitInfo [name: default]
 2019-03-05 12:02:23.601 [main] INFO  org.hibernate.Version [Version.java:46] HHH000412: Hibernate Core {5.4.1.Final}

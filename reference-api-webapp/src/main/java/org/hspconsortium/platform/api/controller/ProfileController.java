@@ -57,8 +57,8 @@ public class ProfileController {
         return profileService.getAllUploadedProfiles(request, sandboxId);
     }
 
-    @PostMapping(value = "/uploadProfile")
-    public HashMap<List<String>, List<String>> uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, String sandboxId, String apiEndpoint) throws IOException {
+    @PostMapping(value = "/uploadProfile", params = {"sandboxId", "apiEndpoint"})
+    public HashMap<List<String>, List<String>> uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, @RequestParam(value = "sandboxId") String sandboxId, @RequestParam(value = "apiEndpoint") String apiEndpoint) throws IOException {
         if(!sandboxService.verifyUser(request, sandboxId)) {
             throw new UnauthorizedUserException("User not authorized");
         }
