@@ -1639,13 +1639,13 @@ LOCK TABLES `TRM_CONCEPT_PROPERTY` WRITE;
 UNLOCK TABLES;
 
 --
--- Table structure for table `hfj_forced_id`
+-- Table structure for table `HFJ_FORCED_ID`
 --
 
-DROP TABLE IF EXISTS `hfj_forced_id`;
+DROP TABLE IF EXISTS `HFJ_FORCED_ID`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `hfj_forced_id` (
+CREATE TABLE `HFJ_FORCED_ID` (
   `PID` bigint(20) NOT NULL,
   `FORCED_ID` varchar(100) NOT NULL,
   `RESOURCE_PID` bigint(20) NOT NULL,
@@ -1657,23 +1657,23 @@ CREATE TABLE `hfj_forced_id` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `hfj_forced_id`
+-- Dumping data for table `HFJ_FORCED_ID`
 --
 
-LOCK TABLES `hfj_forced_id` WRITE;
-/*!40000 ALTER TABLE `hfj_forced_id` DISABLE KEYS */;
-INSERT INTO `hfj_forced_id` VALUES (1,'whatsup',152,'ValueSet');
-/*!40000 ALTER TABLE `hfj_forced_id` ENABLE KEYS */;
+LOCK TABLES `HFJ_FORCED_ID` WRITE;
+/*!40000 ALTER TABLE `HFJ_FORCED_ID` DISABLE KEYS */;
+INSERT INTO `HFJ_FORCED_ID` VALUES (1,'whatsup',152,'ValueSet');
+/*!40000 ALTER TABLE `HFJ_FORCED_ID` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `hfj_res_param_present`
+-- Table structure for table `HFJ_RES_PARAM_PRESENT`
 --
 
-DROP TABLE IF EXISTS `hfj_res_param_present`;
+DROP TABLE IF EXISTS `HFJ_RES_PARAM_PRESENT`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `hfj_res_param_present` (
+CREATE TABLE `HFJ_RES_PARAM_PRESENT` (
   `PID` bigint(20) NOT NULL,
   `SP_PRESENT` bit(1) NOT NULL,
   `RES_ID` bigint(20) NOT NULL,
@@ -1686,12 +1686,12 @@ CREATE TABLE `hfj_res_param_present` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `hfj_res_param_present`
+-- Dumping data for table `HFJ_RES_PARAM_PRESENT`
 --
 
-LOCK TABLES `hfj_res_param_present` WRITE;
-/*!40000 ALTER TABLE `hfj_res_param_present` DISABLE KEYS */;
-/*!40000 ALTER TABLE `hfj_res_param_present` ENABLE KEYS */;
+LOCK TABLES `HFJ_RES_PARAM_PRESENT` WRITE;
+/*!40000 ALTER TABLE `HFJ_RES_PARAM_PRESENT` DISABLE KEYS */;
+/*!40000 ALTER TABLE `HFJ_RES_PARAM_PRESENT` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -1722,13 +1722,13 @@ INSERT INTO `hspc_tenant_info` VALUES ('hspc9','8','T',NULL,NULL);
 UNLOCK TABLES;
 
 --
--- Table structure for table `trm_concept_map`
+-- Table structure for table `TRM_CONCEPT_MAP`
 --
 
-DROP TABLE IF EXISTS `trm_concept_map`;
+DROP TABLE IF EXISTS `TRM_CONCEPT_MAP`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `trm_concept_map` (
+CREATE TABLE `TRM_CONCEPT_MAP` (
   `PID` bigint(20) NOT NULL,
   `RES_ID` bigint(20) DEFAULT NULL,
   `SOURCE_URL` varchar(200) DEFAULT NULL,
@@ -1741,23 +1741,23 @@ CREATE TABLE `trm_concept_map` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `trm_concept_map`
+-- Dumping data for table `TRM_CONCEPT_MAP`
 --
 
-LOCK TABLES `trm_concept_map` WRITE;
-/*!40000 ALTER TABLE `trm_concept_map` DISABLE KEYS */;
-INSERT INTO `trm_concept_map` VALUES (1,1,'http://hl7.org/fhir/ValueSet/address-use','http://hl7.org/fhir/ValueSet/v3-AddressUse','http://hl7.org/fhir/ConceptMap/101');
-/*!40000 ALTER TABLE `trm_concept_map` ENABLE KEYS */;
+LOCK TABLES `TRM_CONCEPT_MAP` WRITE;
+/*!40000 ALTER TABLE `TRM_CONCEPT_MAP` DISABLE KEYS */;
+INSERT INTO `TRM_CONCEPT_MAP` VALUES (1,1,'http://hl7.org/fhir/ValueSet/address-use','http://hl7.org/fhir/ValueSet/v3-AddressUse','http://hl7.org/fhir/ConceptMap/101');
+/*!40000 ALTER TABLE `TRM_CONCEPT_MAP` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
--- Table structure for table `trm_concept_map_group`
+-- Table structure for table `TRM_CONCEPT_MAP_GROUP`
 --
 
-DROP TABLE IF EXISTS `trm_concept_map_group`;
+DROP TABLE IF EXISTS `TRM_CONCEPT_MAP_GROUP`;
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `trm_concept_map_group` (
+CREATE TABLE `TRM_CONCEPT_MAP_GROUP` (
   `PID` bigint(20) NOT NULL,
   `myConceptMapUrl` varchar(255) DEFAULT NULL,
   `SOURCE_URL` varchar(200) NOT NULL,
@@ -1773,13 +1773,13 @@ CREATE TABLE `trm_concept_map_group` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
--- Dumping data for table `trm_concept_map_group`
+-- Dumping data for table `TRM_CONCEPT_MAP_GROUP`
 --
 
-LOCK TABLES `trm_concept_map_group` WRITE;
-/*!40000 ALTER TABLE `trm_concept_map_group` DISABLE KEYS */;
-INSERT INTO `trm_concept_map_group` VALUES (1,NULL,'http://hl7.org/fhir/address-use',NULL,NULL,'http://hl7.org/fhir/v3/AddressUse',NULL,NULL,1);
-/*!40000 ALTER TABLE `trm_concept_map_group` ENABLE KEYS */;
+LOCK TABLES `TRM_CONCEPT_MAP_GROUP` WRITE;
+/*!40000 ALTER TABLE `TRM_CONCEPT_MAP_GROUP` DISABLE KEYS */;
+INSERT INTO `TRM_CONCEPT_MAP_GROUP` VALUES (1,NULL,'http://hl7.org/fhir/address-use',NULL,NULL,'http://hl7.org/fhir/v3/AddressUse',NULL,NULL,1);
+/*!40000 ALTER TABLE `TRM_CONCEPT_MAP_GROUP` ENABLE KEYS */;
 UNLOCK TABLES;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
