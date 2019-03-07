@@ -26,9 +26,9 @@ The following default port assignments exist
 | 8075        | DSTU2               | HSPC_5         | legacy |
 | 8076        | STU3                | HSPC_5         | legacy |
 | 8077        | R4                  | HSPC_5         | legacy |
-| 8078        | DSTU2               | HSPC_6         | active |
-| 8079        | STU3                | HSPC_6         | active |
-| 8070       | R4                  | HSPC_6         | active |
+| 8078        | DSTU2               | HSPC_8         | active |
+| 8079        | STU3                | HSPC_8         | active |
+| 8070        | R4                  | HSPC_8         | active |
 
 
 # Libraries
