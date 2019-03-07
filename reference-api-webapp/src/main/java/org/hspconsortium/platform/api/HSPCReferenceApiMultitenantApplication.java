@@ -30,13 +30,18 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 import org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+
+import java.util.concurrent.Executor;
 
 @EnableWebSecurity(debug = false)
 @EnableCaching
 @SpringBootApplication
+@EnableAsync
 public class HSPCReferenceApiMultitenantApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
@@ -69,5 +74,18 @@ public class HSPCReferenceApiMultitenantApplication extends SpringBootServletIni
         retVal.setScheduledExecutor(scheduledExecutorService().getObject());
         return retVal;
     }
+
+    @Bean
+    public Executor asyncExecutor() {
+        ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
+//        TODO: Check on setting these values
+        executor.setCorePoolSize(100);
+        executor.setMaxPoolSize(1000);
+        executor.setQueueCapacity(Integer.MAX_VALUE);
+        executor.initialize();
+        return executor;
+    }
+
+
 
 }
