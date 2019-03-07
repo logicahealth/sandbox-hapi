@@ -41,8 +41,8 @@ import java.util.List;
 
 // This is unsecured so don't publish this as a restcontroller in production
 // Will only work if the cqf-ruler code and dependency is removed.
-@RestController
-@RequestMapping("/converter")
+//@RestController
+//@RequestMapping("/converter")
 public class VersionConverterController {
 
 //    @Value("${server.localhost}")
@@ -100,8 +100,10 @@ public class VersionConverterController {
                             if (resource.get("id").toString().matches("[0-9]+")) {
                                 String resourceString = resource.toString().replaceAll(resource.get("id").toString(), "SMART-" + resource.get("id").toString());
                                 convert(resourceString, resourceName, authToken);
+                                logger.info(resourceName);
+                            } else {
+                                convert(resource.toString(), resourceName, authToken);
                             }
-                            convert(resource.toString(), resourceName, authToken);
                         }
                     } catch (Exception e) {
                         logger.error(e.getMessage());

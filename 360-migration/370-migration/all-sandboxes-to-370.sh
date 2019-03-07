@@ -44,7 +44,7 @@ echo "Sandbox List" > sandboxes_done.txt
 
 SQL_STRING="SELECT SCHEMA_NAME AS db FROM information_schema.SCHEMATA WHERE SCHEMA_NAME NOT IN ('mysql', 'information_schema') AND SCHEMA_NAME LIKE 'hspc_5%';"
 # Pipe the SQL into mysql
-DBS=$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)
+DBS=$(echo $SQL_STRING | mysql -h$HOST --port=3306 -u$MYSQL_USER -p$MYSQL_PASS -Bs)
 set -f                      # avoid globbing (expansion of *).
 array=($(echo "$DBS" | tr ',' '\n'))
 
