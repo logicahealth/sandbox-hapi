@@ -21,21 +21,21 @@
 
 
 profile="dstu2"
-sandbox_name="hspc5"
+sandbox_name="hspc8"
 
 if [ $# -gt 0 ]; then
     case "$1" in
         dstu2)
             profile=$1
-            sandbox_name="hspc5"
+            sandbox_name="hspc8"
             ;;
         stu3)
             profile=$1
-            sandbox_name="hspc6"
+            sandbox_name="hspc9"
             ;;
         r4)
             profile=$1
-            sandbox_name="hspc7"
+            sandbox_name="hspc10"
             ;;
         *)
             echo "Usage: $0 {dstu2|stu3|r4} {default|multitenant}"

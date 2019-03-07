@@ -41,8 +41,8 @@ import java.util.List;
 
 // This is unsecured so don't publish this as a restcontroller in production
 // Will only work if the cqf-ruler code and dependency is removed.
-//@RestController
-//@RequestMapping("/converter")
+@RestController
+@RequestMapping("/converter")
 public class VersionConverterController {
 
 //    @Value("${server.localhost}")
@@ -55,16 +55,16 @@ public class VersionConverterController {
     private FhirContext ourFhirCtx = FhirContext.forDstu3();
     private IParser parser = ourFhirCtx.newJsonParser().setPrettyPrint(true);
     private VersionConvertor_30_40 converter = new VersionConvertor_30_40();
-    private String masterStu3Url = "http://localhost:8076/MasterStu3Smart/data/";
-    private String masterR4Url = "http://localhost:8077/MasterR4Smart/data/";
+    private String masterStu3Url = "http://localhost:8079/MasterStu3Smart/data/";
+    private String masterR4Url = "http://localhost:8070/MasterR4Empty/data/";
 
     @RequestMapping(path = "", method = RequestMethod.GET)
     public void convertStarterSetToR4(HttpServletRequest request) {
 
         // This list is according to the available resources in the starter data set.
-//        String[] resources = {"Patient", "Practitioner", "AllergyIntolerance", "Binary", "Condition", "DocumentReference", "Encounter", "FamilyMemberHistory",
-//                "ImagingStudy", "Immunization", "List", "MedicationDispense", "MedicationRequest", "Observation", "Procedure"};
-        String[] resources = {"Observation"};
+        String[] resources = {"Patient", "Practitioner", "AllergyIntolerance", "Binary", "Condition", "DocumentReference", "Encounter", "FamilyMemberHistory",
+                "ImagingStudy", "Immunization", "List", "MedicationDispense", "MedicationRequest", "Procedure", "Observation" };
+//        String[] resources = {"Observation"};
         List<String> resourceList = Arrays.asList(resources);
 
         String authToken = request.getHeader("Authorization").substring(7);
@@ -97,6 +97,10 @@ public class VersionConverterController {
                         JSONArray entry = (JSONArray) jsonBundle.get("entry");
                         for (int i = 0; i < entry.size(); i++) {
                             JSONObject resource = (JSONObject) ((JSONObject) entry.get(i)).get("resource");
+                            if (resource.get("id").toString().matches("[0-9]+")) {
+                                String resourceString = resource.toString().replaceAll(resource.get("id").toString(), "SMART-" + resource.get("id").toString());
+                                convert(resourceString, resourceName, authToken);
+                            }
                             convert(resource.toString(), resourceName, authToken);
                         }
                     } catch (Exception e) {
