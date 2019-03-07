@@ -107,21 +107,21 @@ SQL_STRING="SELECT COUNT(*) FROM $FULL_NAME.HFJ_SPIDX_TOKEN WHERE HASH_IDENTITY 
 SQL_STRING2="SELECT COUNT(*) FROM $FULL_NAME.HFJ_RES_REINDEX_JOB;"
 
 until [  $FINISHED -eq 1 ]; do
-    if [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)" != "0" && "$(echo $SQL_STRING2 | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)" == "0" ]]; then
+    if [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$MYSQL_URL --port=3306 -Bs)" != "0" && "$(echo $SQL_STRING2 | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$MYSQL_URL --port=3306 -Bs)" == "0" ]]; then
         curl -X GET --header "Authorization: BEARER ${BEARER_TOKEN}" "$FHIR_HOST/$SANDBOX_NAME/data/\$mark-all-resources-for-reindexing"
 
-    elif [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)" == "0" && "$(echo $SQL_STRING2 | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)" == "0" ]]; then
+    elif [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$MYSQL_URL --port=3306 -Bs)" == "0" && "$(echo $SQL_STRING2 | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$MYSQL_URL --port=3306 -Bs)" == "0" ]]; then
         let FINISHED=1
     fi
     sleep 15
 done
 
-mysql --user="$MYSQL_USER" --password="$MYSQL_PASS" --database="$FULL_NAME" < postReindexing.sql
+mysql --user="$MYSQL_USER" --password="$MYSQL_PASS" -h$MYSQL_URL --port=3306 --database="$FULL_NAME" < postReindexing.sql
 
 hapi-fhir-3.7.0-cli/hapi-fhir-cli migrate-database -d MYSQL_5_7 -u "jdbc:mysql://$MYSQL_URL/$FULL_NAME?serverTimezone=America/Denver" -n "$MYSQL_USER" -p "$MYSQL_PASS" -f V3_4_0 -t V3_7_0
 
 SQL_STRING="UPDATE sandman.sandbox SET api_endpoint_index='$INDEX' WHERE sandbox_id='$SANDBOX_NAME'";
-echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs
+echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$MYSQL_URL --port=3306 -Bs
 
 echo "Shutting down sever"
 ps ax | grep nameForShutdown | grep -v grep | awk '{print $1}' | xargs kill
