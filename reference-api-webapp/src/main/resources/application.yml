@@ -1,6 +1,6 @@
 server:
   localhost: http://localhost:${server.port}
-  port: ${API_PORT:8075}
+  port: ${API_PORT:8078}
   tomcat:
     remote_ip_header: x-forwarded-for
     protocol_header: x-forwarded-proto
@@ -10,10 +10,8 @@ spring:
     name: HSPC Reference API
   profiles:
     active: multitenant,dstu2
-  datasource:
-    tomcat:
-      initialSize: 1
-      maxActive: 5
+  main:
+    allow-bean-definition-overriding: true
 
 hibernate:
   search:
@@ -38,24 +36,23 @@ hspc:
         clientSecret: secret
         scopes: openid,launch,smart/orchestrate_launch
       sandbox:
-        name: ${SANDBOX_NAME:hspc5}
+        name: ${SANDBOX_NAME:hspc8}
       sandboxManagerApi:
         url: http://${SBMA_HOST:localhost}:${SBMA_PORT:12000}
         transactionPath: /analytics/transaction
         userAuthPath: /user/authorize
       fhir:
-        db:
-          schema: hspc_5_${hspc.platform.api.sandbox.name}
-          driver-class-name: com.mysql.jdbc.Driver
+        datasource:
+          schema: hspc_8_${hspc.platform.api.sandbox.name}
+#          driverClassName: com.mysql.cj.jdbc.Driver
           host: ${DB_HOST:localhost}
-          url: jdbc:mysql://${hspc.platform.api.fhir.db.host}:${DB_PORT:3306}/${hspc.platform.api.fhir.db.schema}
+          url: jdbc:mysql://${hspc.platform.api.fhir.datasource.host}:${DB_PORT:3306}/${hspc.platform.api.fhir.datasource.schema}
           username: ${DB_USER:root}
           password: ${DB_PASSWORD:password}
           emptySchemaScriptPattern: db/mysql/hspc_%s_schema_empty.sql
           starterSchemaScriptPattern: db/mysql/hspc_%s_%s_%s_dataset.sql
           # Comma-separated list of scripts to run in order
           initializationScripts: db/mysql/V1__convert_hapi_3.2.0_to_3.3.0.sql
-        datasource:
           cache:
             size: 10
         defaultTenantId: ${hspc.platform.api.sandbox.name}
@@ -64,7 +61,7 @@ hspc:
           dialect: org.hibernate.dialect.MySQL5Dialect
         terminology:
           proxy:
-            host: api-v5-stu3.hspconsortium.org/${hspc.platform.api.sandbox.name}
+            host: api-v8-stu3.hspconsortium.org/${hspc.platform.api.sandbox.name}
             contextPath: /open
         contextPath: data
         # remove openContextPath to disable the open endpoint
@@ -112,9 +109,9 @@ hspc:
   platform:
     api:
       sandbox:
-        name: ${SANDBOX_NAME:hspc5}
+        name: ${SANDBOX_NAME:hspc8}
 server:
-  port: ${API_PORT:8075}
+  port: ${API_PORT:8078}
 
 ---
 
@@ -125,9 +122,9 @@ hspc:
   platform:
     api:
       sandbox:
-        name: ${SANDBOX_NAME:hspc6}
+        name: ${SANDBOX_NAME:hspc9}
 server:
-  port: ${API_PORT:8076}
+  port: ${API_PORT:8079}
 
 ---
 
@@ -138,7 +135,6 @@ hspc:
   platform:
     api:
       sandbox:
-        name: ${SANDBOX_NAME:hspc7}
+        name: ${SANDBOX_NAME:hspc10}
 server:
-  port: ${API_PORT:8077}
-
+  port: ${API_PORT:8070}

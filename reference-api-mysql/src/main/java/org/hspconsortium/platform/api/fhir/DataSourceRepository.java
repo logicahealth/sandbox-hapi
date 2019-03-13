@@ -1,16 +1,34 @@
+/**
+ *  * #%L
+ *  *
+ *  * %%
+ *  * Copyright (C) 2014-2019 Healthcare Services Platform Consortium
+ *  * %%
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *      http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  * #L%
+ */
+
 package org.hspconsortium.platform.api.fhir;
 
-import com.google.common.cache.Cache;
-import com.google.common.cache.CacheBuilder;
 import org.hspconsortium.platform.api.fhir.model.DataSet;
 import org.hspconsortium.platform.api.fhir.model.Sandbox;
 import org.hspconsortium.platform.api.fhir.service.SandboxService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
-import org.springframework.cache.guava.GuavaCache;
+
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.stereotype.Component;
 
 import javax.sql.DataSource;
@@ -19,9 +37,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 @Component
 public class DataSourceRepository {
@@ -30,7 +49,7 @@ public class DataSourceRepository {
 
     private MultitenantDatabaseProperties multitenancyProperties;
 
-    private GuavaCache datasourceCache;
+    private ConcurrentMap<String, DataSource> datasourceCache;
 
     private SandboxService sandboxService;
 
@@ -38,22 +57,23 @@ public class DataSourceRepository {
     public DataSourceRepository(MultitenantDatabaseProperties multitenancyProperties, SandboxService sandboxService) {
         this.multitenancyProperties = multitenancyProperties;
         this.sandboxService = sandboxService;
+        datasourceCache = new ConcurrentHashMap<>(this.multitenancyProperties.getDataSourceCacheSize());
 
-        Cache<Object, Object> cacheBuilder =
-                CacheBuilder
-                        .newBuilder()
-                        .maximumSize(this.multitenancyProperties.getDataSourceCacheSize())
-                        .build();
+//        LoadingCache<String, Object> cacheBuilder =
+//                Caffeine
+//                        .newBuilder()
+//                        .maximumSize(this.multitenancyProperties.getDataSourceCacheSize())
+//                        .build();
 
-        datasourceCache = new GuavaCache("datasourceCache", cacheBuilder);
+//        datasourceCache = new CaffeineCache("datasourceCache", cacheBuilder);
     }
 
     public DataSource getDataSource(String hspcSchemaVersion, String tenantIdentifier) {
         String key = tenantIdentifier + "~" + hspcSchemaVersion;
 
-        org.springframework.cache.Cache.ValueWrapper valueWrapper = datasourceCache.get(key);
-        if (valueWrapper != null) {
-            return (DataSource) valueWrapper.get();
+//        org.springframework.cache.Cache.ValueWrapper valueWrapper = datasourceCache.get(key);
+        if (datasourceCache.containsKey(key)) {
+            return datasourceCache.get(key);
         }
 
         DataSource dataSource = createDataSource(hspcSchemaVersion, tenantIdentifier);
@@ -79,8 +99,8 @@ public class DataSourceRepository {
     private DataSource createDataSource(String hspcSchemaVersion, String tenant) {
         final DataSourceProperties dataSourceProperties = this.multitenancyProperties.getDataSource(hspcSchemaVersion, tenant);
         DataSourceBuilder factory = DataSourceBuilder
-                .create(this.multitenancyProperties.getDb().getClassLoader())
-                .driverClassName(this.multitenancyProperties.getDb().getDriverClassName())
+                .create(this.multitenancyProperties.getDataSource().getClassLoader())
+//                .driverClassName(this.multitenancyProperties.getDataSource().getDriverClassName())
                 .username(dataSourceProperties.getUsername())
                 .password(dataSourceProperties.getPassword())
                 .url(dataSourceProperties.getUrl());
@@ -130,17 +150,17 @@ public class DataSourceRepository {
     public void createTemplateDataSources(String hspcSchemaVersion, String mainTenant) {
         List<String> defaultTenants = new ArrayList<>();
         switch(mainTenant) {
-            case "hspc5":
+            case "hspc8":
                 defaultTenants.add("MasterDstu2Empty");
                 defaultTenants.add("MasterDstu2Smart");
                 createSpecifiedDataSources(hspcSchemaVersion, defaultTenants);
                 return;
-            case "hspc6":
+            case "hspc9":
                 defaultTenants.add("MasterStu3Empty");
                 defaultTenants.add("MasterStu3Smart");
                 createSpecifiedDataSources(hspcSchemaVersion, defaultTenants);
                 return;
-            case "hspc7":
+            case "hspc10":
                 defaultTenants.add("MasterR4Empty");
                 defaultTenants.add("MasterR4Smart");
                 createSpecifiedDataSources(hspcSchemaVersion, defaultTenants);
@@ -152,8 +172,8 @@ public class DataSourceRepository {
         for (String tenant: defaultTenants) {
             final DataSourceProperties dataSourceProperties = this.multitenancyProperties.getDataSource(hspcSchemaVersion, tenant);
             DataSourceBuilder factory = DataSourceBuilder
-                    .create(this.multitenancyProperties.getDb().getClassLoader())
-                    .driverClassName(this.multitenancyProperties.getDb().getDriverClassName())
+                    .create(this.multitenancyProperties.getDataSource().getClassLoader())
+//                    .driverClassName(this.multitenancyProperties.getDataSource().getDriverClassName())
                     .username(dataSourceProperties.getUsername())
                     .password(dataSourceProperties.getPassword())
                     .url(dataSourceProperties.getUrl());
@@ -193,8 +213,8 @@ public class DataSourceRepository {
 
         final DataSourceProperties dataSourceProperties = this.multitenancyProperties.getInformationSchemaProperties();
         DataSourceBuilder factory = DataSourceBuilder
-                .create(this.multitenancyProperties.getDb().getClassLoader())
-                .driverClassName(this.multitenancyProperties.getDb().getDriverClassName())
+                .create(this.multitenancyProperties.getDataSource().getClassLoader())
+//                .driverClassName(this.multitenancyProperties.getDataSource().getDriverClassName())
                 .username(dataSourceProperties.getUsername())
                 .password(dataSourceProperties.getPassword())
                 .url(dataSourceProperties.getUrl());
@@ -239,8 +259,8 @@ public class DataSourceRepository {
 
         final DataSourceProperties dataSourceProperties = this.multitenancyProperties.getInformationSchemaProperties();
         DataSourceBuilder factory = DataSourceBuilder
-                .create(this.multitenancyProperties.getDb().getClassLoader())
-                .driverClassName(this.multitenancyProperties.getDb().getDriverClassName())
+                .create(this.multitenancyProperties.getDataSource().getClassLoader())
+//                .driverClassName(this.multitenancyProperties.getDataSource().getDriverClassName())
                 .username(dataSourceProperties.getUsername())
                 .password(dataSourceProperties.getPassword())
                 .url(dataSourceProperties.getUrl());

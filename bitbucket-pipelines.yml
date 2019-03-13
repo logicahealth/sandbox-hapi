@@ -27,12 +27,12 @@ pipelines:
             - . ci-1-prepare-sources.sh
             # STU3
             - export FHIR_VERSION="stu3"
-            - export PROJECT_NAME="api-v5-stu3"
+            - export PROJECT_NAME="api-v8-stu3"
             - . ci-0-set-properties.sh
             - . ci-1-prepare-sources.sh
             # R4
             - export FHIR_VERSION="r4"
-            - export PROJECT_NAME="api-v5-r4"
+            - export PROJECT_NAME="api-v8-r4"
             - . ci-0-set-properties.sh
             - . ci-1-prepare-sources.sh
             - . ci-2-build-project.sh
@@ -109,12 +109,12 @@ pipelines:
             - . ci-1-prepare-sources.sh
             # STU3
             - export FHIR_VERSION="stu3"
-            - export PROJECT_NAME="api-v5-stu3"
+            - export PROJECT_NAME="api-v8-stu3"
             - . ci-0-set-properties.sh
             - . ci-1-prepare-sources.sh
             # R4
             - export FHIR_VERSION="r4"
-            - export PROJECT_NAME="api-v5-r4"
+            - export PROJECT_NAME="api-v8-r4"
             - . ci-0-set-properties.sh
             - . ci-1-prepare-sources.sh
             - . ci-2-build-project.sh

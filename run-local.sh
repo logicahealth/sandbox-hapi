@@ -1,21 +1,41 @@
 #!/usr/bin/env bash
+#
+#  * #%L
+#  *
+#  * %%
+#  * Copyright (C) 2014-2019 Healthcare Services Platform Consortium
+#  * %%
+#  * Licensed under the Apache License, Version 2.0 (the "License");
+#  * you may not use this file except in compliance with the License.
+#  * You may obtain a copy of the License at
+#  *
+#  *      http://www.apache.org/licenses/LICENSE-2.0
+#  *
+#  * Unless required by applicable law or agreed to in writing, software
+#  * distributed under the License is distributed on an "AS IS" BASIS,
+#  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#  * See the License for the specific language governing permissions and
+#  * limitations under the License.
+#  * #L%
+#
+
 
 profile="dstu2"
-sandbox_name="hspc5"
+sandbox_name="hspc8"
 
 if [ $# -gt 0 ]; then
     case "$1" in
         dstu2)
             profile=$1
-            sandbox_name="hspc5"
+            sandbox_name="hspc8"
             ;;
         stu3)
             profile=$1
-            sandbox_name="hspc6"
+            sandbox_name="hspc9"
             ;;
         r4)
             profile=$1
-            sandbox_name="hspc7"
+            sandbox_name="hspc10"
             ;;
         *)
             echo "Usage: $0 {dstu2|stu3|r4} {default|multitenant}"

@@ -1,9 +1,30 @@
+/**
+ *  * #%L
+ *  *
+ *  * %%
+ *  * Copyright (C) 2014-2019 Healthcare Services Platform Consortium
+ *  * %%
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *      http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  * #L%
+ */
+
 package org.hspconsortium.platform.api.service;
 
 import org.hspconsortium.platform.api.fhir.service.ProfileService;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
@@ -106,27 +127,38 @@ public class ProfileServiceImpl implements ProfileService {
         return urlAndResources;
     }
 
-    public HashMap<List<String>, List<String>> saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId) throws IOException {
+    public HashMap<List<String>, List<String>> saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId, String apiEndpoint) throws IOException {
         HashMap<List<String>, List<String>> successAndFailureList = new HashMap<>();
         String authToken = request.getHeader("Authorization").substring(7);
-        String fileName = "";
-        String resourceType = "";
-        String resourceName = "";
         List<String> resourceSaved = new ArrayList<>();
         List<String> resourceNotSaved = new ArrayList<>();
         Enumeration zipFileEntries = zipFile.entries();
-
         while(zipFileEntries.hasMoreElements()) {
             ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
-            fileName = entry.getName();
+            String fileName = entry.getName();
             if (fileName.endsWith(".json")) {
                 InputStream inputStream = zipFile.getInputStream(entry);
                 JSONParser jsonParser = new JSONParser();
                 try {
                     JSONObject jsonObject = (JSONObject)jsonParser.parse(new InputStreamReader(inputStream, "UTF-8"));
-                    resourceType = jsonObject.get("resourceType").toString();
-                    resourceName = jsonObject.get("name").toString();
-
+                    String resourceType = jsonObject.get("resourceType").toString();
+                    String resourceName = jsonObject.get("name").toString();
+                    if (resourceType.equals("StructureDefinition")) {
+                        String fhirVersion = jsonObject.get("fhirVersion").toString();
+                        if (apiEndpoint.equals("5") && !fhirVersion.equals("1.0.2")) {
+                            throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (1.0.2). The profile was not saved.");
+                        } else if (apiEndpoint.equals("6") && !fhirVersion.equals("3.0.1")) {
+                            throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.0.1). The profile was not saved.");
+                        } else if (apiEndpoint.equals("7") && !fhirVersion.equals("3.4.0")) {
+                            throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.4.0). The profile was not saved.");
+                        } else if (apiEndpoint.equals("8") && !fhirVersion.equals("1.0.2")) {
+                            throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (1.0.2). The profile was not saved.");
+                        } else if (apiEndpoint.equals("9") && !fhirVersion.equals("3.0.1")) {
+                            throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.0.1). The profile was not saved.");
+                        } else if (apiEndpoint.equals("10") && !fhirVersion.equals("4.0.0")) {
+                            throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (4.0.0). The profile was not saved.");
+                        }
+                    }
                     if (Arrays.stream(profileResources).anyMatch(resourceType::equals)) {
                         String jsonBody = jsonObject.toString();
                         HttpHeaders headers = new HttpHeaders();
@@ -137,14 +169,12 @@ public class ProfileServiceImpl implements ProfileService {
                         try {
                             restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
                             resourceSaved.add(resourceType + " - " + resourceName);
-                        } catch (HttpServerErrorException e) {
+                        } catch (HttpServerErrorException | HttpClientErrorException e) {
                             resourceNotSaved.add(resourceType + " - " + resourceName);
-                            logger.error("Resource not saved: " + resourceType + ". " + e.getMessage());
                         }
                     }
-                }
-                catch (Exception e) {
-                    logger.error("Content of the " + resourceType + " is not supported. " + e.getMessage());
+                } catch (ParseException e) {
+
                 }
             }
         }
