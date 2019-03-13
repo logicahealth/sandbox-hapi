@@ -217,38 +217,38 @@ public class ProfileServiceImpl implements ProfileService {
                 try {
                     JSONObject jsonObject = (JSONObject)jsonParser.parse(new InputStreamReader(inputStream, "UTF-8"));
                     String resourceType = jsonObject.get("resourceType").toString();
-                    String resourceName = jsonObject.get("name").toString();
-                    if (resourceType.equals("StructureDefinition")) {
-                        String fhirVersion = jsonObject.get("fhirVersion").toString();
-                        if (apiEndpoint.equals("5") && !fhirVersion.equals("1.0.2")) {
-                            throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (1.0.2). The profile was not saved.");
-                        } else if (apiEndpoint.equals("6") && !fhirVersion.equals("3.0.1")) {
-                            throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.0.1). The profile was not saved.");
-                        } else if (apiEndpoint.equals("7") && !fhirVersion.equals("3.4.0")) {
-                            throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.4.0). The profile was not saved.");
-                        } else if (apiEndpoint.equals("8") && !fhirVersion.equals("1.0.2")) {
-                            throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (1.0.2). The profile was not saved.");
-                        } else if (apiEndpoint.equals("9") && !fhirVersion.equals("3.0.1")) {
-                            throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.0.1). The profile was not saved.");
-                        } else if (apiEndpoint.equals("10") && !fhirVersion.equals("4.0.0")) {
-                            throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (4.0.0). The profile was not saved.");
-                        }
-                    }
                     if (Arrays.stream(profileResources).anyMatch(resourceType::equals)) {
+                        String resourceId = jsonObject.get("id").toString();
+                        if (resourceType.equals("StructureDefinition")) {
+                            String fhirVersion = jsonObject.get("fhirVersion").toString();
+                            if (apiEndpoint.equals("5") && !fhirVersion.equals("1.0.2")) {
+                                throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (1.0.2). The profile was not saved.");
+                            } else if (apiEndpoint.equals("6") && !fhirVersion.equals("3.0.1")) {
+                                throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.0.1). The profile was not saved.");
+                            } else if (apiEndpoint.equals("7") && !fhirVersion.equals("3.4.0")) {
+                                throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.4.0). The profile was not saved.");
+                            } else if (apiEndpoint.equals("8") && !fhirVersion.equals("1.0.2")) {
+                                throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (1.0.2). The profile was not saved.");
+                            } else if (apiEndpoint.equals("9") && !fhirVersion.equals("3.0.1")) {
+                                throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.0.1). The profile was not saved.");
+                            } else if (apiEndpoint.equals("10") && !fhirVersion.equals("4.0.0")) {
+                                throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (4.0.0). The profile was not saved.");
+                            }
+                        }
                         String jsonBody = jsonObject.toString();
                         HttpHeaders headers = new HttpHeaders();
                         headers.set("Authorization", "BEARER " + authToken);
                         headers.set("Content-Type", "application/json");
-                        String url = localhost + "/" + sandboxId + "/data/" + resourceType + "/" + jsonObject.get("id").toString();
+                        String url = localhost + "/" + sandboxId + "/data/" + resourceType + "/" + resourceId;
                         HttpEntity entity = new HttpEntity(jsonBody, headers);
                         try {
                             restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
-                            resourceSaved.add(resourceType + " - " + resourceName);
+                            resourceSaved.add(resourceType + " - " + resourceId);
                         } catch (HttpServerErrorException | HttpClientErrorException e) {
-                            resourceNotSaved.add(resourceType + " - " + resourceName);
+                            resourceNotSaved.add(resourceType + " - " + resourceId + " - " + e.getMessage());
                         }
                     }
-                } catch (ParseException e) {
+                } catch (Exception e) {
 
                 }
             }
