@@ -73,7 +73,7 @@ public class ProfileController {
 
         try {
             ZipFile zipFile = new ZipFile(zip);
-            list = profileService.saveZipFile(zipFile, request, sandboxId, apiEndpoint, "1");
+            list = profileService.saveZipFile(zipFile, request, sandboxId, apiEndpoint);
         } catch (ZipException e) {
             e.printStackTrace();
         }
@@ -82,6 +82,7 @@ public class ProfileController {
         }
         return list;
     }
+}
 
 //    @PostMapping(value = "/uploadProfile", params = {"sandboxId", "apiEndpoint"})
 //    public ResponseEntity<Object> uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, @RequestParam(value = "sandboxId") String sandboxId, @RequestParam(value = "apiEndpoint") String apiEndpoint) throws IOException {
@@ -119,5 +120,5 @@ public class ProfileController {
 //    public HashMap<String, Boolean> fetchStatus(@RequestParam(value = "fileId") String fileId) {
 //        return profileService.getTaskRunning();
 //    }
-}
+
 
