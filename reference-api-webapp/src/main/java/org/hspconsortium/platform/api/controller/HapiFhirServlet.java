@@ -1,3 +1,23 @@
+/**
+ *  * #%L
+ *  *
+ *  * %%
+ *  * Copyright (C) 2014-2019 Healthcare Services Platform Consortium
+ *  * %%
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *      http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  * #L%
+ */
+
 package org.hspconsortium.platform.api.controller;
 
 import ca.uhn.fhir.context.FhirContext;
@@ -217,7 +237,7 @@ public class HapiFhirServlet extends RestfulServer {
                 stringBuffer.append("/");
             } else {
                 // check each of the fhirMappingPaths to see if one is found
-                if (part.equals(fhirMappingPath) || part.equals(openMappingPath)) {
+                if (part.equals(HapiFhirServletContextHolder.getInstance().getFhirMappingPath()) || part.equals(HapiFhirServletContextHolder.getInstance().getOpenMappingPath())) {
                     foundFhirMappingPath = true;
                 }
             }
@@ -268,18 +288,18 @@ public class HapiFhirServlet extends RestfulServer {
 
     private void resolveResourceProviders(JpaDataProvider provider, IFhirSystemDao<org.hl7.fhir.dstu3.model.Bundle, Meta> systemDao) throws ServletException {
         // Bundle processing
-        FHIRBundleResourceProvider bundleProvider = new FHIRBundleResourceProvider(provider);
-        BundleResourceProvider jpaBundleProvider = (BundleResourceProvider) provider.resolveResourceProvider("Bundle");
-        bundleProvider.setDao(jpaBundleProvider.getDao());
-        bundleProvider.setContext(jpaBundleProvider.getContext());
-
-        try {
-            unregister(jpaBundleProvider, provider.getCollectionProviders());
-        } catch (Exception e) {
-            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-        }
-
-        register(bundleProvider, provider.getCollectionProviders());
+//        FHIRBundleResourceProvider bundleProvider = new FHIRBundleResourceProvider(provider);
+//        BundleResourceProvider jpaBundleProvider = (BundleResourceProvider) provider.resolveResourceProvider("Bundle");
+//        bundleProvider.setDao(jpaBundleProvider.getDao());
+//        bundleProvider.setContext(jpaBundleProvider.getContext());
+//
+//        try {
+//            unregister(jpaBundleProvider, provider.getCollectionProviders());
+//        } catch (Exception e) {
+//            throw new ServletException("Unable to unregister provider: " + e.getMessage());
+//        }
+//
+//        register(bundleProvider, provider.getCollectionProviders());
 
         // ValueSet processing
         FHIRValueSetResourceProvider valueSetProvider = new FHIRValueSetResourceProvider(provider);
@@ -368,18 +388,18 @@ public class HapiFhirServlet extends RestfulServer {
         register(bulkDataPatientProvider, provider.getCollectionProviders());
 
         // Group processing - for bulk data export
-        BulkDataGroupProvider bulkDataGroupProvider = new BulkDataGroupProvider(provider);
-        GroupResourceProvider jpaGroupProvider = (GroupResourceProvider) provider.resolveResourceProvider("Group");
-        bulkDataGroupProvider.setDao(jpaGroupProvider.getDao());
-        bulkDataGroupProvider.setContext(jpaGroupProvider.getContext());
-
-        try {
-            unregister(jpaGroupProvider, provider.getCollectionProviders());
-        } catch (Exception e) {
-            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-        }
-
-        register(bulkDataGroupProvider, provider.getCollectionProviders());
+//        BulkDataGroupProvider bulkDataGroupProvider = new BulkDataGroupProvider(provider);
+//        GroupResourceProvider jpaGroupProvider = (GroupResourceProvider) provider.resolveResourceProvider("Group");
+//        bulkDataGroupProvider.setDao(jpaGroupProvider.getDao());
+//        bulkDataGroupProvider.setContext(jpaGroupProvider.getContext());
+//
+//        try {
+//            unregister(jpaGroupProvider, provider.getCollectionProviders());
+//        } catch (Exception e) {
+//            throw new ServletException("Unable to unregister provider: " + e.getMessage());
+//        }
+//
+//        register(bulkDataGroupProvider, provider.getCollectionProviders());
     }
 
     private void register(IResourceProvider provider, Collection<IResourceProvider> providers) {

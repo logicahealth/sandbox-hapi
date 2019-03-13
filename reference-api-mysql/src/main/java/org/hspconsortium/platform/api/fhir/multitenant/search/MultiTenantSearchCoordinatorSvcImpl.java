@@ -1,3 +1,23 @@
+/**
+ *  * #%L
+ *  *
+ *  * %%
+ *  * Copyright (C) 2014-2019 Healthcare Services Platform Consortium
+ *  * %%
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *      http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  * #L%
+ */
+
 package org.hspconsortium.platform.api.fhir.multitenant.search;
 
 
@@ -5,7 +25,6 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IDao;
 import ca.uhn.fhir.jpa.dao.ISearchBuilder;
-import ca.uhn.fhir.jpa.dao.SearchParameterMap;
 import ca.uhn.fhir.jpa.dao.data.ISearchDao;
 import ca.uhn.fhir.jpa.dao.data.ISearchIncludeDao;
 import ca.uhn.fhir.jpa.dao.data.ISearchResultDao;
@@ -13,6 +32,7 @@ import ca.uhn.fhir.jpa.entity.*;
 import ca.uhn.fhir.jpa.search.ISearchCoordinatorSvc;
 import ca.uhn.fhir.jpa.search.PersistedJpaBundleProvider;
 import ca.uhn.fhir.jpa.search.SearchCoordinatorSvcImpl;
+import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
 import ca.uhn.fhir.jpa.util.StopWatch;
 import ca.uhn.fhir.model.api.Include;
 import ca.uhn.fhir.rest.api.CacheControlDirective;
@@ -31,9 +51,7 @@ import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.annotation.Propagation;
@@ -145,14 +163,10 @@ public class MultiTenantSearchCoordinatorSvcImpl implements ISearchCoordinatorSv
             List<Long> retVal = (List) txTemplate.execute(new TransactionCallback<List<Long>>() {
                 public List<Long> doInTransaction(TransactionStatus theStatus) {
                     List<Long> resultPids = new ArrayList();
-                    Page<SearchResult> searchResults = MultiTenantSearchCoordinatorSvcImpl.this.mySearchResultDao.findWithSearchUuid(search, page);
-                    Iterator var4 = searchResults.iterator();
-
-                    while (var4.hasNext()) {
-                        SearchResult next = (SearchResult) var4.next();
-                        resultPids.add(next.getResourcePid());
+                    Page<Long> searchResults = MultiTenantSearchCoordinatorSvcImpl.this.mySearchResultDao.findWithSearchUuid(search, page);
+                    for (Long next : searchResults) {
+                        resultPids.add(next);
                     }
-
                     return resultPids;
                 }
             });
@@ -190,8 +204,8 @@ public class MultiTenantSearchCoordinatorSvcImpl implements ISearchCoordinatorSv
                     }
 
                     Set<Long> includedPids = new HashSet();
-                    includedPids.addAll(sb.loadReverseIncludes(theCallingDao, MultiTenantSearchCoordinatorSvcImpl.this.myContext, MultiTenantSearchCoordinatorSvcImpl.this.myEntityManager, pids, theParams.getRevIncludes(), true, theParams.getLastUpdated()));
-                    includedPids.addAll(sb.loadReverseIncludes(theCallingDao, MultiTenantSearchCoordinatorSvcImpl.this.myContext, MultiTenantSearchCoordinatorSvcImpl.this.myEntityManager, pids, theParams.getIncludes(), false, theParams.getLastUpdated()));
+                    includedPids.addAll(sb.loadIncludes(MultiTenantSearchCoordinatorSvcImpl.this.myContext, MultiTenantSearchCoordinatorSvcImpl.this.myEntityManager, pids, theParams.getRevIncludes(), true, theParams.getLastUpdated(), "(synchronous)"));
+                    includedPids.addAll(sb.loadIncludes(MultiTenantSearchCoordinatorSvcImpl.this.myContext, MultiTenantSearchCoordinatorSvcImpl.this.myEntityManager, pids, theParams.getIncludes(), false, theParams.getLastUpdated(), "(synchronous)"));
                     List<IBaseResource> resources = new ArrayList();
                     sb.loadResourcesByPid(pids, resources, includedPids, false, MultiTenantSearchCoordinatorSvcImpl.this.myEntityManager, MultiTenantSearchCoordinatorSvcImpl.this.myContext, theCallingDao);
                     return new SimpleBundleProvider(resources);
@@ -336,13 +350,35 @@ public class MultiTenantSearchCoordinatorSvcImpl implements ISearchCoordinatorSv
             return null;
         } else {
             int pageIndex = theFromIndex / pageSize;
-            Pageable page = new PageRequest(pageIndex, pageSize) {
+            Pageable page = new AbstractPageRequest(pageIndex, pageSize) {
                 private static final long serialVersionUID = 1L;
 
-                public int getOffset() {
+                @Override
+                public long getOffset() {
                     return theFromIndex;
                 }
+
+                @Override
+                public Sort getSort() {
+                    return Sort.unsorted();
+                }
+
+                @Override
+                public Pageable next() {
+                    return null;
+                }
+
+                @Override
+                public Pageable previous() {
+                    return null;
+                }
+
+                @Override
+                public Pageable first() {
+                    return null;
+                }
             };
+
             return page;
         }
     }
@@ -557,8 +593,8 @@ public class MultiTenantSearchCoordinatorSvcImpl implements ISearchCoordinatorSv
                         nextResult.setOrder(MultiTenantSearchCoordinatorSvcImpl.SearchTask.this.myCountSaved++);
                         resultsToSave.add(nextResult);
                     }
+                    MultiTenantSearchCoordinatorSvcImpl.this.mySearchResultDao.saveAll(resultsToSave);
 
-                    MultiTenantSearchCoordinatorSvcImpl.this.mySearchResultDao.save(resultsToSave);
                     synchronized (MultiTenantSearchCoordinatorSvcImpl.SearchTask.this.mySyncedPids) {
                         int numSyncedThisPass = MultiTenantSearchCoordinatorSvcImpl.SearchTask.this.myUnsyncedPids.size();
                         MultiTenantSearchCoordinatorSvcImpl.ourLog.trace("Syncing {} search results", Integer.valueOf(numSyncedThisPass));
