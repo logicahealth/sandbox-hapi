@@ -1,3 +1,23 @@
+/**
+ *  * #%L
+ *  *
+ *  * %%
+ *  * Copyright (C) 2014-2019 Healthcare Services Platform Consortium
+ *  * %%
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *      http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  * #L%
+ */
+
 package org.hspconsortium.platform.api.controller;
 
 import org.codehaus.plexus.util.IOUtil;
@@ -37,8 +57,8 @@ public class ProfileController {
         return profileService.getAllUploadedProfiles(request, sandboxId);
     }
 
-    @PostMapping(value = "/uploadProfile")
-    public HashMap<List<String>, List<String>> uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, String sandboxId) throws IOException {
+    @PostMapping(value = "/uploadProfile", params = {"sandboxId", "apiEndpoint"})
+    public HashMap<List<String>, List<String>> uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, @RequestParam(value = "sandboxId") String sandboxId, @RequestParam(value = "apiEndpoint") String apiEndpoint) throws IOException {
         if(!sandboxService.verifyUser(request, sandboxId)) {
             throw new UnauthorizedUserException("User not authorized");
         }
@@ -51,7 +71,7 @@ public class ProfileController {
 
         try {
             ZipFile zipFile = new ZipFile(zip);
-            list = profileService.saveZipFile(zipFile, request, sandboxId);
+            list = profileService.saveZipFile(zipFile, request, sandboxId, apiEndpoint);
         } catch (ZipException e) {
             e.printStackTrace();
         }

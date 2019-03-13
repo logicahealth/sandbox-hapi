@@ -5,7 +5,7 @@ hspc:
       oauth2:
         clientSecret: secret
       fhir:
-        db:
+        datasource:
           host: sandboxdb.hspconsortium.org
           username: system
           password: ENC(PN5w0Ds+k3I2vOVS/dZM/N9HaIFZgGIX)

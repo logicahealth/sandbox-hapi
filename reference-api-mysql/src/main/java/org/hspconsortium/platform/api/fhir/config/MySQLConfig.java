@@ -1,6 +1,27 @@
+/**
+ *  * #%L
+ *  *
+ *  * %%
+ *  * Copyright (C) 2014-2019 Healthcare Services Platform Consortium
+ *  * %%
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *      http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  * #L%
+ */
+
 package org.hspconsortium.platform.api.fhir.config;
 
 import ca.uhn.fhir.jpa.dao.DaoConfig;
+import ca.uhn.fhir.jpa.model.entity.ModelConfig;
 import ca.uhn.fhir.jpa.search.LuceneSearchMappingFactory;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
@@ -9,7 +30,7 @@ import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.lucene.util.Version;
-import org.flywaydb.core.Flyway;
+//import org.flywaydb.core.Flyway;
 import org.hibernate.cfg.Environment;
 import org.hspconsortium.platform.api.fhir.DatabaseProperties;
 import org.hspconsortium.platform.api.fhir.util.TAR;
@@ -20,10 +41,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceBuilder;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.*;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -65,8 +86,8 @@ public class MySQLConfig {
     @Value("${hspc.platform.api.fhir.allowExternalReferences:true}")
     private boolean allowExternalReferences;
 
-    @Value("${flyway.locations}")
-    private String flywayLocations;
+//    @Value("${flyway.locations}")
+//    private String flywayLocations;
 
     @Autowired
     private JpaProperties jpaProperties;
@@ -93,14 +114,19 @@ public class MySQLConfig {
         return retVal;
     }
 
+    @Bean
+    public ModelConfig modelConfig() {
+        return daoConfig().getModelConfig();
+    }
+
     @Primary
     @Bean//(name = {"dataSource"})
     @Profile("default")
     public DataSource dataSource() {
-        DataSourceProperties db = getDatabaseProperties().getDb();
+        DataSourceProperties db = getDatabaseProperties().getDataSource();
         DataSourceBuilder factory = DataSourceBuilder
                 .create(db.getClassLoader())
-                .driverClassName(db.getDriverClassName())
+//                .driverClassName(db.getDriverClassName())
                 .username(db.getUsername())
                 .password(db.getPassword())
                 .url(db.getUrl());
@@ -113,10 +139,10 @@ public class MySQLConfig {
 
         // migrate the database manually because of a circular bean problem
         // with multi-tenant datasources
-        Flyway flyway = new Flyway();
-        flyway.setLocations(flywayLocations);
-        flyway.setDataSource(dataSource);
-        flyway.migrate();
+//        Flyway flyway = new Flyway();
+//        flyway.setLocations(flywayLocations);
+//        flyway.setDataSource(dataSource);
+//        flyway.migrate();
 
         return dataSource;
     }
@@ -124,7 +150,7 @@ public class MySQLConfig {
     @Bean(name = {"noSchemaDataSource"})
     public DataSource noSchemaDataSource() {
         // create a datasource that doesn't have a schema in the url
-        DataSourceProperties db = getDatabaseProperties().getDb();
+        DataSourceProperties db = getDatabaseProperties().getDataSource();
 
         String urlNoSchema = null;
         for (String schema : db.getSchema()) {
@@ -140,7 +166,7 @@ public class MySQLConfig {
 
         DataSourceBuilder factory = DataSourceBuilder
                 .create(db.getClassLoader())
-                .driverClassName(db.getDriverClassName())
+//                .driverClassName(db.getDriverClassName())
                 .username(db.getUsername())
                 .password(db.getPassword())
                 .url(urlNoSchema);
@@ -150,7 +176,6 @@ public class MySQLConfig {
             ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getPoolProperties().setTestOnBorrow(true);
             ((org.apache.tomcat.jdbc.pool.DataSource) dataSource).getPoolProperties().setValidationQuery("SELECT 1");
         }
-
         // try it out
         try {
             Connection connection = dataSource.getConnection();
@@ -166,7 +191,8 @@ public class MySQLConfig {
     public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource) {
         LocalContainerEntityManagerFactoryBean retVal = new LocalContainerEntityManagerFactoryBean();
         retVal.setDataSource(dataSource);
-        retVal.setPackagesToScan("ca.uhn.fhir.jpa.entity");
+        String[] packageLocations = {"ca.uhn.fhir.jpa.entity", "ca.uhn.fhir.jpa.model.entity"};
+        retVal.setPackagesToScan(packageLocations);
         retVal.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
         retVal.setJpaProperties(jpaProperties(dataSource));
         retVal.afterPropertiesSet();
