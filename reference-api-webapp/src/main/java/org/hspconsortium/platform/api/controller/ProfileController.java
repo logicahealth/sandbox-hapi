@@ -59,66 +59,68 @@ public class ProfileController {
         return profileService.getAllUploadedProfiles(request, sandboxId);
     }
 
-    @PostMapping(value = "/uploadProfile", params = {"sandboxId", "apiEndpoint"})
-    public HashMap<List<String>, List<String>> uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, @RequestParam(value = "sandboxId") String sandboxId, @RequestParam(value = "apiEndpoint") String apiEndpoint) throws IOException {
-        if(!sandboxService.verifyUser(request, sandboxId)) {
-            throw new UnauthorizedUserException("User not authorized");
-        }
-        HashMap<List<String>, List<String>> list = new HashMap<>();
-        // Save file to temp
-        File zip = File.createTempFile(UUID.randomUUID().toString(), "temp");
-        FileOutputStream o = new FileOutputStream(zip);
-        IOUtil.copy(file.getInputStream(), o);
-        o.close();
-
-        try {
-            ZipFile zipFile = new ZipFile(zip);
-            list = profileService.saveZipFile(zipFile, request, sandboxId, apiEndpoint);
-        } catch (ZipException e) {
-            e.printStackTrace();
-        }
-        finally {
-            zip.delete();
-        }
-        return list;
-    }
-}
+//    Last working code
 
 //    @PostMapping(value = "/uploadProfile", params = {"sandboxId", "apiEndpoint"})
-//    public ResponseEntity<Object> uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, @RequestParam(value = "sandboxId") String sandboxId, @RequestParam(value = "apiEndpoint") String apiEndpoint) throws IOException {
-//        String fileId = UUID.randomUUID().toString();
-//        HashMap<String, Boolean> setTask = new HashMap<>();
+//    public HashMap<List<String>, List<String>> uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, @RequestParam(value = "sandboxId") String sandboxId, @RequestParam(value = "apiEndpoint") String apiEndpoint) throws IOException {
 //        if(!sandboxService.verifyUser(request, sandboxId)) {
 //            throw new UnauthorizedUserException("User not authorized");
 //        }
-//        if (!file.getOriginalFilename().isEmpty()) {
-////            setTask.put(fileId, true);
-////            profileService.setTaskRunning(setTask);
-//            File zip = File.createTempFile(UUID.randomUUID().toString(), "temp");
-//            FileOutputStream o = new FileOutputStream(zip);
-//            IOUtil.copy(file.getInputStream(), o);
-//            o.close();
+//        HashMap<List<String>, List<String>> list = new HashMap<>();
+//        // Save file to temp
+//        File zip = File.createTempFile(UUID.randomUUID().toString(), "temp");
+//        FileOutputStream o = new FileOutputStream(zip);
+//        IOUtil.copy(file.getInputStream(), o);
+//        o.close();
 //
-//            try {
-//                ZipFile zipFile = new ZipFile(zip);
-//                profileService.saveZipFile(zipFile, request, sandboxId, apiEndpoint, fileId);
-//            } catch (ZipException e) {
-//                e.printStackTrace();
-//            }
-//            finally {
-//                zip.delete();
-//            }
-//        } else {
-//            return new ResponseEntity<>("Invalid File", HttpStatus.BAD_REQUEST);
+//        try {
+//            ZipFile zipFile = new ZipFile(zip);
+//            list = profileService.saveZipFile(zipFile, request, sandboxId, apiEndpoint);
+//        } catch (ZipException e) {
+//            e.printStackTrace();
 //        }
-//
-//        return new ResponseEntity<>(fileId, HttpStatus.OK);
+//        finally {
+//            zip.delete();
+//        }
+//        return list;
 //    }
-//
-//    @RequestMapping(value = "/profileUploadStatus", params = {"fileId"})
-//    @ResponseBody
-//    public HashMap<String, Boolean> fetchStatus(@RequestParam(value = "fileId") String fileId) {
-//        return profileService.getTaskRunning();
-//    }
+
+    @PostMapping(value = "/uploadProfile", params = {"sandboxId", "apiEndpoint"})
+    public ResponseEntity<Object> uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, @RequestParam(value = "sandboxId") String sandboxId, @RequestParam(value = "apiEndpoint") String apiEndpoint) throws IOException {
+        String fileId = UUID.randomUUID().toString();
+        HashMap<String, Boolean> setTask = new HashMap<>();
+        if(!sandboxService.verifyUser(request, sandboxId)) {
+            throw new UnauthorizedUserException("User not authorized");
+        }
+        if (!file.getOriginalFilename().isEmpty()) {
+//            setTask.put(fileId, true);
+//            profileService.setTaskRunning(setTask);
+            File zip = File.createTempFile(UUID.randomUUID().toString(), "temp");
+            FileOutputStream o = new FileOutputStream(zip);
+            IOUtil.copy(file.getInputStream(), o);
+            o.close();
+
+            try {
+                ZipFile zipFile = new ZipFile(zip);
+                profileService.saveZipFile(zipFile, request, sandboxId, apiEndpoint, fileId);
+            } catch (ZipException e) {
+                e.printStackTrace();
+            }
+            finally {
+                zip.delete();
+            }
+        } else {
+            return new ResponseEntity<>("Invalid File", HttpStatus.BAD_REQUEST);
+        }
+
+        return new ResponseEntity<>(fileId, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/profileUploadStatus", params = {"fileId"})
+    @ResponseBody
+    public HashMap<String, Boolean> fetchStatus(@RequestParam(value = "fileId") String fileId) {
+        return profileService.getTaskRunning();
+    }
+}
 
 
