@@ -1,5 +1,5 @@
 FROM openjdk:8-jdk-alpine
-ADD hspc-reference-api-webapp*.jar hspc-reference-api-webapp-2.4.1-SNAPSHOT.jar
+ADD hspc-reference-api-webapp*.jar hspc-reference-api-webapp-2.4.1.jar
 ADD 340-indexing.sh 340-indexing.sh
 ADD run-fhir-server.sh run-fhir-server.sh
 RUN chmod 755 340-indexing.sh
