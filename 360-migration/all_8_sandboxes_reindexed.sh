@@ -50,6 +50,9 @@ do
     SQL_STRING="SELECT COUNT(*) FROM $FULL_NAME.HFJ_RESOURCE;"
 #    if [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 --database=$FULL_NAME -Bs)" != "0" ]]; then
     if [[ $FULL_NAME == "hspc_8_TwoUsers" ]]; then
+        SQL_STRING="UPDATE $FULL_NAME.HFJ_RESOURCE SET SP_INDEX_STATUS = NULL"
+        echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
+
         SQL_STRING="SELECT RES_VERSION FROM $FULL_NAME.HFJ_RESOURCE WHERE RES_ID=1;"
             # Pipe the SQL into mysql
     #        FHIR_VERSION=$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)
@@ -112,7 +115,7 @@ do
 
         echo "Running server on port $PORT."
 
-        echo "curl --header \"Authorization: BEARER ${BEARER_TOKEN}\" \"$FHIR_HOST/$SANDBOX_NAME/data/\$mark-all-resources-for-reindexing\""
+        echo "curl --header \"Authorization: BEARER ${BEARER_TOKEN}\" \"http://localhost:$PORT/$SANDBOX_NAME/data/\$mark-all-resources-for-reindexing\""
         STARTED=0
         until [  $STARTED -eq 1 ]; do
             if [[ "$(curl -X GET --header "Authorization: BEARER $BEARER_TOKEN" "$FHIR_HOST/$SANDBOX_NAME/data/\$mark-all-resources-for-reindexing")" != *"NullPointerException"* ]]; then
