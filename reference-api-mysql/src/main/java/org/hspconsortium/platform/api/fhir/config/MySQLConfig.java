@@ -112,7 +112,7 @@ public class MySQLConfig {
         retVal.setAllowExternalReferences(allowExternalReferences);
         retVal.setReuseCachedSearchResultsForMillis(null);
         // Enable below when HAPI has fixed the issue with ":contains"
-//        retVal.setAllowContainsSearches(true);
+        retVal.setAllowContainsSearches(true);
         return retVal;
     }
 
