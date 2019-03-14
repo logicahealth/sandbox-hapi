@@ -1,5 +1,5 @@
 FROM openjdk:8-jdk-alpine
-ADD hspc-reference-api-webapp-2.4.1-SNAPSHOT.jar hspc-reference-api-webapp-2.4.1-SNAPSHOT.jar
+ADD hspc-reference-api-webapp-2.4.1.jar hspc-reference-api-webapp-2.4.1.jar
 ADD migrate-hapi-370.sh migrate-hapi-370.sh
 ADD all-sandboxes-to-370.sh all-sandboxes-to-370.sh
 ADD run-fhir-server.sh run-fhir-server.sh
