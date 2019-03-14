@@ -7,7 +7,7 @@
  =========|_|==============|___/=/_/_/_/
  :: Spring Boot ::        (v2.1.1.RELEASE)
 
-2019-03-05 12:02:16.013 [main] INFO  o.h.p.a.HSPCReferenceApiMultitenantApplication [StartupInfoLogger.java:50] Starting HSPCReferenceApiMultitenantApplication v2.4.0-SNAPSHOT on Jacobs-MacBook-Pro.local with PID 14764 (/Users/jacobcrump/HSPC_projects/reference-api/360-migration/370-migration/hspc-reference-api-webapp-2.4.0-SNAPSHOT.jar started by jacobcrump in /Users/jacobcrump/HSPC_projects/reference-api/360-migration/370-migration)
+2019-03-05 12:02:16.013 [main] INFO  o.h.p.a.HSPCReferenceApiMultitenantApplication [StartupInfoLogger.java:50] Starting HSPCReferenceApiMultitenantApplication v2.4.2-SNAPSHOT on Jacobs-MacBook-Pro.local with PID 14764 (/Users/jacobcrump/HSPC_projects/reference-api/360-migration/370-migration/hspc-reference-api-webapp-2.4.2-SNAPSHOT.jar started by jacobcrump in /Users/jacobcrump/HSPC_projects/reference-api/360-migration/370-migration)
 2019-03-05 12:02:16.017 [main] INFO  o.h.p.a.HSPCReferenceApiMultitenantApplication [SpringApplication.java:679] The following profiles are active: stu3,multitenant
 2019-03-05 12:02:18.023 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [RepositoryConfigurationDelegate.java:126] Bootstrapping Spring Data repositories in DEFAULT mode.
 2019-03-05 12:02:18.306 [main] INFO  o.s.d.r.c.RepositoryConfigurationDelegate [RepositoryConfigurationDelegate.java:182] Finished Spring Data repository scanning in 273ms. Found 32 repository interfaces.
