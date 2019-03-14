@@ -1,5 +1,5 @@
 FROM openjdk:8-jdk-alpine
-ADD hspc-reference-api-webapp*.jar hspc-reference-api-webapp-2.4.2.jar
+ADD hspc-reference-api-webapp*.jar hspc-reference-api-webapp-2.4.3-SNAPSHOT.jar
 ADD all_8_sandboxes_reindexed.sh all_8_sandboxes_reindexed.sh
 ADD run-fhir-server.sh run-fhir-server.sh
 RUN chmod 755 all_8_sandboxes_reindexed.sh
