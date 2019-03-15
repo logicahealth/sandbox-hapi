@@ -77,7 +77,7 @@ public class HSPCReferenceApiMultitenantApplication extends SpringBootServletIni
     }
 
     @Bean
-    public TaskExecutor threadPoolTaskExecutor() {
+    public Executor threadPoolTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 //        TODO: Check on setting these values
         executor.setCorePoolSize(100);
