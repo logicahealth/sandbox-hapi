@@ -30,6 +30,7 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ConcurrentTaskScheduler;
 import org.springframework.scheduling.concurrent.ScheduledExecutorFactoryBean;
@@ -76,7 +77,7 @@ public class HSPCReferenceApiMultitenantApplication extends SpringBootServletIni
     }
 
     @Bean
-    public Executor asyncExecutor() {
+    public Executor threadPoolTaskExecutor() {
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
 //        TODO: Check on setting these values
         executor.setCorePoolSize(100);
@@ -85,7 +86,4 @@ public class HSPCReferenceApiMultitenantApplication extends SpringBootServletIni
         executor.initialize();
         return executor;
     }
-
-
-
 }
