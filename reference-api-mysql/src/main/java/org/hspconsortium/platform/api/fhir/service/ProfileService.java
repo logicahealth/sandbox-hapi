@@ -20,15 +20,14 @@
 
 package org.hspconsortium.platform.api.fhir.service;
 
-import org.json.simple.JSONObject;
+import org.hspconsortium.platform.api.fhir.model.ProfileTask;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.zip.ZipFile;
 
 public interface ProfileService {
     void saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId, String apiEndpoint, String fileId) throws IOException;
-    HashMap<String, List<JSONObject>> getAllUploadedProfiles(HttpServletRequest request, String sandboxId);
-    JSONObject getTaskRunning(String fileId);
+    ProfileTask getTaskRunning(String id);
+    HashMap<String, ProfileTask> getIdProfileTask();
 }

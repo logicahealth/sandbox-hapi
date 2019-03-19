@@ -21,9 +21,9 @@
 package org.hspconsortium.platform.api.controller;
 
 import org.codehaus.plexus.util.IOUtil;
+import org.hspconsortium.platform.api.fhir.model.ProfileTask;
 import org.hspconsortium.platform.api.fhir.service.ProfileService;
 import org.hspconsortium.platform.api.fhir.service.SandboxService;
-import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,8 +34,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -49,18 +47,9 @@ public class ProfileController {
     @Autowired
     private ProfileService profileService;
 
-    @ResponseBody
-    @GetMapping(value = "/getAllProfiles", params = {"sandboxId"})
-    public HashMap<String, List<JSONObject>> getAllUploadedProfiles(HttpServletRequest request, @RequestParam(value = "sandboxId") String sandboxId) {
-        if(!sandboxService.verifyUser(request, sandboxId)) {
-            throw new UnauthorizedUserException("User not authorized");
-        }
-        return profileService.getAllUploadedProfiles(request, sandboxId);
-    }
-
     @PostMapping(value = "/uploadProfile", params = {"sandboxId", "apiEndpoint"})
     public ResponseEntity<Object> uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, @RequestParam(value = "sandboxId") String sandboxId, @RequestParam(value = "apiEndpoint") String apiEndpoint) throws IOException {
-        String fileId = UUID.randomUUID().toString();
+        String id = UUID.randomUUID().toString();
         if(!sandboxService.verifyUser(request, sandboxId)) {
             throw new UnauthorizedUserException("User not authorized");
         }
@@ -71,7 +60,7 @@ public class ProfileController {
             o.close();
             try {
                 ZipFile zipFile = new ZipFile(zip);
-                profileService.saveZipFile(zipFile, request, sandboxId, apiEndpoint, fileId);
+                profileService.saveZipFile(zipFile, request, sandboxId, apiEndpoint, id);
             } catch (ZipException e) {
                 e.printStackTrace();
             }
@@ -81,12 +70,17 @@ public class ProfileController {
         } else {
             return new ResponseEntity<>("Invalid File", HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(fileId, HttpStatus.OK);
+        return new ResponseEntity<>(id, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/profileUploadStatus", params = {"fileId"})
+    @RequestMapping(value = "/profileUploadStatus", params = {"id"})
     @ResponseBody
-    public JSONObject fetchStatus(@RequestParam(value = "fileId") String fileId) {
-        return profileService.getTaskRunning(fileId);
+    public ProfileTask fetchStatus(@RequestParam(value = "id") String id) {
+        ProfileTask profileTask = profileService.getTaskRunning(id);
+        ProfileTask profileTaskCopy = profileTask;
+        if (!profileTask.getStatus()){
+            profileService.getIdProfileTask().remove(id);
+        }
+        return profileTaskCopy;
     }
 }

@@ -20,8 +20,8 @@
 
 package org.hspconsortium.platform.api.service;
 
+import org.hspconsortium.platform.api.fhir.model.ProfileTask;
 import org.hspconsortium.platform.api.fhir.service.ProfileService;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.slf4j.Logger;
@@ -30,7 +30,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
@@ -54,93 +53,26 @@ public class ProfileServiceImpl implements ProfileService {
     @Value("${hspc.platform.api.fhir.profileResources}")
     private String[] profileResources;
 
-    private JSONObject taskRunning = new JSONObject();
+    private HashMap<String, ProfileTask> idProfileTask = new HashMap<>();
+    private ProfileTask profileTask;
 
-    public JSONObject getTaskRunning(String fileId) {
-        if (taskRunning.get("fileId").equals(fileId)) {
-            return taskRunning;
-        }
-        return null;
+    public ProfileTask getTaskRunning(String id) {
+        return idProfileTask.get(id);
     }
 
-    public HashMap<String, List<JSONObject>> getAllUploadedProfiles(HttpServletRequest request, String sandboxId) {
-        String authToken = request.getHeader("Authorization").substring(7);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "BEARER " + authToken);
-        HttpEntity entity = new HttpEntity(headers);
-
-        HashMap<String, List<JSONObject>> urlAndResources = new HashMap<>();
-
-        String url = "";
-        String completeUrl = "";
-        String profileUrl = "";
-        String currentUrl = "";
-
-        JSONParser jsonParser = new JSONParser();
-        List<JSONObject> urtList = new ArrayList<>();
-        Boolean next = true;
-
-        for (String resourceType : profileResources) {
-            url = localhost + "/" + sandboxId + "/data/" + resourceType + "?_count=50";
-            next = true;
-            while (next) {
-                ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-                if (response.hasBody()) {
-                    String jsonString = response.getBody();
-                    try {
-                        JSONObject jsonBundle = (JSONObject) jsonParser.parse(jsonString);
-                        JSONArray linkArray = (JSONArray) jsonBundle.get("link");
-                        next = false;
-                        if (linkArray.size() >= 2) {
-                            for (int i = 0; i < linkArray.size(); i++) {
-                                if (((JSONObject) linkArray.get(i)).get("relation").toString().equals("next")) {
-                                    next = true;
-                                    url = ((JSONObject) linkArray.get(i)).get("url").toString();
-                                }
-                            }
-                        }
-
-                        JSONArray entry = (JSONArray) jsonBundle.get("entry");
-                        for (int i = 0; i < entry.size(); i++) {
-                            JSONObject resource = (JSONObject) ((JSONObject) entry.get(i)).get("resource");
-                            completeUrl = resource.get("url").toString();
-                            if (completeUrl.contains(resourceType)) {
-                                profileUrl = completeUrl.substring(0, completeUrl.indexOf(resourceType));
-                            } else {
-                                profileUrl = completeUrl;
-                            }
-                            if (currentUrl.isEmpty()) {
-                                currentUrl = profileUrl;
-                                urtList.add(resource);
-                            } else if (profileUrl.equals(currentUrl)) {
-                                urtList.add(resource);
-                            } else {
-                                urlAndResources.put(currentUrl, urtList);
-                                currentUrl = profileUrl;
-                                urtList.clear();
-                                urtList.add(resource);
-                                urlAndResources.put(currentUrl, urtList);
-                                //TODO: not adding SD and another CS if the current url has changed.
-                                // it only added one resource to the QICore, where it should be adding 3
-                            }
-                        }
-                    } catch (Exception e) {
-                        logger.error(e.getMessage());
-                    }
-                }
-            }
-        }
-        return urlAndResources;
+    public HashMap<String, ProfileTask> getIdProfileTask() {
+        return idProfileTask;
     }
 
     @Async
-    public void saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId, String apiEndpoint, String fileId) throws IOException {
-        JSONArray resourceSavedJSONArray = new JSONArray();
-        JSONArray resourceNotSavedJSONArray = new JSONArray();
+    public void saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId, String apiEndpoint, String id) throws IOException {
+        List<String> resourceSaved = new ArrayList<>();
+        List<String> resourceNotSaved = new ArrayList<>();
         int totalCount = 0;
         int resourceSavedCount = 0;
         int resourceNotSavedCount = 0;
-        addToTaskRunning(fileId, "true", resourceSavedJSONArray, resourceNotSavedJSONArray, totalCount, resourceSavedCount, resourceNotSavedCount);
+        addToProfileTask(id, true, resourceSaved, resourceNotSaved, totalCount, resourceSavedCount, resourceNotSavedCount);
+        idProfileTask.put(id, profileTask);
         String authToken = request.getHeader("Authorization").substring(7);
         Enumeration zipFileEntries = zipFile.entries();
         while(zipFileEntries.hasMoreElements()) {
@@ -178,15 +110,17 @@ public class ProfileServiceImpl implements ProfileService {
                         HttpEntity entity = new HttpEntity(jsonBody, headers);
                         try {
                             restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
-                            resourceSavedJSONArray.add(resourceType + " - " + resourceId);
+                            resourceSaved.add(resourceType + " - " + resourceId);
                             totalCount++;
                             resourceSavedCount++;
-                            addToTaskRunning(fileId, "true", resourceSavedJSONArray, resourceNotSavedJSONArray, totalCount, resourceSavedCount, resourceNotSavedCount);
+                            addToProfileTask(id, true, resourceSaved, resourceNotSaved, totalCount, resourceSavedCount, resourceNotSavedCount);
+                            idProfileTask.put(id, profileTask);
                         } catch (HttpServerErrorException | HttpClientErrorException e) {
-                            resourceNotSavedJSONArray.add(resourceType + " - " + resourceId + " - " + e.getMessage());
+                            resourceNotSaved.add(resourceType + " - " + resourceId + " - " + e.getMessage());
                             totalCount++;
                             resourceNotSavedCount++;
-                            addToTaskRunning(fileId, "true", resourceSavedJSONArray, resourceNotSavedJSONArray, totalCount, resourceSavedCount, resourceNotSavedCount);
+                            addToProfileTask(id, true, resourceSaved, resourceNotSaved, totalCount, resourceSavedCount, resourceNotSavedCount);
+                            idProfileTask.put(id, profileTask);
                         }
                     }
                 } catch (Exception e) {
@@ -194,20 +128,22 @@ public class ProfileServiceImpl implements ProfileService {
                 }
             }
         }
-        addToTaskRunning(fileId, "false", resourceSavedJSONArray, resourceNotSavedJSONArray, totalCount, resourceSavedCount, resourceNotSavedCount);
+        addToProfileTask(id, false, resourceSaved, resourceNotSaved, totalCount, resourceSavedCount, resourceNotSavedCount);
+        idProfileTask.put(id, profileTask);
     }
 
-    public JSONObject addToTaskRunning(String fileId, String runStatus, JSONArray resourceSavedJSONArray,
-                                       JSONArray resourceNotSavedJSONArray, int totalCount, int resourceSavedCount,
-                                       int resourceNotSavedCount){
-        taskRunning.put("fileId", fileId);
-        taskRunning.put("runStatus", runStatus);
-        taskRunning.put("resourceSaved", resourceSavedJSONArray);
-        taskRunning.put("resourceNotSaved", resourceNotSavedJSONArray);
-        taskRunning.put("totalResourceProcessedCount", totalCount);
-        taskRunning.put("resourceSavedCount", resourceSavedCount);
-        taskRunning.put("resourceNotSavedCount", resourceNotSavedCount);
-        return taskRunning;
+    public ProfileTask addToProfileTask(String id, Boolean runStatus, List<String> resourceSaved,
+                                        List<String> resourceNotSaved, int totalCount, int resourceSavedCount,
+                                        int resourceNotSavedCount){
+        profileTask = new ProfileTask();
+        profileTask.setId(id);
+        profileTask.setStatus(runStatus);
+        profileTask.setResourceSaved(resourceSaved);
+        profileTask.setResourceNotSaved(resourceNotSaved);
+        profileTask.setTotalCount(totalCount);
+        profileTask.setResourceSavedCount(resourceSavedCount);
+        profileTask.setResourceNotSavedCount(resourceNotSavedCount);
+        return profileTask;
     }
 }
 
