@@ -21,6 +21,8 @@
 package org.hspconsortium.platform.api.fhir.service;
 
 import org.hspconsortium.platform.api.fhir.model.ProfileTask;
+import org.springframework.web.multipart.MultipartFile;
+
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.HashMap;
@@ -30,4 +32,5 @@ public interface ProfileService {
     void saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId, String apiEndpoint, String fileId) throws IOException;
     ProfileTask getTaskRunning(String id);
     HashMap<String, ProfileTask> getIdProfileTask();
+    void saveTGZfile (MultipartFile file, HttpServletRequest request, String sandboxId, String apiEndpoint, String fileId) throws IOException;
 }
