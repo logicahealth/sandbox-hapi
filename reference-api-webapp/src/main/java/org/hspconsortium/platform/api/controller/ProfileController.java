@@ -20,6 +20,7 @@
 
 package org.hspconsortium.platform.api.controller;
 
+import org.apache.commons.io.FilenameUtils;
 import org.codehaus.plexus.util.IOUtil;
 import org.hspconsortium.platform.api.fhir.model.ProfileTask;
 import org.hspconsortium.platform.api.fhir.service.ProfileService;
@@ -50,14 +51,16 @@ public class ProfileController {
     @PostMapping(value = "/uploadProfile", params = {"sandboxId", "apiEndpoint"})
     public ResponseEntity<Object> uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, @RequestParam(value = "sandboxId") String sandboxId, @RequestParam(value = "apiEndpoint") String apiEndpoint) throws IOException {
         String id = UUID.randomUUID().toString();
+        String fileName = file.getOriginalFilename();
+        String fileExtension = FilenameUtils.getExtension(fileName);
         if(!sandboxService.verifyUser(request, sandboxId)) {
             throw new UnauthorizedUserException("User not authorized");
         }
-        if (!file.getOriginalFilename().isEmpty()) {
-            File zip = File.createTempFile(UUID.randomUUID().toString(), "temp");
-            FileOutputStream o = new FileOutputStream(zip);
-            IOUtil.copy(file.getInputStream(), o);
-            o.close();
+        if (!fileName.isEmpty() & !fileExtension.equals("tgz")) {
+            File zip = File.createTempFile(id, "temp");
+            FileOutputStream outputStream = new FileOutputStream(zip);
+            IOUtil.copy(file.getInputStream(), outputStream);
+            outputStream.close();
             try {
                 ZipFile zipFile = new ZipFile(zip);
                 profileService.saveZipFile(zipFile, request, sandboxId, apiEndpoint, id);
@@ -67,6 +70,8 @@ public class ProfileController {
             finally {
                 zip.delete();
             }
+        } else if (!fileName.isEmpty() & fileExtension.equals("tgz")) {
+            profileService.saveTGZfile(file, request, sandboxId, apiEndpoint, id);
         } else {
             return new ResponseEntity<>("Invalid File", HttpStatus.BAD_REQUEST);
         }
