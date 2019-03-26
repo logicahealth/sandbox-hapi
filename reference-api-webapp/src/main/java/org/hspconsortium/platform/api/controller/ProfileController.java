@@ -25,6 +25,7 @@ import org.codehaus.plexus.util.IOUtil;
 import org.hspconsortium.platform.api.fhir.model.ProfileTask;
 import org.hspconsortium.platform.api.fhir.service.ProfileService;
 import org.hspconsortium.platform.api.fhir.service.SandboxService;
+import org.json.simple.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -49,10 +50,14 @@ public class ProfileController {
     private ProfileService profileService;
 
     @PostMapping(value = "/uploadProfile", params = {"sandboxId", "apiEndpoint"})
-    public ResponseEntity<Object> uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request, @RequestParam(value = "sandboxId") String sandboxId, @RequestParam(value = "apiEndpoint") String apiEndpoint) throws IOException {
+    public JSONObject uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request,
+                                     @RequestParam(value = "sandboxId") String sandboxId,
+                                     @RequestParam(value = "apiEndpoint") String apiEndpoint) throws IOException {
+
         String id = UUID.randomUUID().toString();
         String fileName = file.getOriginalFilename();
         String fileExtension = FilenameUtils.getExtension(fileName);
+        JSONObject statusReturned = new JSONObject();
         if(!sandboxService.verifyUser(request, sandboxId)) {
             throw new UnauthorizedUserException("User not authorized");
         }
@@ -73,19 +78,31 @@ public class ProfileController {
         } else if (!fileName.isEmpty() & fileExtension.equals("tgz")) {
             profileService.saveTGZfile(file, request, sandboxId, apiEndpoint, id);
         } else {
-            return new ResponseEntity<>("Invalid File", HttpStatus.BAD_REQUEST);
+            statusReturned.put("status", false);
+            statusReturned.put("id", id);
+            statusReturned.put("responseEntity", HttpStatus.BAD_REQUEST);
+            return statusReturned;
         }
-        return new ResponseEntity<>(id, HttpStatus.OK);
+        statusReturned.put("status", true);
+        statusReturned.put("id", id);
+        statusReturned.put("responseEntity", HttpStatus.OK);
+        return statusReturned;
     }
 
     @RequestMapping(value = "/profileUploadStatus", params = {"id"})
     @ResponseBody
     public ProfileTask fetchStatus(@RequestParam(value = "id") String id) {
         ProfileTask profileTask = profileService.getTaskRunning(id);
-        ProfileTask profileTaskCopy = profileTask;
-        if (!profileTask.getStatus()){
-            profileService.getIdProfileTask().remove(id);
+        if (profileTask != null) {
+            ProfileTask profileTaskCopy = profileTask;
+            if (!profileTask.getStatus()){
+                profileService.getIdProfileTask().remove(id);
+            }
+            return profileTaskCopy;
+        } else {
+            ProfileTask profileTaskNull = new ProfileTask();
+            profileTaskNull.setId(id);
+            return profileTaskNull;
         }
-        return profileTaskCopy;
     }
 }
