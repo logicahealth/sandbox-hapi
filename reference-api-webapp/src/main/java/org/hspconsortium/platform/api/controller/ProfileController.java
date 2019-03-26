@@ -101,7 +101,6 @@ public class ProfileController {
             return profileTaskCopy;
         } else {
             ProfileTask profileTaskNull = new ProfileTask();
-            profileTaskNull.setId(id);
             return profileTaskNull;
         }
     }
