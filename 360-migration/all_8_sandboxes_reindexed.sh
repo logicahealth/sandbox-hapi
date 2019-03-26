@@ -48,8 +48,8 @@ array=($(echo "$DBS" | tr ',' '\n'))
 for FULL_NAME in "${array[@]}"
 do
     SQL_STRING="SELECT COUNT(*) FROM $FULL_NAME.HFJ_RESOURCE;"
-#    if [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 --database=$FULL_NAME -Bs)" != "0" ]]; then
-    if [[ $FULL_NAME == "hspc_8_TwoUsers" ]]; then
+    if [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 --database=$FULL_NAME -Bs)" != "0" ]]; then
+#    if [[ $FULL_NAME == "hspc_8_TwoUsers" ]]; then
         SQL_STRING="UPDATE $FULL_NAME.HFJ_RESOURCE SET SP_INDEX_STATUS = NULL"
         echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
 
@@ -125,7 +125,7 @@ do
             sleep 1
         done
         FINISHED=0
-       SQL_STRING="SELECT COUNT(*) FROM $FULL_NAME.HFJ_RES_REINDEX_JOB;"
+       SQL_STRING="SELECT COUNT(*) FROM $FULL_NAME.HFJ_RESOURCE WHERE SP_INDEX_STATUS IS NULL"
        until [  $FINISHED -eq 1 ]; do
     #            if [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -Bs)" == "0" ]]; then
             if [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 --database=$FULL_NAME -Bs)" == "0" ]]; then
