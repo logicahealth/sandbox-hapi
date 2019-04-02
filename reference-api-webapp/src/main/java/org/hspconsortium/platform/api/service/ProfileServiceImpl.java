@@ -20,38 +20,32 @@
 
 package org.hspconsortium.platform.api.service;
 
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
+import org.apache.commons.io.FilenameUtils;
+import org.hspconsortium.platform.api.fhir.model.ProfileTask;
 import org.hspconsortium.platform.api.fhir.service.ProfileService;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
-
 import javax.servlet.http.HttpServletRequest;
 import java.io.*;
 import java.util.*;
-import java.util.concurrent.Future;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
-
 import org.springframework.web.client.HttpServerErrorException;
 import org.springframework.web.client.RestTemplate;
-
+import org.springframework.web.multipart.MultipartFile;
 
 @Component
 public class ProfileServiceImpl implements ProfileService {
-    private static final Logger logger = LoggerFactory.getLogger(SandboxServiceImpl.class);
-
     private RestTemplate restTemplate = new RestTemplate();
 
     @Value("${server.localhost}")
@@ -60,201 +54,136 @@ public class ProfileServiceImpl implements ProfileService {
     @Value("${hspc.platform.api.fhir.profileResources}")
     private String[] profileResources;
 
-    private HashMap<String, Boolean> taskRunning;
+    private HashMap<String, ProfileTask> idProfileTask = new HashMap<>();
 
-    public HashMap<String, Boolean> getTaskRunning() {
-        return taskRunning;
+    public ProfileTask getTaskRunning(String id) {
+        return idProfileTask.get(id);
     }
 
-    public void setTaskRunning(HashMap<String, Boolean> taskRunning) {
-        this.taskRunning = taskRunning;
+    public HashMap<String, ProfileTask> getIdProfileTask() {
+        return idProfileTask;
     }
 
-    public HashMap<String, List<JSONObject>> getAllUploadedProfiles(HttpServletRequest request, String sandboxId) {
-        String authToken = request.getHeader("Authorization").substring(7);
-        HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", "BEARER " + authToken);
-        HttpEntity entity = new HttpEntity(headers);
-
-        HashMap<String, List<JSONObject>> urlAndResources = new HashMap<>();
-
-        String url = "";
-        String completeUrl = "";
-        String profileUrl = "";
-        String currentUrl = "";
-
-        JSONParser jsonParser = new JSONParser();
-        List<JSONObject> urtList = new ArrayList<>();
-        Boolean next = true;
-
-        for (String resourceType: profileResources) {
-            url = localhost + "/" + sandboxId + "/data/" + resourceType + "?_count=50";
-            next = true;
-            while(next) {
-                ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-                if (response.hasBody()) {
-                    String jsonString = response.getBody();
-                    try {
-                        JSONObject jsonBundle = (JSONObject) jsonParser.parse(jsonString);
-                        JSONArray  linkArray = (JSONArray) jsonBundle.get("link");
-                        next = false;
-                        if (linkArray.size() >= 2) {
-                            for (int i = 0; i < linkArray.size(); i++) {
-                                if (((JSONObject) linkArray.get(i)).get("relation").toString().equals("next")) {
-                                    next = true;
-                                    url = ((JSONObject) linkArray.get(i)).get("url").toString();
-                                }
-                            }
-                        }
-
-                        JSONArray entry = (JSONArray) jsonBundle.get("entry");
-                        for (int i = 0; i < entry.size(); i++) {
-                            JSONObject resource = (JSONObject) ((JSONObject) entry.get(i)).get("resource");
-                            completeUrl = resource.get("url").toString();
-                            if (completeUrl.contains(resourceType)) {
-                                profileUrl = completeUrl.substring(0, completeUrl.indexOf(resourceType));
-                            } else {
-                                profileUrl = completeUrl;
-                            }
-                            if (currentUrl.isEmpty()) {
-                                currentUrl = profileUrl;
-                                urtList.add(resource);
-                            } else if (profileUrl.equals(currentUrl)) {
-                                urtList.add(resource);
-                            } else {
-                                urlAndResources.put(currentUrl, urtList);
-                                currentUrl = profileUrl;
-                                urtList.clear();
-                                urtList.add(resource);
-                                urlAndResources.put(currentUrl, urtList);
-                                //TODO: not adding SD and another CS if the current url has changed.
-                                // it only added one resource to the QICore, where it should be adding 3
-                            }
-                        }
-                    } catch (Exception e) {
-                        logger.error(e.getMessage());
-                    }
-                }
-            }
-        }
-        return urlAndResources;
-    }
-
-    public HashMap<List<String>, List<String>> saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId, String apiEndpoint) throws IOException {
-        HashMap<List<String>, List<String>> successAndFailureList = new HashMap<>();
+    @Async
+    public void saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId, String apiEndpoint, String id) throws IOException {
         String authToken = request.getHeader("Authorization").substring(7);
         List<String> resourceSaved = new ArrayList<>();
         List<String> resourceNotSaved = new ArrayList<>();
+        int totalCount = 0;
+        int resourceSavedCount = 0;
+        int resourceNotSavedCount = 0;
+        ProfileTask profileTask = addToProfileTask(id, true, resourceSaved, resourceNotSaved, totalCount, resourceSavedCount, resourceNotSavedCount );
         Enumeration zipFileEntries = zipFile.entries();
         while(zipFileEntries.hasMoreElements()) {
             ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
             String fileName = entry.getName();
             if (fileName.endsWith(".json")) {
                 InputStream inputStream = zipFile.getInputStream(entry);
-                JSONParser jsonParser = new JSONParser();
-                try {
-                    JSONObject jsonObject = (JSONObject)jsonParser.parse(new InputStreamReader(inputStream, "UTF-8"));
-                    String resourceType = jsonObject.get("resourceType").toString();
-                    if (Arrays.stream(profileResources).anyMatch(resourceType::equals)) {
-                        String resourceId = jsonObject.get("id").toString();
-                        if (resourceType.equals("StructureDefinition")) {
-                            String fhirVersion = jsonObject.get("fhirVersion").toString();
-                            if (apiEndpoint.equals("5") && !fhirVersion.equals("1.0.2")) {
-                                throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (1.0.2). The profile was not saved.");
-                            } else if (apiEndpoint.equals("6") && !fhirVersion.equals("3.0.1")) {
-                                throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.0.1). The profile was not saved.");
-                            } else if (apiEndpoint.equals("7") && !fhirVersion.equals("3.4.0")) {
-                                throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.4.0). The profile was not saved.");
-                            } else if (apiEndpoint.equals("8") && !fhirVersion.equals("1.0.2")) {
-                                throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (1.0.2). The profile was not saved.");
-                            } else if (apiEndpoint.equals("9") && !fhirVersion.equals("3.0.1")) {
-                                throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.0.1). The profile was not saved.");
-                            } else if (apiEndpoint.equals("10") && !fhirVersion.equals("4.0.0")) {
-                                throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (4.0.0). The profile was not saved.");
-                            }
-                        }
-                        String jsonBody = jsonObject.toString();
-                        HttpHeaders headers = new HttpHeaders();
-                        headers.set("Authorization", "BEARER " + authToken);
-                        headers.set("Content-Type", "application/json");
-                        String url = localhost + "/" + sandboxId + "/data/" + resourceType + "/" + resourceId;
-                        HttpEntity entity = new HttpEntity(jsonBody, headers);
-                        try {
-                            restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
-                            resourceSaved.add(resourceType + " - " + resourceId);
-                        } catch (HttpServerErrorException | HttpClientErrorException e) {
-                            resourceNotSaved.add(resourceType + " - " + resourceId + " - " + e.getMessage());
-                        }
-                    }
-                } catch (Exception e) {
-
-                }
+                profileTask = saveProfileResources(authToken, sandboxId, apiEndpoint, id, inputStream, fileName, profileTask);
             }
         }
-        successAndFailureList.put(resourceSaved, resourceNotSaved);
-        return successAndFailureList;
+        profileTask.setStatus(false);
+        idProfileTask.put(id, profileTask);
+    }
+
+    @Async
+    public void saveTGZfile (MultipartFile file, HttpServletRequest request, String sandboxId, String apiEndpoint, String id) throws IOException {
+        String authToken = request.getHeader("Authorization").substring(7);
+        List<String> resourceSaved = new ArrayList<>();
+        List<String> resourceNotSaved = new ArrayList<>();
+        int totalCount = 0;
+        int resourceSavedCount = 0;
+        int resourceNotSavedCount = 0;
+        ProfileTask profileTask = addToProfileTask(id, true, resourceSaved, resourceNotSaved, totalCount, resourceSavedCount, resourceNotSavedCount );
+        InputStream fileInputStream = file.getInputStream();
+        TarArchiveInputStream tarArchiveInputStream = new TarArchiveInputStream(new GzipCompressorInputStream(fileInputStream));
+        TarArchiveEntry entry;
+        while ((entry = tarArchiveInputStream.getNextTarEntry()) != null) {
+            if (entry.isDirectory()) {
+                continue;
+            }
+            String fileName = entry.getName();
+            String fileExtension = FilenameUtils.getExtension(fileName);
+            if (fileExtension.equals("json")) {
+                profileTask = saveProfileResources(authToken, sandboxId, apiEndpoint, id, tarArchiveInputStream, fileName, profileTask);
+            }
+        }
+        tarArchiveInputStream.close();
+        profileTask.setStatus(false);
+        idProfileTask.put(id, profileTask);
+    }
+
+    public ProfileTask addToProfileTask(String id, Boolean runStatus, List<String> resourceSaved,
+                                        List<String> resourceNotSaved, int totalCount, int resourceSavedCount,
+                                        int resourceNotSavedCount){
+        ProfileTask profileTask = new ProfileTask();
+        profileTask.setId(id);
+        profileTask.setStatus(runStatus);
+        profileTask.setResourceSaved(resourceSaved);
+        profileTask.setResourceNotSaved(resourceNotSaved);
+        profileTask.setTotalCount(totalCount);
+        profileTask.setResourceSavedCount(resourceSavedCount);
+        profileTask.setResourceNotSavedCount(resourceNotSavedCount);
+        return profileTask;
+    }
+
+    private ProfileTask saveProfileResources (String authToken, String sandboxId, String apiEndpoint, String id, InputStream inputStream, String fileName, ProfileTask profileTask) {
+        List<String> resourceSaved = profileTask.getResourceSaved();
+        List<String> resourceNotSaved = profileTask.getResourceNotSaved();
+        int totalCount = profileTask.getTotalCount();
+        int resourceSavedCount = profileTask.getResourceSavedCount();
+        int resourceNotSavedCount = profileTask.getResourceNotSavedCount();
+        profileTask = addToProfileTask(id, true, resourceSaved, resourceNotSaved, totalCount, resourceSavedCount, resourceNotSavedCount);
+        idProfileTask.put(id, profileTask);
+        JSONParser jsonParser = new JSONParser();
+        try {
+            JSONObject jsonObject = (JSONObject)jsonParser.parse(new InputStreamReader(inputStream, "UTF-8"));
+            String resourceType = jsonObject.get("resourceType").toString();
+            if (Arrays.stream(profileResources).anyMatch(resourceType::equals)) {
+                String resourceId = jsonObject.get("id").toString();
+                if (resourceType.equals("StructureDefinition")) {
+                    String fhirVersion = jsonObject.get("fhirVersion").toString();
+                    if (apiEndpoint.equals("5") && !fhirVersion.equals("1.0.2")) {
+                        throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (1.0.2). The profile was not saved.");
+                    } else if (apiEndpoint.equals("6") && !fhirVersion.equals("3.0.1")) {
+                        throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.0.1). The profile was not saved.");
+                    } else if (apiEndpoint.equals("7") && !fhirVersion.equals("3.4.0")) {
+                        throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.4.0). The profile was not saved.");
+                    } else if (apiEndpoint.equals("8") && !fhirVersion.equals("1.0.2")) {
+                        throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (1.0.2). The profile was not saved.");
+                    } else if (apiEndpoint.equals("9") && !fhirVersion.equals("3.0.1")) {
+                        throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.0.1). The profile was not saved.");
+                    } else if (apiEndpoint.equals("10") && !fhirVersion.equals("4.0.0")) {
+                        throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (4.0.0). The profile was not saved.");
+                    }
+                }
+                String jsonBody = jsonObject.toString();
+                HttpHeaders headers = new HttpHeaders();
+                headers.set("Authorization", "BEARER " + authToken);
+                headers.set("Content-Type", "application/json");
+                String url = localhost + "/" + sandboxId + "/data/" + resourceType + "/" + resourceId;
+                HttpEntity entity = new HttpEntity(jsonBody, headers);
+                try {
+                    restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
+                    resourceSaved.add(resourceType + " - " + resourceId);
+                    totalCount++;
+                    resourceSavedCount++;
+                    profileTask = addToProfileTask(id, true, resourceSaved, resourceNotSaved, totalCount, resourceSavedCount, resourceNotSavedCount);
+                    idProfileTask.put(id, profileTask);
+                } catch (HttpServerErrorException | HttpClientErrorException e) {
+                    resourceNotSaved.add(resourceType + " - " + resourceId + " - " + e.getMessage());
+                    totalCount++;
+                    resourceNotSavedCount++;
+                    profileTask = addToProfileTask(id, true, resourceSaved, resourceNotSaved, totalCount, resourceSavedCount, resourceNotSavedCount);
+                    idProfileTask.put(id, profileTask);
+                }
+            }
+        } catch (Exception e) {
+
+        }
+        return profileTask;
     }
 }
-
-//    @Async
-//    public Future<HashMap<List<String>, List<String>>> saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId, String apiEndpoint, String fileId) throws IOException {
-//        HashMap<List<String>, List<String>> successAndFailureList = new HashMap<>();
-//        String authToken = request.getHeader("Authorization").substring(7);
-//        List<String> resourceSaved = new ArrayList<>();
-//        List<String> resourceNotSaved = new ArrayList<>();
-//        Enumeration zipFileEntries = zipFile.entries();
-//        while(zipFileEntries.hasMoreElements()) {
-//            taskRunning = new HashMap<>();
-//            taskRunning.put(fileId, true);
-//            ZipEntry entry = (ZipEntry) zipFileEntries.nextElement();
-//            String fileName = entry.getName();
-//            if (fileName.endsWith(".json")) {
-//                InputStream inputStream = zipFile.getInputStream(entry);
-//                JSONParser jsonParser = new JSONParser();
-//                try {
-//                    JSONObject jsonObject = (JSONObject)jsonParser.parse(new InputStreamReader(inputStream, "UTF-8"));
-//                    String resourceType = jsonObject.get("resourceType").toString();
-//                    String resourceName = jsonObject.get("name").toString();
-//                    if (resourceType.equals("StructureDefinition")) {
-//                        String fhirVersion = jsonObject.get("fhirVersion").toString();
-//                        if (apiEndpoint.equals("5") && !fhirVersion.equals("1.0.2")) {
-//                            throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (1.0.2). The profile was not saved.");
-//                        } else if (apiEndpoint.equals("6") && !fhirVersion.equals("3.0.1")) {
-//                            throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.0.1). The profile was not saved.");
-//                        } else if (apiEndpoint.equals("7") && !fhirVersion.equals("3.4.0")) {
-//                            throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.4.0). The profile was not saved.");
-//                        } else if (apiEndpoint.equals("8") && !fhirVersion.equals("1.0.2")) {
-//                            throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (1.0.2). The profile was not saved.");
-//                        } else if (apiEndpoint.equals("9") && !fhirVersion.equals("3.0.1")) {
-//                            throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.0.1). The profile was not saved.");
-//                        } else if (apiEndpoint.equals("10") && !fhirVersion.equals("4.0.0")) {
-//                            throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (4.0.0). The profile was not saved.");
-//                        }
-//                    }
-//                    if (Arrays.stream(profileResources).anyMatch(resourceType::equals)) {
-//                        String jsonBody = jsonObject.toString();
-//                        HttpHeaders headers = new HttpHeaders();
-//                        headers.set("Authorization", "BEARER " + authToken);
-//                        headers.set("Content-Type", "application/json");
-//                        String url = localhost + "/" + sandboxId + "/data/" + resourceType + "/" + jsonObject.get("id").toString();
-//                        HttpEntity entity = new HttpEntity(jsonBody, headers);
-//                        try {
-//                            restTemplate.exchange(url, HttpMethod.PUT, entity, String.class);
-//                            resourceSaved.add(resourceType + " - " + resourceName);
-//                        } catch (HttpServerErrorException | HttpClientErrorException e) {
-//                            resourceNotSaved.add(resourceType + " - " + resourceName);
-//                        }
-//                    }
-//                } catch (ParseException e) {
-//
-//                }
-//            }
-//        }
-//        successAndFailureList.put(resourceSaved, resourceNotSaved);
-//        taskRunning.put(fileId, false);
-//        return new AsyncResult<>(successAndFailureList);
-//    }
-
 
 
 //            if (fileName.endsWith(".xml")) {
