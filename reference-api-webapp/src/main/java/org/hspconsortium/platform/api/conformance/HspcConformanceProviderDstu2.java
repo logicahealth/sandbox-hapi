@@ -27,6 +27,7 @@ import ca.uhn.fhir.model.dstu2.composite.MetaDt;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.model.dstu2.resource.Conformance;
 import ca.uhn.fhir.rest.server.RestfulServer;
+import org.hspconsortium.platform.api.controller.MultitenantHapiFhirController;
 import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryDstu2;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,6 +47,9 @@ public class HspcConformanceProviderDstu2 extends JpaConformanceProviderDstu2 {
     @Override
     public Conformance getServerConformance(HttpServletRequest request) {
         Conformance conformance = super.getServerConformance(request);
-        return this.metadataRepository.addConformance(conformance);
+        if (request.getRequestURI().split("/")[2].equals("data")) { // If someone can think of something better, please implement
+            return this.metadataRepository.addConformance(conformance);
+        }
+        return conformance;
     }
 }

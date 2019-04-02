@@ -49,17 +49,18 @@ while true; do
     array=($(echo "$DBS" | tr ',' '\n'))
 
     # Display your result
-    FULL_NAME="${array[$(( ( RANDOM % ${#array[@]} ) ))]}"
-#    FULL_NAME="hspc_5_SSSTU31108"
+#    FULL_NAME="${array[$(( ( RANDOM % ${#array[@]} ) ))]}"
+    FULL_NAME="hspc_5_stu3"
 
     SANDBOX_NAME=${FULL_NAME:7}
     SQL_STRING="SHOW DATABASES LIKE '$TEMP_SCHEMA$SANDBOX_NAME';"
     if [[ -z "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs)" ]]; then
 
         STARTED=0
-        SQL_STRING="SELECT api_endpoint_index FROM sandman.sandbox WHERE sandbox_id='$SANDBOX_NAME';"
+#        SQL_STRING="SELECT api_endpoint_index FROM sandman.sandbox WHERE sandbox_id='$SANDBOX_NAME';"
         # Pipe the SQL into mysql
         FHIR_VERSION=$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs)
+        FHIR_VERSION='6'
         case "${FHIR_VERSION}" in
             5)
                 FHIR_VERSION="dstu2"
@@ -73,8 +74,8 @@ while true; do
         esac
         if [[ $FHIR_VERSION != "r4" && $FULL_NAME != 'hspc_5_fhirnpi' && $FULL_NAME != 'hspc_5_hspc5' && $FULL_NAME != 'hspc_5_hspc6' && $FULL_NAME != 'hspc_5_hspc7' ]]; then
 
-            echo "USE $FULL_NAME" | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
-            SQL_STRING="UPDATE sandman.sandbox SET expiration_message='For the next several minutes, your sandbox will be undergoing an upgrade. Any changes made to the FHIR data of this sandbox may not be saved while this banner is showing.', expiration_date='2019-04-01' WHERE sandbox_id='$SANDBOX_NAME';"
+#            echo "USE $FULL_NAME" | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
+#            SQL_STRING="UPDATE sandman.sandbox SET expiration_message='For the next several minutes, your sandbox will be undergoing an upgrade. Any changes made to the FHIR data of this sandbox may not be saved while this banner is showing.', expiration_date='2019-04-01' WHERE sandbox_id='$SANDBOX_NAME';"
             echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
             SQL_STRING="DROP DATABASE IF EXISTS $TEMP_SCHEMA$SANDBOX_NAME;"
             echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
@@ -116,7 +117,8 @@ while true; do
             echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
 
             SQL_STRING="SELECT api_endpoint_index FROM sandman.sandbox WHERE sandbox_id='$SANDBOX_NAME';"
-            FHIR_VERSION_NUMBER=$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs)
+#            FHIR_VERSION_NUMBER=$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs)
+FHIR_VERSION_NUMBER='6'
             case "${FHIR_VERSION_NUMBER}" in
             5)
                 FHIR_VERSION_NUMBER="8"
@@ -129,16 +131,13 @@ while true; do
                 ;;
             esac
 
-            SQL_STRING="UPDATE sandman.sandbox SET api_endpoint_index='$FHIR_VERSION_NUMBER' WHERE sandbox_id='$SANDBOX_NAME';"
-            echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
-
+#            SQL_STRING="UPDATE sandman.sandbox SET api_endpoint_index='$FHIR_VERSION_NUMBER' WHERE sandbox_id='$SANDBOX_NAME';"
+#            echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
             SQL_STRING="DROP DATABASE $TEMP_SCHEMA$SANDBOX_NAME;"
             echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
-
-            SQL_STRING="UPDATE sandman.sandbox SET expiration_message=NULL, expiration_date=NULL WHERE sandbox_id='$SANDBOX_NAME';"
-            echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
+#            SQL_STRING="UPDATE sandman.sandbox SET expiration_message=NULL, expiration_date=NULL WHERE sandbox_id='$SANDBOX_NAME';"
+#            echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs
             echo "$SANDBOX_NAME" >> sandboxes_done.txt
-
         fi
     fi
 done
