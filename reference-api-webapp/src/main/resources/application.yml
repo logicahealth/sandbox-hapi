@@ -4,6 +4,8 @@ server:
   tomcat:
     remote_ip_header: x-forwarded-for
     protocol_header: x-forwarded-proto
+    maxswallowsize:
+      inmb: -1
 
 spring:
   application:
@@ -12,6 +14,11 @@ spring:
     active: multitenant,dstu2
   main:
     allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
 
 hibernate:
   search:
@@ -138,3 +145,4 @@ hspc:
         name: ${SANDBOX_NAME:hspc10}
 server:
   port: ${API_PORT:8070}
+
