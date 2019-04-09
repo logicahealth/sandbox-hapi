@@ -187,7 +187,7 @@ public class ProfileServiceImpl implements ProfileService {
                 }
             }
         } catch (ParseException | IOException e) {
-            throw new RuntimeException(e.getMessage());
+
         }
         return profileTask;
     }
