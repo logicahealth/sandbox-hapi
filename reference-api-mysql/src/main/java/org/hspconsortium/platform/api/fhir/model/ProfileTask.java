@@ -25,6 +25,7 @@ import java.util.List;
 public class ProfileTask {
     private String id;
     private Boolean status;
+    private String error;
     private List<String> resourceSaved;
     private List<String> resourceNotSaved;
     private int totalCount;
@@ -41,6 +42,14 @@ public class ProfileTask {
 
     public Boolean getStatus() {
         return status;
+    }
+
+    public String getError() {
+        return error;
+    }
+
+    public void setError(String error) {
+        this.error = error;
     }
 
     public void setStatus(Boolean status) {

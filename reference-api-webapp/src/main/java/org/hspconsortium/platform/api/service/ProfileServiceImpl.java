@@ -28,6 +28,7 @@ import org.hspconsortium.platform.api.fhir.model.ProfileTask;
 import org.hspconsortium.platform.api.fhir.service.ProfileService;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -143,18 +144,25 @@ public class ProfileServiceImpl implements ProfileService {
                 String resourceId = jsonObject.get("id").toString();
                 if (resourceType.equals("StructureDefinition")) {
                     String fhirVersion = jsonObject.get("fhirVersion").toString();
-                    if (apiEndpoint.equals("5") && !fhirVersion.equals("1.0.2")) {
-                        throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (1.0.2). The profile was not saved.");
-                    } else if (apiEndpoint.equals("6") && !fhirVersion.equals("3.0.1")) {
-                        throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.0.1). The profile was not saved.");
-                    } else if (apiEndpoint.equals("7") && !fhirVersion.equals("3.4.0")) {
-                        throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.4.0). The profile was not saved.");
-                    } else if (apiEndpoint.equals("8") && !fhirVersion.equals("1.0.2")) {
-                        throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (1.0.2). The profile was not saved.");
+                    String errorMessage = "";
+                    if (apiEndpoint.equals("8") && !fhirVersion.equals("1.0.2")) {
+                        errorMessage = fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (1.0.2). The profile was not saved.";
+                        profileTask.setError(errorMessage);
+                        profileTask.setStatus(false);
+                        idProfileTask.put(id, profileTask);
+                        throw new IllegalArgumentException(errorMessage);
                     } else if (apiEndpoint.equals("9") && !fhirVersion.equals("3.0.1")) {
-                        throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.0.1). The profile was not saved.");
+                        errorMessage = fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.0.1). The profile was not saved.";
+                        profileTask.setError(errorMessage);
+                        profileTask.setStatus(false);
+                        idProfileTask.put(id, profileTask);
+                        throw new IllegalArgumentException(errorMessage);
                     } else if (apiEndpoint.equals("10") && !fhirVersion.equals("4.0.0")) {
-                        throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (4.0.0). The profile was not saved.");
+                        errorMessage = fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (4.0.0). The profile was not saved.";
+                        profileTask.setError(errorMessage);
+                        profileTask.setStatus(false);
+                        idProfileTask.put(id, profileTask);
+                        throw new IllegalArgumentException(errorMessage);
                     }
                 }
                 String jsonBody = jsonObject.toString();
@@ -178,8 +186,8 @@ public class ProfileServiceImpl implements ProfileService {
                     idProfileTask.put(id, profileTask);
                 }
             }
-        } catch (Exception e) {
-
+        } catch (ParseException | IOException e) {
+            throw new RuntimeException(e.getMessage());
         }
         return profileTask;
     }
