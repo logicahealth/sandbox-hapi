@@ -81,6 +81,9 @@ public class ProfileServiceImpl implements ProfileService {
             if (fileName.endsWith(".json")) {
                 InputStream inputStream = zipFile.getInputStream(entry);
                 profileTask = saveProfileResources(authToken, sandboxId, apiEndpoint, id, inputStream, fileName, profileTask);
+                if (profileTask.getError() != null) {
+                    break;
+                }
             }
         }
         profileTask.setStatus(false);
@@ -107,6 +110,9 @@ public class ProfileServiceImpl implements ProfileService {
             String fileExtension = FilenameUtils.getExtension(fileName);
             if (fileExtension.equals("json")) {
                 profileTask = saveProfileResources(authToken, sandboxId, apiEndpoint, id, tarArchiveInputStream, fileName, profileTask);
+                if (profileTask.getError() != null) {
+                    break;
+                }
             }
         }
         tarArchiveInputStream.close();
@@ -150,19 +156,19 @@ public class ProfileServiceImpl implements ProfileService {
                         profileTask.setError(errorMessage);
                         profileTask.setStatus(false);
                         idProfileTask.put(id, profileTask);
-                        throw new IllegalArgumentException(errorMessage);
+                        return profileTask;
                     } else if (apiEndpoint.equals("9") && !fhirVersion.equals("3.0.1")) {
                         errorMessage = fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.0.1). The profile was not saved.";
                         profileTask.setError(errorMessage);
                         profileTask.setStatus(false);
                         idProfileTask.put(id, profileTask);
-                        throw new IllegalArgumentException(errorMessage);
+                        return profileTask;
                     } else if (apiEndpoint.equals("10") && !fhirVersion.equals("4.0.0")) {
                         errorMessage = fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (4.0.0). The profile was not saved.";
                         profileTask.setError(errorMessage);
                         profileTask.setStatus(false);
                         idProfileTask.put(id, profileTask);
-                        throw new IllegalArgumentException(errorMessage);
+                        return profileTask;
                     }
                 }
                 String jsonBody = jsonObject.toString();
@@ -186,8 +192,8 @@ public class ProfileServiceImpl implements ProfileService {
                     idProfileTask.put(id, profileTask);
                 }
             }
-        } catch (ParseException | IOException e) {
-            throw new RuntimeException(e.getMessage());
+        } catch (Exception e) {
+
         }
         return profileTask;
     }
