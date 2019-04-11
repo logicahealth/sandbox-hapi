@@ -21,6 +21,7 @@
 package org.hspconsortium.platform.api.controller;
 
 import org.hspconsortium.platform.api.fhir.model.Sandbox;
+import org.hspconsortium.platform.api.fhir.model.SmartConfigurationMetadata;
 import org.hspconsortium.platform.api.oauth2.OAuth2ResourceConfig;
 import org.hspconsortium.platform.api.fhir.service.SandboxService;
 import org.hspconsortium.platform.api.smart.LaunchOrchestrationSendEndpoint;
@@ -38,6 +39,9 @@ import java.util.Properties;
 @RestController
 @RequestMapping("/{tenant}")
 public class MultitenantHapiFhirController extends ServletWrappingController {
+
+    @Autowired
+    private SmartConfigurationMetadata smartConfigurationMetadata;
 
     public static final String SANDBOX_NAME_ATTRIBUTE = "HSPC_SANDBOX_NAME";
 
@@ -103,5 +107,23 @@ public class MultitenantHapiFhirController extends ServletWrappingController {
     @RequestMapping(value = "/${hspc.platform.api.fhir.contextPath}/_services/smart/Launch", method = RequestMethod.POST)
     public void smartLaunch(HttpServletRequest request, HttpServletResponse response, @RequestBody String jsonString) {
         launchOrchestrationEndpoint.handleLaunchRequest(request, response, jsonString);
+    }
+
+    @RequestMapping(value = { "/${hspc.platform.api.fhir.openContextPath:" + OAuth2ResourceConfig.NO_ENDPOINT + "}/.well-known/smart-configuration" ,
+            "/${hspc.platform.api.fhir.contextPath}/.well-known/smart-configuration" }, method = RequestMethod.GET)
+    public SmartConfigurationMetadata smartConfiguration() {
+        SmartConfigurationMetadata smartConfigurationMetadataReturned = new SmartConfigurationMetadata();
+        smartConfigurationMetadataReturned.setAuthorizationEndpoint(smartConfigurationMetadata.getAuthorizationEndpoint());
+        smartConfigurationMetadataReturned.setTokenEndpoint(smartConfigurationMetadata.getTokenEndpoint());
+        smartConfigurationMetadataReturned.setTokenEndpointAuthMethodsSupported(smartConfigurationMetadata.getTokenEndpointAuthMethodsSupported());
+        smartConfigurationMetadataReturned.setRegistrationEndpoint(smartConfigurationMetadata.getRegistrationEndpoint());
+        smartConfigurationMetadataReturned.setScopesSupported(smartConfigurationMetadata.getScopesSupported());
+        smartConfigurationMetadataReturned.setResponseTypesSupported(smartConfigurationMetadata.getResponseTypesSupported());
+        smartConfigurationMetadataReturned.setManagementEndpoint(smartConfigurationMetadata.getManagementEndpoint());
+        smartConfigurationMetadataReturned.setIntrospectionEndpoint(smartConfigurationMetadata.getIntrospectionEndpoint());
+        smartConfigurationMetadataReturned.setRevocationEndpoint(smartConfigurationMetadata.getRevocationEndpoint());
+        smartConfigurationMetadataReturned.setCapabilities(smartConfigurationMetadata.getCapabilities());
+        return smartConfigurationMetadataReturned;
+
     }
 }
