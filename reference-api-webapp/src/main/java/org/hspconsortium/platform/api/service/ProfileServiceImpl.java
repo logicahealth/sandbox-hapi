@@ -80,6 +80,9 @@ public class ProfileServiceImpl implements ProfileService {
             if (fileName.endsWith(".json")) {
                 InputStream inputStream = zipFile.getInputStream(entry);
                 profileTask = saveProfileResources(authToken, sandboxId, apiEndpoint, id, inputStream, fileName, profileTask);
+                if (profileTask.getError() != null) {
+                    break;
+                }
             }
         }
         profileTask.setStatus(false);
@@ -106,6 +109,9 @@ public class ProfileServiceImpl implements ProfileService {
             String fileExtension = FilenameUtils.getExtension(fileName);
             if (fileExtension.equals("json")) {
                 profileTask = saveProfileResources(authToken, sandboxId, apiEndpoint, id, tarArchiveInputStream, fileName, profileTask);
+                if (profileTask.getError() != null) {
+                    break;
+                }
             }
         }
         tarArchiveInputStream.close();
@@ -143,18 +149,25 @@ public class ProfileServiceImpl implements ProfileService {
                 String resourceId = jsonObject.get("id").toString();
                 if (resourceType.equals("StructureDefinition")) {
                     String fhirVersion = jsonObject.get("fhirVersion").toString();
-                    if (apiEndpoint.equals("5") && !fhirVersion.equals("1.0.2")) {
-                        throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (1.0.2). The profile was not saved.");
-                    } else if (apiEndpoint.equals("6") && !fhirVersion.equals("3.0.1")) {
-                        throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.0.1). The profile was not saved.");
-                    } else if (apiEndpoint.equals("7") && !fhirVersion.equals("3.4.0")) {
-                        throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.4.0). The profile was not saved.");
-                    } else if (apiEndpoint.equals("8") && !fhirVersion.equals("1.0.2")) {
-                        throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (1.0.2). The profile was not saved.");
+                    String errorMessage = "";
+                    if (apiEndpoint.equals("8") && !fhirVersion.equals("1.0.2")) {
+                        errorMessage = fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (1.0.2). The profile was not saved.";
+                        profileTask.setError(errorMessage);
+                        profileTask.setStatus(false);
+                        idProfileTask.put(id, profileTask);
+                        return profileTask;
                     } else if (apiEndpoint.equals("9") && !fhirVersion.equals("3.0.1")) {
-                        throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.0.1). The profile was not saved.");
+                        errorMessage = fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (3.0.1). The profile was not saved.";
+                        profileTask.setError(errorMessage);
+                        profileTask.setStatus(false);
+                        idProfileTask.put(id, profileTask);
+                        return profileTask;
                     } else if (apiEndpoint.equals("10") && !fhirVersion.equals("4.0.0")) {
-                        throw new RuntimeException(fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (4.0.0). The profile was not saved.");
+                        errorMessage = fileName + " FHIR version (" + fhirVersion + ") is incompatible with your current sandbox's FHIR version (4.0.0). The profile was not saved.";
+                        profileTask.setError(errorMessage);
+                        profileTask.setStatus(false);
+                        idProfileTask.put(id, profileTask);
+                        return profileTask;
                     }
                 }
                 String jsonBody = jsonObject.toString();

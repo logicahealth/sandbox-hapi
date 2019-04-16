@@ -4,6 +4,8 @@ server:
   tomcat:
     remote_ip_header: x-forwarded-for
     protocol_header: x-forwarded-proto
+    maxswallowsize:
+      inmb: -1
 
 spring:
   application:
@@ -12,6 +14,11 @@ spring:
     active: multitenant,dstu2
   main:
     allow-bean-definition-overriding: true
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
 
 hibernate:
   search:
@@ -138,3 +145,29 @@ hspc:
         name: ${SANDBOX_NAME:hspc10}
 server:
   port: ${API_PORT:8070}
+
+---
+
+smart-configuration-metadata:
+  authorization_endpoint: ${hspc.platform.authorization.url}/authorize
+  token_endpoint: ${hspc.platform.authorization.url}/token
+  token_endpoint_auth_methods_supported: ["client_secret_basic"]
+  registration_endpoint: ${hspc.platform.authorization.url}/register
+  scopes_supported: ["smart/orchestrate_launch", "launch", "openid", "profile", "user/*.*","user/*.read","user/*.write","user/AdverseReaction.read","user/AdverseReaction.write",
+                     "user/Alert.read", "user/Alert.write", "user/Condition.read", "user/Condition.write", "user/Encounter.read", "user/Encounter.write", "user/FamilyHistory.read",
+                     "user/FamilyHistory.write", "user/Medication.read", "user/Medication.write", "user/MedicationPrescription.read", "user/MedicationPrescription.write",
+                     "user/MedicationStatement.read", "user/MedicationStatement.write", "user/Observation.read", "user/Observation.write", "user/Patient.read",
+                     "user/Patient.write", "user/Substance.read", "user/Substance.write", "patient/*.*", "patient/*.read", "patient/*.write", "patient/AdverseReaction.read",
+                     "patient/AdverseReaction.write", "patient/Alert.read", "patient/Alert.write", "patient/Condition.read", "patient/Condition.write", "patient/Encounter.read",
+                     "patient/Encounter.write", "patient/FamilyHistory.read", "patient/FamilyHistory.write", "patient/MedicationPrescription.read", "patient/MedicationPrescription.write",
+                     "patient/MedicationStatement.read", "patient/MedicationStatement.write", "patient/Observation.read", "patient/Observation.write", "patient/Patient.read",
+                     "patient/Patient.write", "system/*.read", "system/*.write", "launch/patient", "launch/encounter", "launch/location", "patient/AllergyIntolerance.read",
+                     "patient/AllergyIntolerance.write", "user/AllergyIntolerance.read", "user/AllergyIntolerance.write", "patient/DocumentReference.read", "patient/DocumentReference.write",
+                     "online_access", "user/Immunization.read", "user/Immunization.write", "user/MedicationOrder.read", "user/MedicationOrder.write", "patient/Immunization.read",
+                     "patient/Immunization.write", "patient/MedicationOrder.read", "patient/MedicationOrder.write", "offline_access","fhirUser"]
+  response_types_supported: ["code"]
+  management_endpoint: ${hspc.platform.authorization.url}/manage
+  introspection_endpoint: ${hspc.platform.authorization.url}/introspect
+  revocation_endpoint: ${hspc.platform.authorization.url}/revoke
+  capabilities: ["launch-ehr", "client-public", "client-confidential-symmetric", "context-ehr-patient", "sso-openid-connect", "launch-standalone"]
+
