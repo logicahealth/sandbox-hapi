@@ -36,6 +36,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -49,10 +51,12 @@ public class ProfileController {
     @Autowired
     private ProfileService profileService;
 
-    @PostMapping(value = "/uploadProfile", params = {"sandboxId", "apiEndpoint"})
+    @PostMapping(value = "/uploadProfile", params = {"sandboxId", "apiEndpoint", "profileName", "profileId"})
     public JSONObject uploadProfile (@RequestParam("file") MultipartFile file, HttpServletRequest request,
                                      @RequestParam(value = "sandboxId") String sandboxId,
-                                     @RequestParam(value = "apiEndpoint") String apiEndpoint) throws IOException {
+                                     @RequestParam(value = "apiEndpoint") String apiEndpoint,
+                                     @RequestParam(value = "profileName") String profileName,
+                                     @RequestParam(value = "profileId") String profileId) throws IOException {
 
         String id = UUID.randomUUID().toString();
         String fileName = file.getOriginalFilename();
@@ -68,7 +72,7 @@ public class ProfileController {
             outputStream.close();
             try {
                 ZipFile zipFile = new ZipFile(zip);
-                profileService.saveZipFile(zipFile, request, sandboxId, apiEndpoint, id);
+                profileService.saveZipFile(zipFile, request, sandboxId, apiEndpoint, id, profileName, profileId);
             } catch (ZipException e) {
                 e.printStackTrace();
             }
@@ -76,7 +80,7 @@ public class ProfileController {
                 zip.delete();
             }
         } else if (!fileName.isEmpty() & fileExtension.equals("tgz")) {
-            profileService.saveTGZfile(file, request, sandboxId, apiEndpoint, id);
+            profileService.saveTGZfile(file, request, sandboxId, apiEndpoint, id, profileName, profileId);
         } else {
             statusReturned.put("status", false);
             statusReturned.put("id", id);
@@ -103,5 +107,13 @@ public class ProfileController {
             ProfileTask profileTaskNull = new ProfileTask();
             return profileTaskNull;
         }
+    }
+
+    @GetMapping(value = "/getSDs", params = {"profileId"})
+    public List<JSONObject> getStructureDefinitions () {
+        List<JSONObject> structureDefinitions = new ArrayList<>();
+
+
+        return structureDefinitions;
     }
 }
