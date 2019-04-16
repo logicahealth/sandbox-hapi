@@ -20,17 +20,20 @@
 
 package org.hspconsortium.platform.api.fhir.service;
 
+import org.hspconsortium.platform.api.fhir.model.FhirProfile;
 import org.hspconsortium.platform.api.fhir.model.ProfileTask;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.zip.ZipFile;
 
 public interface ProfileService {
-    void saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId, String apiEndpoint, String fileId) throws IOException;
+    void saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId, String apiEndpoint, String id, String profileName, String profileId) throws IOException;
     ProfileTask getTaskRunning(String id);
     HashMap<String, ProfileTask> getIdProfileTask();
-    void saveTGZfile (MultipartFile file, HttpServletRequest request, String sandboxId, String apiEndpoint, String fileId) throws IOException;
+    void saveTGZfile (MultipartFile file, HttpServletRequest request, String sandboxId, String apiEndpoint, String id, String profileName, String profileId) throws IOException;
+    void saveProfileToSandman (List<FhirProfile> fhirProfile, HttpServletRequest request);
 }
