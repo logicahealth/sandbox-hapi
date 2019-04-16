@@ -48,3 +48,4 @@ hibernate:
   search:
     default:
       indexBase: /var/indexes/@artifact.name@/stu3
+

@@ -268,6 +268,7 @@ public class OAuth2ResourceConfig extends ResourceServerConfigurerAdapter {
             // be handled by an interceptor (which has been completed in AnalyticsInterceptor.java)
             permitRegex(http, "\\/" + fhirPath + "\\/metadata", "GET");
             permitRegex(http, "\\/" + fhirPath + "\\/metadata.*", "GET");
+            permitRegex(http, "\\/" + fhirPath + "\\/.well-known\\/smart-configuration", "GET");
             permitRegex(http, "\\/" + fhirPath + "\\/_services\\/smart\\/.*", null);
         }
     }
