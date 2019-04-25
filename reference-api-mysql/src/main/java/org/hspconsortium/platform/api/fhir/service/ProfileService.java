@@ -35,5 +35,5 @@ public interface ProfileService {
     ProfileTask getTaskRunning(String id);
     HashMap<String, ProfileTask> getIdProfileTask();
     void saveTGZfile (MultipartFile file, HttpServletRequest request, String sandboxId, String apiEndpoint, String id, String profileName, String profileId) throws IOException;
-    void saveProfileToSandman (List<FhirProfile> fhirProfile, HttpServletRequest request);
+    void sendProfileToSandboxManagerApi (List<FhirProfile> fhirProfile, String authToken);
 }
