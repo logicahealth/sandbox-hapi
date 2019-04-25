@@ -24,9 +24,6 @@ import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.apache.commons.compress.compressors.gzip.GzipCompressorInputStream;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.HttpClients;
 import org.hspconsortium.platform.api.fhir.model.FhirProfile;
 import org.hspconsortium.platform.api.fhir.model.ProfileTask;
 import org.hspconsortium.platform.api.fhir.model.Sandbox;
@@ -85,9 +82,9 @@ public class ProfileServiceImpl implements ProfileService {
         this.sandboxService = sandboxService;
     }
 
-    @Async
+    @Async("taskExecutor")
     public void saveZipFile (ZipFile zipFile, HttpServletRequest request, String sandboxId, String apiEndpoint, String id, String profileName, String profileId) throws IOException {
-//        String authToken = request.getHeader("Authorization").substring(7);
+        String authToken = request.getHeader("Authorization");
         List<String> resourceSaved = new ArrayList<>();
         List<String> resourceNotSaved = new ArrayList<>();
         int totalCount = 0;
@@ -101,23 +98,26 @@ public class ProfileServiceImpl implements ProfileService {
             String fileName = entry.getName();
             if (fileName.endsWith(".json")) {
                 InputStream inputStream = zipFile.getInputStream(entry);
-                JSONObject profileTaskAndFhirProfile = saveProfileResource(request, sandboxId, apiEndpoint, id, inputStream, fileName, profileTask, profileName, profileId);
+                JSONObject profileTaskAndFhirProfile = saveProfileResource(authToken, sandboxId, apiEndpoint, id, inputStream, fileName, profileTask, profileName, profileId);
                 profileTask = (ProfileTask) profileTaskAndFhirProfile.get("profileTask");
                 if (profileTask.getError() != null) {
                     break;
                 }
-                fhirProfiles.add((FhirProfile) profileTaskAndFhirProfile.get("fhirProfile"));
+                FhirProfile fhirProfile = (FhirProfile) profileTaskAndFhirProfile.get("fhirProfile");
+                if (fhirProfile != null) {
+                    fhirProfiles.add(fhirProfile);
+                }
             }
         }
         profileTask.setStatus(false);
         idProfileTask.put(id, profileTask);
-        sendProfileToSandboxManagerApi(fhirProfiles, request);
+        sendProfileToSandboxManagerApi(fhirProfiles, authToken);
     }
 
-    @Async
+    @Async("taskExecutor")
     public void saveTGZfile (MultipartFile file, HttpServletRequest request, String sandboxId, String apiEndpoint, String id, String profileName, String profileId) throws IOException {
         //TODO: implement the new changes as saveZipFile
-//        String authToken = request.getHeader("Authorization").substring(7);
+       String authToken = request.getHeader("Authorization");
         List<String> resourceSaved = new ArrayList<>();
         List<String> resourceNotSaved = new ArrayList<>();
         int totalCount = 0;
@@ -134,7 +134,7 @@ public class ProfileServiceImpl implements ProfileService {
             String fileName = entry.getName();
             String fileExtension = FilenameUtils.getExtension(fileName);
             if (fileExtension.equals("json")) {
-                profileTask = (ProfileTask) saveProfileResource(request, sandboxId, apiEndpoint, id, tarArchiveInputStream, fileName, profileTask, profileName, profileId).get("profileTask");
+                profileTask = (ProfileTask) saveProfileResource(authToken, sandboxId, apiEndpoint, id, tarArchiveInputStream, fileName, profileTask, profileName, profileId).get("profileTask");
                 if (profileTask.getError() != null) {
                     break;
                 }
@@ -145,7 +145,7 @@ public class ProfileServiceImpl implements ProfileService {
         idProfileTask.put(id, profileTask);
     }
 
-    public ProfileTask addToProfileTask(String id, Boolean runStatus, List<String> resourceSaved,
+    private ProfileTask addToProfileTask(String id, Boolean runStatus, List<String> resourceSaved,
                                         List<String> resourceNotSaved, int totalCount, int resourceSavedCount,
                                         int resourceNotSavedCount){
         ProfileTask profileTask = new ProfileTask();
@@ -159,7 +159,7 @@ public class ProfileServiceImpl implements ProfileService {
         return profileTask;
     }
 
-    private JSONObject saveProfileResource(HttpServletRequest request, String sandboxId, String apiEndpoint, String id, InputStream inputStream, String fileName, ProfileTask profileTask, String profileName, String profileId) {
+    private JSONObject saveProfileResource(String authToken, String sandboxId, String apiEndpoint, String id, InputStream inputStream, String fileName, ProfileTask profileTask, String profileName, String profileId) {
         JSONObject profileTaskAndFhirProfile = new JSONObject();
         List<String> resourceSaved = profileTask.getResourceSaved();
         List<String> resourceNotSaved = profileTask.getResourceNotSaved();
@@ -168,6 +168,7 @@ public class ProfileServiceImpl implements ProfileService {
         int resourceNotSavedCount = profileTask.getResourceNotSavedCount();
         profileTask = addToProfileTask(id, true, resourceSaved, resourceNotSaved, totalCount, resourceSavedCount, resourceNotSavedCount);
         idProfileTask.put(id, profileTask);
+        profileTaskAndFhirProfile.put("profileTask", profileTask);
         FhirProfile fhirProfile = new FhirProfile();
         JSONParser jsonParser = new JSONParser();
         try {
@@ -206,8 +207,7 @@ public class ProfileServiceImpl implements ProfileService {
                 }
                 String jsonBody = jsonObject.toString();
                 HttpHeaders headers = new HttpHeaders();
-//                headers.set("Authorization", "BEARER " + authToken);
-                headers.set("Authorization", request.getHeader("Authorization"));
+                headers.set("Authorization", authToken);
                 headers.set("Content-Type", "application/json");
                 String url = localhost + "/" + sandboxId + "/data/" + resourceType + "/" + resourceId;
                 HttpEntity entity = new HttpEntity(jsonBody, headers);
@@ -219,6 +219,16 @@ public class ProfileServiceImpl implements ProfileService {
                     profileTask = addToProfileTask(id, true, resourceSaved, resourceNotSaved, totalCount, resourceSavedCount, resourceNotSavedCount);
                     idProfileTask.put(id, profileTask);
                     profileTaskAndFhirProfile.put("profileTask", profileTask);
+
+//                    Sandbox sandbox = sandboxService.get(sandboxId);
+                    fhirProfile.setProfileName(profileName);
+                    fhirProfile.setFullUrl(fullUrl);
+                    fhirProfile.setRelativeUrl(resourceType + "/" + resourceId);
+//                    fhirProfile.setSandbox(sandbox);
+                    fhirProfile.setSandboxId(sandboxId);
+                    fhirProfile.setProfileId(profileId);
+                    profileTaskAndFhirProfile.put("fhirProfile", fhirProfile);
+
                 } catch (HttpServerErrorException | HttpClientErrorException e) {
                     resourceNotSaved.add(resourceType + " - " + resourceId + " - " + e.getMessage());
                     totalCount++;
@@ -227,14 +237,6 @@ public class ProfileServiceImpl implements ProfileService {
                     idProfileTask.put(id, profileTask);
                     profileTaskAndFhirProfile.put("profileTask", profileTask);
                 }
-
-                Sandbox sandbox = sandboxService.get(sandboxId);
-                fhirProfile.setProfileName(profileName);
-                fhirProfile.setFullUrl(fullUrl);
-                fhirProfile.setRelativeUrl(resourceType + "/" + resourceId);
-                fhirProfile.setSandbox(sandbox);
-                fhirProfile.setProfileId(profileId);
-                profileTaskAndFhirProfile.put("fhirProfile", fhirProfile);
             }
         } catch (Exception e) {
 
@@ -242,13 +244,13 @@ public class ProfileServiceImpl implements ProfileService {
         return profileTaskAndFhirProfile;
     }
 
-    public void sendProfileToSandboxManagerApi(List<FhirProfile> fhirProfiles, HttpServletRequest request) {
+    public void sendProfileToSandboxManagerApi(List<FhirProfile> fhirProfiles, String authToken) {
         HttpHeaders headers = new HttpHeaders();
-        headers.set("Authorization", request.getHeader("Authorization"));
+        headers.set("Authorization", authToken);
         headers.set("Content-Type", "application/json");
         HttpEntity entity = new HttpEntity(fhirProfiles.toString(), headers);
         try {
-            restTemplate.exchange(sandboxManagerApiUrl + profilePath, HttpMethod.PUT, entity, String.class);
+            restTemplate.exchange(sandboxManagerApiUrl + profilePath, HttpMethod.POST, entity, String.class);
         } catch (HttpServerErrorException | HttpClientErrorException e) {
 
         }

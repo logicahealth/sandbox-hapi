@@ -48,7 +48,7 @@ hspc:
         url: http://${SBMA_HOST:localhost}:${SBMA_PORT:12000}
         transactionPath: /analytics/transaction
         userAuthPath: /user/authorize
-        profilePath: /fhir-profile/save
+        profilePath: /fhir-profile
       fhir:
         datasource:
           schema: hspc_8_${hspc.platform.api.sandbox.name}

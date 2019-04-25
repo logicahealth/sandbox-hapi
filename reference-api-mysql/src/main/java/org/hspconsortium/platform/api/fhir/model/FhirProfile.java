@@ -1,26 +1,33 @@
-package org.hspconsortium.platform.api.fhir.model;
+/**
+ *  * #%L
+ *  *
+ *  * %%
+ *  * Copyright (C) 2014-2019 Healthcare Services Platform Consortium
+ *  * %%
+ *  * Licensed under the Apache License, Version 2.0 (the "License");
+ *  * you may not use this file except in compliance with the License.
+ *  * You may obtain a copy of the License at
+ *  *
+ *  *      http://www.apache.org/licenses/LICENSE-2.0
+ *  *
+ *  * Unless required by applicable law or agreed to in writing, software
+ *  * distributed under the License is distributed on an "AS IS" BASIS,
+ *  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  * See the License for the specific language governing permissions and
+ *  * limitations under the License.
+ *  * #L%
+ */
 
-import javax.persistence.*;
+package org.hspconsortium.platform.api.fhir.model;
 
 public class FhirProfile {
 
-    private String id;
     private String profileName;
     private String fullUrl;
     private String relativeUrl;
-    private Sandbox sandbox;
+    private String sandboxId;
     private String profileId;
     private String profileType;
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
-    }
 
     public String getProfileName() {
         return profileName;
@@ -46,14 +53,12 @@ public class FhirProfile {
         this.relativeUrl = relativeUrl;
     }
 
-    @ManyToOne(cascade={CascadeType.MERGE, CascadeType.PERSIST})
-    @JoinColumn(name="sandbox_id")
-    public Sandbox getSandbox() {
-        return sandbox;
+    public String getSandboxId() {
+        return sandboxId;
     }
 
-    public void setSandbox(Sandbox sandbox) {
-        this.sandbox = sandbox;
+    public void setSandboxId(String sandboxId) {
+        this.sandboxId = sandboxId;
     }
 
     public String getProfileId() {
@@ -70,5 +75,26 @@ public class FhirProfile {
 
     public void setProfileType(String profileType) {
         this.profileType = profileType;
+    }
+
+    @Override
+    public String toString() {
+        if (profileType == null) {
+            return "{" +
+                    "\"profileName\": \"" + profileName + "\"" +
+                    ", \"fullUrl\": \"" + fullUrl + "\"" +
+                    ", \"relativeUrl\": \"" + relativeUrl + "\"" +
+                    ", \"sandbox\": " + "{\"sandboxId\": \"" + sandboxId + "\"" + "}" +
+                    ", \"profileId\": \"" + profileId + "\"" +
+                    ", \"profileType\": " + null +
+                    '}';
+        } else return "{" +
+                "\"profileName\": \"" + profileName + "\"" +
+                ", \"fullUrl\": \"" + fullUrl + "\"" +
+                ", \"relativeUrl\": \"" + relativeUrl + "\"" +
+                ", \"sandbox\": " + "{\"sandboxId\": \"" + sandboxId + "\"" + "}" +
+                ", \"profileId\": \"" + profileId + "\"" +
+                ", \"profileType\": \"" + profileType + "\"" +
+                '}';
     }
 }
