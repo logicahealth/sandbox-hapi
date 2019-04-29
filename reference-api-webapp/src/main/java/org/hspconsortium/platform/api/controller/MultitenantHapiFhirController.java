@@ -113,15 +113,15 @@ public class MultitenantHapiFhirController extends ServletWrappingController {
             "/${hspc.platform.api.fhir.contextPath}/.well-known/smart-configuration" }, method = RequestMethod.GET)
     public SmartConfigurationMetadata smartConfiguration() {
         SmartConfigurationMetadata smartConfigurationMetadataReturned = new SmartConfigurationMetadata();
-        smartConfigurationMetadataReturned.setAuthorizationEndpoint(smartConfigurationMetadata.getAuthorizationEndpoint());
-        smartConfigurationMetadataReturned.setTokenEndpoint(smartConfigurationMetadata.getTokenEndpoint());
-        smartConfigurationMetadataReturned.setTokenEndpointAuthMethodsSupported(smartConfigurationMetadata.getTokenEndpointAuthMethodsSupported());
-        smartConfigurationMetadataReturned.setRegistrationEndpoint(smartConfigurationMetadata.getRegistrationEndpoint());
-        smartConfigurationMetadataReturned.setScopesSupported(smartConfigurationMetadata.getScopesSupported());
-        smartConfigurationMetadataReturned.setResponseTypesSupported(smartConfigurationMetadata.getResponseTypesSupported());
-        smartConfigurationMetadataReturned.setManagementEndpoint(smartConfigurationMetadata.getManagementEndpoint());
-        smartConfigurationMetadataReturned.setIntrospectionEndpoint(smartConfigurationMetadata.getIntrospectionEndpoint());
-        smartConfigurationMetadataReturned.setRevocationEndpoint(smartConfigurationMetadata.getRevocationEndpoint());
+        smartConfigurationMetadataReturned.setAuthorization_endpoint(smartConfigurationMetadata.getAuthorization_endpoint());
+        smartConfigurationMetadataReturned.setToken_endpoint(smartConfigurationMetadata.getToken_endpoint());
+        smartConfigurationMetadataReturned.setToken_endpoint_auth_methods(smartConfigurationMetadata.getToken_endpoint_auth_methods());
+        smartConfigurationMetadataReturned.setRegistration_endpoint(smartConfigurationMetadata.getRegistration_endpoint());
+        smartConfigurationMetadataReturned.setScopes_supported(smartConfigurationMetadata.getScopes_supported());
+        smartConfigurationMetadataReturned.setResponse_types_supported(smartConfigurationMetadata.getResponse_types_supported());
+        smartConfigurationMetadataReturned.setManagement_endpoint(smartConfigurationMetadata.getManagement_endpoint());
+        smartConfigurationMetadataReturned.setIntrospection_endpoint(smartConfigurationMetadata.getIntrospection_endpoint());
+        smartConfigurationMetadataReturned.setRevocation_endpoint(smartConfigurationMetadata.getRevocation_endpoint());
         smartConfigurationMetadataReturned.setCapabilities(smartConfigurationMetadata.getCapabilities());
         return smartConfigurationMetadataReturned;
 

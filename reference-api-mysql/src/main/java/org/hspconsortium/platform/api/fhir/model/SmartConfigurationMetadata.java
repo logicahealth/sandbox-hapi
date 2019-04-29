@@ -29,87 +29,87 @@ import java.util.List;
 @Configuration
 public class SmartConfigurationMetadata {
 
-    private String authorizationEndpoint;
-    private String tokenEndpoint;
-    private List<String> tokenEndpointAuthMethodsSupported;
-    private String registrationEndpoint;
-    private List<String> scopesSupported;
-    private List<String> responseTypesSupported;
-    private String managementEndpoint;
-    private String introspectionEndpoint;
-    private String revocationEndpoint;
+    private String authorization_endpoint;
+    private String token_endpoint;
+    private List<String> token_endpoint_auth_methods;
+    private String registration_endpoint;
+    private List<String> scopes_supported;
+    private List<String> response_types_supported;
+    private String management_endpoint;
+    private String introspection_endpoint;
+    private String revocation_endpoint;
     private List<String> capabilities;
 
-    public String getAuthorizationEndpoint() {
-        return authorizationEndpoint;
+    public String getAuthorization_endpoint() {
+        return authorization_endpoint;
     }
 
-    public void setAuthorizationEndpoint(String authorizationEndpoint) {
-        this.authorizationEndpoint = authorizationEndpoint;
+    public void setAuthorization_endpoint(String authorization_endpoint) {
+        this.authorization_endpoint = authorization_endpoint;
     }
 
-    public String getTokenEndpoint() {
-        return tokenEndpoint;
+    public String getToken_endpoint() {
+        return token_endpoint;
     }
 
-    public void setTokenEndpoint(String tokenEndpoint) {
-        this.tokenEndpoint = tokenEndpoint;
+    public void setToken_endpoint(String token_endpoint) {
+        this.token_endpoint = token_endpoint;
     }
 
-    public List<String> getTokenEndpointAuthMethodsSupported() {
-        return tokenEndpointAuthMethodsSupported;
+    public List<String> getToken_endpoint_auth_methods() {
+        return token_endpoint_auth_methods;
     }
 
-    public void setTokenEndpointAuthMethodsSupported(List<String> tokenEndpointAuthMethodsSupported) {
-        this.tokenEndpointAuthMethodsSupported = tokenEndpointAuthMethodsSupported;
+    public void setToken_endpoint_auth_methods(List<String> token_endpoint_auth_methods) {
+        this.token_endpoint_auth_methods = token_endpoint_auth_methods;
     }
 
-    public String getRegistrationEndpoint() {
-        return registrationEndpoint;
+    public String getRegistration_endpoint() {
+        return registration_endpoint;
     }
 
-    public void setRegistrationEndpoint(String registrationEndpoint) {
-        this.registrationEndpoint = registrationEndpoint;
+    public void setRegistration_endpoint(String registration_endpoint) {
+        this.registration_endpoint = registration_endpoint;
     }
 
-    public List<String> getScopesSupported() {
-        return scopesSupported;
+    public List<String> getScopes_supported() {
+        return scopes_supported;
     }
 
-    public void setScopesSupported(List<String> scopesSupported) {
-        this.scopesSupported = scopesSupported;
+    public void setScopes_supported(List<String> scopes_supported) {
+        this.scopes_supported = scopes_supported;
     }
 
-    public List<String> getResponseTypesSupported() {
-        return responseTypesSupported;
+    public List<String> getResponse_types_supported() {
+        return response_types_supported;
     }
 
-    public void setResponseTypesSupported(List<String> responseTypesSupported) {
-        this.responseTypesSupported = responseTypesSupported;
+    public void setResponse_types_supported(List<String> response_types_supported) {
+        this.response_types_supported = response_types_supported;
     }
 
-    public String getManagementEndpoint() {
-        return managementEndpoint;
+    public String getManagement_endpoint() {
+        return management_endpoint;
     }
 
-    public void setManagementEndpoint(String managementEndpoint) {
-        this.managementEndpoint = managementEndpoint;
+    public void setManagement_endpoint(String management_endpoint) {
+        this.management_endpoint = management_endpoint;
     }
 
-    public String getIntrospectionEndpoint() {
-        return introspectionEndpoint;
+    public String getIntrospection_endpoint() {
+        return introspection_endpoint;
     }
 
-    public void setIntrospectionEndpoint(String introspectionEndpoint) {
-        this.introspectionEndpoint = introspectionEndpoint;
+    public void setIntrospection_endpoint(String introspection_endpoint) {
+        this.introspection_endpoint = introspection_endpoint;
     }
 
-    public String getRevocationEndpoint() {
-        return revocationEndpoint;
+    public String getRevocation_endpoint() {
+        return revocation_endpoint;
     }
 
-    public void setRevocationEndpoint(String revocationEndpoint) {
-        this.revocationEndpoint = revocationEndpoint;
+    public void setRevocation_endpoint(String revocation_endpoint) {
+        this.revocation_endpoint = revocation_endpoint;
     }
 
     public List<String> getCapabilities() {
@@ -124,25 +124,25 @@ public class SmartConfigurationMetadata {
 
     public SmartConfigurationMetadata() { }
 
-    public SmartConfigurationMetadata(String authorizationEndpoint,
-                                      String tokenEndpoint,
-                                      List<String> tokenEndpointAuthMethodsSupported,
-                                      String registrationEndpoint,
-                                      List<String> scopesSupported,
-                                      List<String> responseTypesSupported,
-                                      String managementEndpoint,
-                                      String introspectionEndpoint,
-                                      String revocationEndpoint,
+    public SmartConfigurationMetadata(String authorization_endpoint,
+                                      String token_endpoint,
+                                      List<String> token_endpoint_auth_methods,
+                                      String registration_endpoint,
+                                      List<String> scopes_supported,
+                                      List<String> response_types_supported,
+                                      String management_endpoint,
+                                      String introspection_endpoint,
+                                      String revocation_endpoint,
                                       List<String> capabilities) {
-        this.authorizationEndpoint = authorizationEndpoint;
-        this.tokenEndpoint = tokenEndpoint;
-        this.tokenEndpointAuthMethodsSupported = tokenEndpointAuthMethodsSupported;
-        this.registrationEndpoint = registrationEndpoint;
-        this.scopesSupported = scopesSupported;
-        this.responseTypesSupported = responseTypesSupported;
-        this.managementEndpoint = managementEndpoint;
-        this.introspectionEndpoint = introspectionEndpoint;
-        this.revocationEndpoint = revocationEndpoint;
+        this.authorization_endpoint = authorization_endpoint;
+        this.token_endpoint = token_endpoint;
+        this.token_endpoint_auth_methods = token_endpoint_auth_methods;
+        this.registration_endpoint = registration_endpoint;
+        this.scopes_supported = scopes_supported;
+        this.response_types_supported = response_types_supported;
+        this.management_endpoint = management_endpoint;
+        this.introspection_endpoint = introspection_endpoint;
+        this.revocation_endpoint = revocation_endpoint;
         this.capabilities = capabilities;
     }
 
