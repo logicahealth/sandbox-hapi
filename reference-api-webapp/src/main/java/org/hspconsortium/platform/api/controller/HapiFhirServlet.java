@@ -287,6 +287,8 @@ public class HapiFhirServlet extends RestfulServer {
     }
 
     private void resolveResourceProviders(JpaDataProvider provider, IFhirSystemDao<org.hl7.fhir.dstu3.model.Bundle, Meta> systemDao) throws ServletException {
+        NarrativeProvider narrativeProvider = new NarrativeProvider();
+        HQMFProvider hqmfProvider = new HQMFProvider();
         // Bundle processing
 //        FHIRBundleResourceProvider bundleProvider = new FHIRBundleResourceProvider(provider);
 //        BundleResourceProvider jpaBundleProvider = (BundleResourceProvider) provider.resolveResourceProvider("Bundle");
@@ -318,7 +320,7 @@ public class HapiFhirServlet extends RestfulServer {
         registerInterceptor(transactionInterceptor);
 
         // Measure processing
-        FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(provider, systemDao);
+        FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(provider, systemDao, narrativeProvider, hqmfProvider);
         MeasureResourceProvider jpaMeasureProvider = (MeasureResourceProvider) provider.resolveResourceProvider("Measure");
         measureProvider.setDao(jpaMeasureProvider.getDao());
         measureProvider.setContext(jpaMeasureProvider.getContext());
@@ -359,33 +361,19 @@ public class HapiFhirServlet extends RestfulServer {
 
         register(planDefProvider, provider.getCollectionProviders());
 
-        // StructureMap processing
-        FHIRStructureMapResourceProvider structureMapProvider = new FHIRStructureMapResourceProvider(provider);
-        StructureMapResourceProvider jpaStructMapProvider = (StructureMapResourceProvider) provider.resolveResourceProvider("StructureMap");
-        structureMapProvider.setDao(jpaStructMapProvider.getDao());
-        structureMapProvider.setContext(jpaStructMapProvider.getContext());
-
-        try {
-            unregister(jpaStructMapProvider, provider.getCollectionProviders());
-        } catch (Exception e) {
-            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-        }
-
-        register(structureMapProvider, provider.getCollectionProviders());
-
         // Patient processing - for bulk data export
-        BulkDataPatientProvider bulkDataPatientProvider = new BulkDataPatientProvider(provider);
-        PatientResourceProvider jpaPatientProvider = (PatientResourceProvider) provider.resolveResourceProvider("Patient");
-        bulkDataPatientProvider.setDao(jpaPatientProvider.getDao());
-        bulkDataPatientProvider.setContext(jpaPatientProvider.getContext());
-
-        try {
-            unregister(jpaPatientProvider, provider.getCollectionProviders());
-        } catch (Exception e) {
-            throw new ServletException("Unable to unregister provider: " + e.getMessage());
-        }
-
-        register(bulkDataPatientProvider, provider.getCollectionProviders());
+//        BulkDataPatientProvider bulkDataPatientProvider = new BulkDataPatientProvider(provider);
+//        PatientResourceProvider jpaPatientProvider = (PatientResourceProvider) provider.resolveResourceProvider("Patient");
+//        bulkDataPatientProvider.setDao(jpaPatientProvider.getDao());
+//        bulkDataPatientProvider.setContext(jpaPatientProvider.getContext());
+//
+//        try {
+//            unregister(jpaPatientProvider, provider.getCollectionProviders());
+//        } catch (Exception e) {
+//            throw new ServletException("Unable to unregister provider: " + e.getMessage());
+//        }
+//
+//        register(bulkDataPatientProvider, provider.getCollectionProviders());
 
         // Group processing - for bulk data export
 //        BulkDataGroupProvider bulkDataGroupProvider = new BulkDataGroupProvider(provider);
