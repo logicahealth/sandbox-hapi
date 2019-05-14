@@ -31,7 +31,7 @@ case "${ENVIRONMENT}" in
         HOST="127.0.0.1"
         ;;
     test)
-        HOST="sandboxdb-test.hspconsortium.org"
+        HOST="sandboxdb-test.logicahealth.org"
         ;;
     prod)
         HOST="sandboxdb.hspconsortium.org"
@@ -95,7 +95,7 @@ do
                 FHIR_HOST="http://127.0.0.1:$PORT"
                 ;;
             test)
-                FHIR_HOST="https://api-v8-$FHIR_VERSION-test.hspconsortium.org"
+                FHIR_HOST="https://api-v8-$FHIR_VERSION-test.logicahealth.org"
                 ;;
             prod)
                 FHIR_HOST="https://api-v8-$FHIR_VERSION.hspconsortium.org"
