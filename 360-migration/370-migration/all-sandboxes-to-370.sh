@@ -33,7 +33,7 @@ case "${ENVIRONMENT}" in
         HOST="127.0.0.1"
         ;;
     test)
-        HOST="sandboxdb-test.hspconsortium.org"
+        HOST="sandboxdb-test.logicahealth.org"
         ;;
     prod)
         HOST="sandboxdb.hspconsortium.org"
