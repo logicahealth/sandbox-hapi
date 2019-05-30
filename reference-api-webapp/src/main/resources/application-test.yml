@@ -15,7 +15,7 @@ hspc:
         url: https://${SBMA_HOST:sandbox-api-test.logicahealth.org}
         transactionPath: /analytics/transaction
     authorization:
-      url: https://auth-test.logicahealth.org
+      url: https://auth-test.hspconsortium.org
     messaging:
       pubsub:
         enabled: true
