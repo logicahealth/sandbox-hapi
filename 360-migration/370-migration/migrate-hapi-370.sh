@@ -34,7 +34,7 @@ case "${ENVIRONMENT}" in
         MYSQL_URL="127.0.0.1:3306"
         ;;
     test)
-        MYSQL_URL="sandboxdb-test.logicahealth.org"
+        MYSQL_URL="sandboxdb-test.hspconsortium.org"
         ;;
     prod)
         MYSQL_URL="sandboxdb.hspconsortium.org"
@@ -67,7 +67,7 @@ case "${ENVIRONMENT}" in
         FHIR_HOST="http://127.0.0.1:$PORT"
         ;;
     test)
-        FHIR_HOST="https://api-v8-$FHIR_VERSION-test.logicahealth.org"
+        FHIR_HOST="https://api-v8-$FHIR_VERSION-test.hspconsortium.org"
         ;;
     prod)
         FHIR_HOST="https://api-v8-$FHIR_VERSION.hspconsortium.org"
