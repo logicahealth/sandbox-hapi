@@ -23,10 +23,7 @@ package org.hspconsortium.platform.api.oauth2;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.security.oauth2.provider.token.DefaultAccessTokenConverter;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class HspcAccessTokenConverter extends DefaultAccessTokenConverter {
 
@@ -52,18 +49,25 @@ public class HspcAccessTokenConverter extends DefaultAccessTokenConverter {
 
             Map<String, String> launchContextParams = new HashMap<>();
 
-            for (String curParam : launchContextCollection) {
+            for (int i = 0; i < launchContextCollection.size(); i++) {
+                String curParam = ((List<String>) launchContextCollection).get(i);
                 int splitIndex = curParam.indexOf("=");
-
-                String key = curParam.substring(0, splitIndex);
-                String value = curParam.substring(splitIndex + 1);
-
-                launchContextParams.put(key, value);
+                if (splitIndex == -1) {
+                    int pastSplitIndex = ((List<String>) launchContextCollection).get(i-1).indexOf("=");
+                    String pastKey = ((List<String>) launchContextCollection).get(i-1).substring(0, pastSplitIndex);
+                    String pastValue = ((List<String>) launchContextCollection).get(i-1).substring(pastSplitIndex + 1);
+                    String newValue = pastValue + "," + curParam;
+                    launchContextParams.put(pastKey, newValue);
+                } else {
+                    String key = curParam.substring(0, splitIndex);
+                    String value = curParam.substring(splitIndex + 1);
+                    launchContextParams.put(key, value);
+                }
             }
 
             return launchContextParams;
         }
-
+        
         return null;
     }
 
