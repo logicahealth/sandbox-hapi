@@ -29,6 +29,8 @@ import ca.uhn.fhir.jpa.dao.data.ISearchDao;
 import ca.uhn.fhir.jpa.dao.data.ISearchIncludeDao;
 import ca.uhn.fhir.jpa.dao.data.ISearchResultDao;
 import ca.uhn.fhir.jpa.entity.*;
+import ca.uhn.fhir.jpa.model.search.SearchRuntimeDetails;
+import ca.uhn.fhir.jpa.model.search.SearchStatusEnum;
 import ca.uhn.fhir.jpa.search.ISearchCoordinatorSvc;
 import ca.uhn.fhir.jpa.search.PersistedJpaBundleProvider;
 import ca.uhn.fhir.jpa.search.SearchCoordinatorSvcImpl;
@@ -184,7 +186,8 @@ public class MultiTenantSearchCoordinatorSvcImpl implements ISearchCoordinatorSv
 
     public IBundleProvider registerSearch(final IDao theCallingDao, final SearchParameterMap theParams, final String theResourceType, CacheControlDirective var4) {
         StopWatch w = new StopWatch();
-        final String searchUuid = UUID.randomUUID().toString();
+        final String searchUuidStr = UUID.randomUUID().toString();
+        SearchRuntimeDetails searchUuid = new SearchRuntimeDetails(searchUuidStr);
         Class<? extends IBaseResource> resourceTypeClass = this.myContext.getResourceDefinition(theResourceType).getImplementingClass();
         final ISearchBuilder sb = theCallingDao.newSearchBuilder();
         sb.setType(resourceTypeClass, theResourceType);
@@ -248,7 +251,7 @@ public class MultiTenantSearchCoordinatorSvcImpl implements ISearchCoordinatorSv
             }
 
             Search search = new Search();
-            search.setUuid(searchUuid);
+            search.setUuid(searchUuidStr);
             search.setCreated(new Date());
             search.setSearchLastReturned(new Date());
             search.setTotalCount((Integer) null);
@@ -403,9 +406,9 @@ public class MultiTenantSearchCoordinatorSvcImpl implements ISearchCoordinatorSv
         private final Search mySearch;
         private final ArrayList<Long> mySyncedPids = new ArrayList();
         private final ArrayList<Long> myUnsyncedPids = new ArrayList();
-        private String mySearchUuid;
+        private SearchRuntimeDetails mySearchUuid;
 
-        public SearchTask(Search theSearch, IDao theCallingDao, SearchParameterMap theParams, String theResourceType, String theSearchUuid) {
+        public SearchTask(Search theSearch, IDao theCallingDao, SearchParameterMap theParams, String theResourceType, SearchRuntimeDetails theSearchUuid) {
             this.mySearch = theSearch;
             this.myCallingDao = theCallingDao;
             this.myParams = theParams;
