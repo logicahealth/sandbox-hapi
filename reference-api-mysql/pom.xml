@@ -98,11 +98,11 @@
         </dependency>
 
         <!--cqf-ruler dependency needs to be commented out for the r4 conversion endpoint to work.-->
-        <dependency>
-            <groupId>org.opencds.cqf</groupId>
-            <artifactId>cqf-ruler</artifactId>
-            <version>0.1.11-SNAPSHOT</version>
-        </dependency>
+        <!--<dependency>-->
+            <!--<groupId>org.opencds.cqf</groupId>-->
+            <!--<artifactId>cqf-ruler</artifactId>-->
+            <!--<version>0.1.11-SNAPSHOT</version>-->
+        <!--</dependency>-->
 
     </dependencies>
 
