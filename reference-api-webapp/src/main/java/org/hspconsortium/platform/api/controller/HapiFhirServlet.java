@@ -31,6 +31,7 @@ import ca.uhn.fhir.jpa.provider.r4.JpaSystemProviderR4;
 import ca.uhn.fhir.jpa.rp.dstu3.*;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.jpa.term.IHapiTerminologySvcDstu3;
+import ca.uhn.fhir.jpa.util.ResourceProviderFactory;
 import ca.uhn.fhir.model.dstu2.composite.MetaDt;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
@@ -85,41 +86,39 @@ public class HapiFhirServlet extends RestfulServer {
         setFhirContext(fhirContext);
 
         /*
-         * The BaseJavaConfigDstu3.java class is a spring configuration
-         * file which is automatically generated as a part of hapi-fhir-jpaserver-base and
-         * contains bean definitions for a resource provider for each resource type
-         */
-        String resourceProviderBeanName; // starter project has ResourceProviderFactory as the Type instead of String
-
-        if (fhirVersionEnum == FhirVersionEnum.DSTU2) {
-            resourceProviderBeanName = "myResourceProvidersDstu2";
-        } else if (fhirVersionEnum == FhirVersionEnum.DSTU3) {
-            resourceProviderBeanName = "myResourceProvidersDstu3";
-        } else if (fhirVersionEnum == FhirVersionEnum.R4) {
-            resourceProviderBeanName = "myResourceProvidersR4";
-        } else {
-            throw new IllegalStateException("Not a supported FHIR Version: " + fhirVersionEnum);
-        }
-
-        List<IResourceProvider> beans = myAppCtx.getBean(resourceProviderBeanName, List.class);
-        setResourceProviders(beans);
-
-        /*
          * The system provider implements non-resource-type methods, such as
          * transaction, and global history.
          */
 
+        /*
+         * The BaseJavaConfigDstu3.java class is a spring configuration
+         * file which is automatically generated as a part of hapi-fhir-jpaserver-base and
+         * contains bean definitions for a resource provider for each resource type
+         */
+        ResourceProviderFactory resourceProviders;
+
         Object systemProvider;
         if (fhirVersionEnum == FhirVersionEnum.DSTU2) {
-            systemProvider = myAppCtx.getBean("mySystemProviderDstu2", JpaSystemProviderDstu2.class); // Starter project is also setting the resourceProviders(ResourceProviderFactory) here.
+            resourceProviders = myAppCtx.getBean("myResourceProvidersDstu2", ResourceProviderFactory.class);
+            systemProvider = myAppCtx.getBean("mySystemProviderDstu2", JpaSystemProviderDstu2.class);
         } else if (fhirVersionEnum == FhirVersionEnum.DSTU3) {
+            resourceProviders = myAppCtx.getBean("myResourceProvidersDstu3", ResourceProviderFactory.class);
             systemProvider = myAppCtx.getBean("mySystemProviderDstu3", JpaSystemProviderDstu3.class);
         } else if (fhirVersionEnum == FhirVersionEnum.R4) {
+            resourceProviders = myAppCtx.getBean("myResourceProvidersR4", ResourceProviderFactory.class);
             systemProvider = myAppCtx.getBean("mySystemProviderR4", JpaSystemProviderR4.class);
         } else {
             throw new IllegalStateException();
         }
-        setPlainProviders(systemProvider); // starter project doesn't have it
+//        setPlainProviders(systemProvider);
+
+        setFhirContext(myAppCtx.getBean(FhirContext.class));
+
+        registerProviders(resourceProviders.createProviders());
+        registerProvider(systemProvider);
+
+//        List<IResourceProvider> beans = myAppCtx.getBean(resourceProviders.toString(), List.class);
+//        setResourceProviders(beans);
 
         if (fhirVersionEnum == FhirVersionEnum.DSTU2) {
             IFhirSystemDao<Bundle, MetaDt> systemDao = myAppCtx.getBean("mySystemDaoDstu2", IFhirSystemDao.class);
@@ -134,10 +133,10 @@ public class HapiFhirServlet extends RestfulServer {
                     this,
                     systemDao,
                     myAppCtx.getBean(DaoConfig.class),
-                    myAppCtx.getBean(MetadataRepositoryStu3.class)); // the starter project uses the JpaConformanceProviderDstu3(this, systemDAO, appCtx.getBean(DaoConfing.class)
+                    myAppCtx.getBean(MetadataRepositoryStu3.class));
             confProvider.setImplementationDescription("HSPC Reference API Server - STU3");
             setServerConformanceProvider(confProvider);
-            // CQF implementation
+//            // CQF implementation
 //            JpaDataProvider provider = new JpaDataProvider(beans);
 //            TerminologyProvider terminologyProvider = new JpaTerminologyProvider(myAppCtx.getBean("terminologyService", IHapiTerminologySvcDstu3.class), getFhirContext(), (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet"));
 //            provider.setTerminologyProvider(terminologyProvider);
@@ -189,19 +188,8 @@ public class HapiFhirServlet extends RestfulServer {
          */
         Collection<IServerInterceptor> interceptorBeans = myAppCtx.getBeansOfType(IServerInterceptor.class).values();
         for (IServerInterceptor interceptor : interceptorBeans) {
-            this.registerInterceptor(interceptor); //In the starter project there is no for loop, it has a ResponseHighLighterInterceptor. Here we have three interceptorBeans: PubSubInterceptor, UserSecurityAndAnalytics, SubscriptionRequiredManualActivation
+            this.registerInterceptor(interceptor);
         }
-
-        // In the starter project there is LogginInterceptor
-//        /*
-//         * Add some logging for each request
-//         */
-//        LoggingInterceptor loggingInterceptor = new LoggingInterceptor();
-//        loggingInterceptor.setLoggerName(HapiProperties.getLoggerName());
-//        loggingInterceptor.setMessageFormat(HapiProperties.getLoggerFormat());
-//        loggingInterceptor.setErrorMessageFormat(HapiProperties.getLoggerErrorFormat());
-//        loggingInterceptor.setLogExceptions(HapiProperties.getLoggerLogExceptions());
-//        this.registerInterceptor(loggingInterceptor);
 
         /*
          * If you are hosting this server at a specific DNS name, the server will try to
@@ -219,48 +207,8 @@ public class HapiFhirServlet extends RestfulServer {
          * with this feature.
          */
         if (fhirVersionEnum == FhirVersionEnum.DSTU3) {
-            registerProvider(myAppCtx.getBean(TerminologyUploaderProviderDstu3.class));  // Starter project registerProviders with ResourceFactoryClass for all fhirVersions
+            registerProvider(myAppCtx.getBean(TerminologyUploaderProviderDstu3.class));
         }
-
-        // In the stater project the below codes are there
-
-//        // Define your CORS configuration. This is an example
-//        // showing a typical setup. You should customize this
-//        // to your specific needs
-//        if (HapiProperties.getCorsEnabled()) {
-//            CorsConfiguration config = new CorsConfiguration();
-//            config.addAllowedHeader("x-fhir-starter");
-//            config.addAllowedHeader("Origin");
-//            config.addAllowedHeader("Accept");
-//            config.addAllowedHeader("X-Requested-With");
-//            config.addAllowedHeader("Content-Type");
-//            config.addAllowedHeader("Prefer");
-//
-//            config.addAllowedOrigin(HapiProperties.getCorsAllowedOrigin());
-//
-//            config.addExposedHeader("Location");
-//            config.addExposedHeader("Content-Location");
-//            config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
-//
-//            // Create the interceptor and register it
-//            CorsInterceptor interceptor = new CorsInterceptor(config);
-//            registerInterceptor(interceptor);
-//        }
-//
-//        // If subscriptions are enabled, we want to register the interceptor that
-//        // will activate them and match results against them
-//        if (HapiProperties.getSubscriptionWebsocketEnabled() ||
-//                HapiProperties.getSubscriptionEmailEnabled() ||
-//                HapiProperties.getSubscriptionRestHookEnabled()) {
-//            // Loads subscription interceptors (SubscriptionActivatingInterceptor, SubscriptionMatcherInterceptor)
-//            // with activation of scheduled subscription
-//            SubscriptionInterceptorLoader subscriptionInterceptorLoader = appCtx.getBean(SubscriptionInterceptorLoader.class);
-//            subscriptionInterceptorLoader.registerInterceptors();
-//
-//            // Subscription debug logging
-//            IInterceptorService interceptorService = appCtx.getBean(IInterceptorService.class);
-//            interceptorService.registerInterceptor(new SubscriptionDebugLogInterceptor());
-//        }
     }
 
     /**
