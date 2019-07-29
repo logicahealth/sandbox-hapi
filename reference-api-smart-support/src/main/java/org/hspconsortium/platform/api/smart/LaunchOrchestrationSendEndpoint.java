@@ -64,7 +64,7 @@ public class LaunchOrchestrationSendEndpoint {
         try {
             entity = new StringEntity(jsonString);
             postRequest.setEntity(entity);
-
+            
             setAuthorizationHeader(postRequest, apiServerClientId, apiServerClientSecret);
         } catch (UnsupportedEncodingException uee_ex) {
             throw new RuntimeException(uee_ex);
