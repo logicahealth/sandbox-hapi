@@ -50,10 +50,8 @@ import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryDstu2Imp
 import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryR4;
 import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryStu3;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
-import org.opencds.cqf.interceptors.TransactionInterceptor;
+//import org.opencds.cqf.interceptors.TransactionInterceptor;
 import org.opencds.cqf.providers.*;
-//import org.springframework.transaction.interceptor.TransactionInterceptor;
-import org.springframework.transaction.interceptor.TransactionInterceptor;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletException;
@@ -321,8 +319,8 @@ public class HapiFhirServlet extends RestfulServer {
         }
 
         register(valueSetProvider, provider.getCollectionProviders());
-        TransactionInterceptor transactionInterceptor = new TransactionInterceptor(valueSetProvider);
-        registerInterceptor(transactionInterceptor);
+//        TransactionInterceptor transactionInterceptor = new TransactionInterceptor(valueSetProvider);
+//        registerInterceptor(transactionInterceptor);
 
         // Measure processing
         FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(provider, systemDao, narrativeProvider, hqmfProvider);
