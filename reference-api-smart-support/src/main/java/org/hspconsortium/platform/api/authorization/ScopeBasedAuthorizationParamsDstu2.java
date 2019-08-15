@@ -87,7 +87,7 @@ public class ScopeBasedAuthorizationParamsDstu2 implements ScopeBasedAuthorizati
             case "Group":
                 return "member";
             case "Patient":
-                return "link";
+                return "_id";
             case "Provenance":
                 return "target.subject";
             case "OrderResponse":

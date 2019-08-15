@@ -24,7 +24,7 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 @Component
-@Profile("stu3")
+@Profile("r4")
 public class ScopeBasedAuthorizationParamsR4 implements ScopeBasedAuthorizationParams {
     @Override
     @SuppressWarnings("Duplicates")
@@ -96,7 +96,7 @@ public class ScopeBasedAuthorizationParamsR4 implements ScopeBasedAuthorizationP
             case "Group":
                 return "member";
             case "Patient":
-                return "link";
+                return "_id";
             case "Provenance": // target.patient, patient
                 return "target.subject";
             case "ResearchSubject":
