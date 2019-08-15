@@ -31,6 +31,7 @@ import ca.uhn.fhir.jpa.provider.r4.JpaSystemProviderR4;
 import ca.uhn.fhir.jpa.rp.dstu3.*;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
 import ca.uhn.fhir.jpa.term.IHapiTerminologySvcDstu3;
+import ca.uhn.fhir.jpa.util.ResourceProviderFactory;
 import ca.uhn.fhir.model.dstu2.composite.MetaDt;
 import ca.uhn.fhir.model.dstu2.resource.Bundle;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
@@ -49,11 +50,12 @@ import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryDstu2Imp
 import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryR4;
 import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryStu3;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
-import org.opencds.cqf.interceptors.TransactionInterceptor;
+//import org.opencds.cqf.interceptors.TransactionInterceptor;
 import org.opencds.cqf.providers.*;
 import org.springframework.web.context.WebApplicationContext;
 
 import javax.servlet.ServletException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -85,41 +87,42 @@ public class HapiFhirServlet extends RestfulServer {
         setFhirContext(fhirContext);
 
         /*
-         * The BaseJavaConfigDstu3.java class is a spring configuration
-         * file which is automatically generated as a part of hapi-fhir-jpaserver-base and
-         * contains bean definitions for a resource provider for each resource type
-         */
-        String resourceProviderBeanName;
-
-        if (fhirVersionEnum == FhirVersionEnum.DSTU2) {
-            resourceProviderBeanName = "myResourceProvidersDstu2";
-        } else if (fhirVersionEnum == FhirVersionEnum.DSTU3) {
-            resourceProviderBeanName = "myResourceProvidersDstu3";
-        } else if (fhirVersionEnum == FhirVersionEnum.R4) {
-            resourceProviderBeanName = "myResourceProvidersR4";
-        } else {
-            throw new IllegalStateException("Not a supported FHIR Version: " + fhirVersionEnum);
-        }
-
-        List<IResourceProvider> beans = myAppCtx.getBean(resourceProviderBeanName, List.class);
-        setResourceProviders(beans);
-
-        /*
          * The system provider implements non-resource-type methods, such as
          * transaction, and global history.
          */
 
+        /*
+         * The BaseJavaConfigDstu3.java class is a spring configuration
+         * file which is automatically generated as a part of hapi-fhir-jpaserver-base and
+         * contains bean definitions for a resource provider for each resource type
+         */
+        ResourceProviderFactory resourceProviders;
+
         Object systemProvider;
         if (fhirVersionEnum == FhirVersionEnum.DSTU2) {
+            resourceProviders = myAppCtx.getBean("myResourceProvidersDstu2", ResourceProviderFactory.class);
             systemProvider = myAppCtx.getBean("mySystemProviderDstu2", JpaSystemProviderDstu2.class);
         } else if (fhirVersionEnum == FhirVersionEnum.DSTU3) {
+            resourceProviders = myAppCtx.getBean("myResourceProvidersDstu3", ResourceProviderFactory.class);
             systemProvider = myAppCtx.getBean("mySystemProviderDstu3", JpaSystemProviderDstu3.class);
         } else if (fhirVersionEnum == FhirVersionEnum.R4) {
+            resourceProviders = myAppCtx.getBean("myResourceProvidersR4", ResourceProviderFactory.class);
             systemProvider = myAppCtx.getBean("mySystemProviderR4", JpaSystemProviderR4.class);
         } else {
             throw new IllegalStateException();
         }
         setPlainProviders(systemProvider);
+
+        setFhirContext(myAppCtx.getBean(FhirContext.class));
+
+        registerProviders(resourceProviders.createProviders());
+        registerProvider(systemProvider);
+
+        List<IResourceProvider> beans = new ArrayList<>();
+        for (int i = 0; i < resourceProviders.createProviders().size(); i++) {
+            beans.add((IResourceProvider) resourceProviders.createProviders().get(i));
+        }
+        setResourceProviders(beans);
 
         if (fhirVersionEnum == FhirVersionEnum.DSTU2) {
             IFhirSystemDao<Bundle, MetaDt> systemDao = myAppCtx.getBean("mySystemDaoDstu2", IFhirSystemDao.class);
@@ -304,7 +307,7 @@ public class HapiFhirServlet extends RestfulServer {
 //        register(bundleProvider, provider.getCollectionProviders());
 
         // ValueSet processing
-        FHIRValueSetResourceProvider valueSetProvider = new FHIRValueSetResourceProvider(provider);
+        FHIRValueSetResourceProvider valueSetProvider = new FHIRValueSetResourceProvider(new CodeSystemResourceProvider());
         ValueSetResourceProvider jpaValueSetProvider = (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet");
         valueSetProvider.setDao(jpaValueSetProvider.getDao());
         valueSetProvider.setContext(jpaValueSetProvider.getContext());
@@ -316,8 +319,8 @@ public class HapiFhirServlet extends RestfulServer {
         }
 
         register(valueSetProvider, provider.getCollectionProviders());
-        TransactionInterceptor transactionInterceptor = new TransactionInterceptor(valueSetProvider);
-        registerInterceptor(transactionInterceptor);
+//        TransactionInterceptor transactionInterceptor = new TransactionInterceptor(valueSetProvider);
+//        registerInterceptor(transactionInterceptor);
 
         // Measure processing
         FHIRMeasureResourceProvider measureProvider = new FHIRMeasureResourceProvider(provider, systemDao, narrativeProvider, hqmfProvider);

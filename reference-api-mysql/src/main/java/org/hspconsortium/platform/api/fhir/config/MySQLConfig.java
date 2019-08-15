@@ -284,14 +284,14 @@ public class MySQLConfig {
                 "Path[${servletPath}] Source[${requestHeader.x-forwarded-for}] Operation[${operationType} ${operationName} ${idOrResourceName}] UA[${requestHeader.user-agent}] Params[${requestParameters}] ResponseEncoding[${responseEncodingNoDefault}]");
         retVal.setLogExceptions(true);
         retVal.setErrorMessageFormat("ERROR - ${requestVerb} ${requestUrl}");
-        return retVal;
+        return (IServerInterceptor) retVal;
     }
 
     /**
      * This interceptor adds some pretty syntax highlighting in responses when a browser is detected
      */
     @Bean(autowire = Autowire.BY_TYPE)
-    public IServerInterceptor responseHighlighterInterceptor() {
+    public ResponseHighlighterInterceptor responseHighlighterInterceptor() {
         return new ResponseHighlighterInterceptor();
     }
 
