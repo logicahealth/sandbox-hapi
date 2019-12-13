@@ -67,12 +67,12 @@ public class HSPCReferenceApiMultitenantApplication extends SpringBootServletIni
         return b;
     }
 
-    @Bean(name="hapiJpaTaskExecutor")
-    public AsyncTaskExecutor taskScheduler() {
-        ConcurrentTaskScheduler retVal = new ConcurrentTaskScheduler();
-        retVal.setConcurrentExecutor(scheduledExecutorService().getObject());
-        retVal.setScheduledExecutor(scheduledExecutorService().getObject());
-        return retVal;
-    }
+//    @Bean(name="hapiJpaTaskExecutor")
+//    public AsyncTaskExecutor taskScheduler() {
+//        ConcurrentTaskScheduler retVal = new ConcurrentTaskScheduler();
+//        retVal.setConcurrentExecutor(scheduledExecutorService().getObject());
+//        retVal.setScheduledExecutor(scheduledExecutorService().getObject());
+//        return retVal;
+//    }
 
 }
