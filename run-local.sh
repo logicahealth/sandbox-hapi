@@ -20,7 +20,7 @@
 #
 
 
-profile="dstu2"
+profile="stu3"
 sandbox_name="hspc8"
 
 if [ $# -gt 0 ]; then
@@ -52,7 +52,7 @@ else
     tenant="multitenant"
     jar="reference-api-webapp/target/hspc-reference-api-webapp-*.jar"
 fi
-
+jenv local 1.8
 set -x
 
 echo "running..."

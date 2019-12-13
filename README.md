@@ -6,7 +6,7 @@ Welcome to the HSPC Reference API!  The HSPC Reference API server contains a FHI
 
 *Note:* If you are wanting to build and test SMART on FHIR Apps, it is recommended that you use the free cloud-hosted version of the HSPC Sandbox.
 
-[HSPC Sandbox](https://sandbox.hspconsortium.org)
+[Logica Sandbox](https://sandbox.logicahealth.org)
 
 # Servers
 
