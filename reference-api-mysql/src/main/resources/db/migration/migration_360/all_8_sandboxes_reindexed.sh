@@ -102,14 +102,14 @@ do
                 ;;
         esac
 
-       ./run-fhir-server.sh $FHIR_VERSION $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
+       run-fhir-server.sh $FHIR_VERSION $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
 
        sleep 60
         if [[ ! -z "$(lsof -t -i:$PORT)" ]]; then
             let STARTED=1
         else
             ps ax | grep nameForShutdown | grep -v grep | awk '{print $1}' | xargs kill
-            ./run-fhir-server.sh $FHIR_VERSION $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
+            run-fhir-server.sh $FHIR_VERSION $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
         fi
 
 

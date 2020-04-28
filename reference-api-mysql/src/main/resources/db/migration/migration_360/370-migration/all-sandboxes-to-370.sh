@@ -100,11 +100,11 @@ while true; do
             if [[ "$(echo $SQL_STRING | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs)" != "0" ]]; then
                 SQL_STRING3="SELECT COUNT(*) FROM $FULL_NAME.HFJ_SPIDX_TOKEN WHERE HASH_IDENTITY IS NULL;"
                 if [[ "$(echo $SQL_STRING3 | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs)" != "0" ]]; then
-                   ./migrate-hapi-370.sh $MYSQL_USER $MYSQL_PASS $ENVIRONMENT "$TEMP_SCHEMA$SANDBOX_NAME" $FHIR_VERSION $BEARER_TOKEN $JASYPT_PASSWORD
+                   migrate-hapi-370.sh $MYSQL_USER $MYSQL_PASS $ENVIRONMENT "$TEMP_SCHEMA$SANDBOX_NAME" $FHIR_VERSION $BEARER_TOKEN $JASYPT_PASSWORD
 
                 fi
             elif [[ "$(echo $SQL_STRING2 | mysql -u$MYSQL_USER -p$MYSQL_PASS -h$HOST --port=3306 -Bs)" != "0" ]]; then
-                ./migrate-hapi-370.sh $MYSQL_USER $MYSQL_PASS $ENVIRONMENT "$TEMP_SCHEMA$SANDBOX_NAME" $FHIR_VERSION $BEARER_TOKEN $JASYPT_PASSWORD
+                migrate-hapi-370.sh $MYSQL_USER $MYSQL_PASS $ENVIRONMENT "$TEMP_SCHEMA$SANDBOX_NAME" $FHIR_VERSION $BEARER_TOKEN $JASYPT_PASSWORD
             fi
 
             mysqldump --host=$HOST --protocol=tcp --user=$MYSQL_USER --password=$MYSQL_PASS --hex-blob=TRUE --port=3306 --default-character-set=utf8 --skip-triggers "$TEMP_SCHEMA$SANDBOX_NAME" > temp-dump.sql
