@@ -74,6 +74,8 @@ hspc:
         # remove openContextPath to disable the open endpoint
         openContextPath: open
         profileResources: StructureDefinition, CodeSystem, ValueSet, SearchParameter
+        maxPageSize: 200
+        defaultPageSize: 50
     # these values are used for internal calls to the auth server
     authorization:
       protocol: http
