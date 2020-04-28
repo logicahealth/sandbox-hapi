@@ -74,7 +74,7 @@ case "${ENVIRONMENT}" in
         ;;
 esac
 
-./run-fhir-server.sh $FHIR_VERSION $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
+run-fhir-server.sh $FHIR_VERSION $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
 
 STARTED=0
 
@@ -85,7 +85,7 @@ sleep 60
         let STARTED=1
     else
         ps ax | grep nameForShutdown | grep -v grep | awk '{print $1}' | xargs kill
-        ./run-fhir-server.sh $FHIR_VERSION $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
+        run-fhir-server.sh $FHIR_VERSION $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
     fi
 
 done
