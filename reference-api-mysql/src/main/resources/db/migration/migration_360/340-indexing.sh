@@ -94,7 +94,7 @@ do
                 FHIR_VERSION="stu3"
                 ;;
         esac
-        ./run-fhir-server.sh $FHIR_VERSION $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
+        run-fhir-server.sh $FHIR_VERSION $ENVIRONMENT $SANDBOX_NAME $JASYPT_PASSWORD
         sleep 240
 
         SQL_STRING="SELECT COUNT(*) FROM $FULL_NAME.HFJ_RESOURCE WHERE SP_INDEX_STATUS IS NULL;"
