@@ -20,7 +20,6 @@
 
 package org.hspconsortium.platform.api.smart;
 
-import com.sun.org.apache.xerces.internal.impl.dv.util.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpRequest;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -40,6 +39,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
+import java.util.Base64;
 
 @Component
 public class LaunchOrchestrationSendEndpoint {
@@ -90,7 +90,7 @@ public class LaunchOrchestrationSendEndpoint {
 
     protected static void setAuthorizationHeader(HttpRequest request, String clientId, String clientSecret) {
         String authHeader = String.format("%s:%s", clientId, clientSecret == null ? "" : clientSecret);
-        String encoded = Base64.encode(authHeader.getBytes());
+        String encoded = Base64.getEncoder().encodeToString(authHeader.getBytes());
         request.addHeader("Authorization", String.format("Basic %s", encoded));
     }
 }
