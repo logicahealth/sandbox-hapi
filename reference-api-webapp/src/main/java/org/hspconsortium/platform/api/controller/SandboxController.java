@@ -22,18 +22,16 @@ package org.hspconsortium.platform.api.controller;
 
 import ca.uhn.fhir.rest.server.exceptions.ForbiddenOperationException;
 import org.apache.commons.lang3.Validate;
-import org.hspconsortium.platform.api.fhir.model.DataSet;
-import org.hspconsortium.platform.api.fhir.model.ResetSandboxCommand;
-import org.hspconsortium.platform.api.fhir.model.Sandbox;
-import org.hspconsortium.platform.api.fhir.model.SnapshotSandboxCommand;
-import org.hspconsortium.platform.api.fhir.service.SandboxService;
+import org.hspconsortium.platform.api.model.DataSet;
+import org.hspconsortium.platform.api.model.ResetSandboxCommand;
+import org.hspconsortium.platform.api.model.Sandbox;
+import org.hspconsortium.platform.api.service.SandboxService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Profile;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.constraints.NotNull;
-import java.util.Set;
 
 @RestController
 @RequestMapping("${hspc.platform.api.sandboxPath:/sandbox}")
@@ -77,32 +75,6 @@ public class SandboxController {
     public String reset(@RequestBody ResetSandboxCommand resetSandboxCommand) {
         sandboxService.reset(sandboxName, resetSandboxCommand.getDataSet());
         return "Success";
-    }
-
-    @RequestMapping(path = "/snapshot", method = RequestMethod.GET)
-    public Set<String> getSnapshots() {
-        return sandboxService.getSandboxSnapshots(sandboxName);
-    }
-
-    @RequestMapping(path = "/snapshot/{snapshotId}", method = RequestMethod.POST)
-    public String snapshot(@PathVariable("snapshotId") String snapshotId,
-                                @RequestBody SnapshotSandboxCommand snapshotSandboxCommand) {
-        Validate.notNull(snapshotId);
-        Validate.isTrue(snapshotId.matches("^[a-zA-Z0-9]+$"), "Snapshot ID must only contain alphanumeric characters");
-        Validate.isTrue(snapshotId.length() < 20, "Snapshot ID must be less than 20 characters");
-        Validate.notNull(snapshotSandboxCommand);
-        Validate.notNull(snapshotSandboxCommand.getAction());
-
-        switch (snapshotSandboxCommand.getAction()) {
-            case Take:
-                return sandboxService.takeSnapshot(sandboxName, snapshotId);
-            case Restore:
-                return sandboxService.restoreSnapshot(sandboxName, snapshotId);
-            case Delete:
-                return sandboxService.deleteSnapshot(sandboxName, snapshotId);
-            default:
-                throw new RuntimeException("Unknown sandbox command action: " + snapshotSandboxCommand.getAction());
-        }
     }
 
     private void validate(String teamId) {
