@@ -20,26 +20,20 @@
 
 package org.hspconsortium.platform.api.controller;
 
-import org.hspconsortium.platform.api.fhir.model.DataSet;
-import org.hspconsortium.platform.api.fhir.model.ResetSandboxCommand;
-import org.hspconsortium.platform.api.fhir.model.Sandbox;
-import org.hspconsortium.platform.api.fhir.model.SnapshotSandboxCommand;
-import org.hspconsortium.platform.api.fhir.service.SandboxService;
+import org.hspconsortium.platform.api.model.ResetSandboxCommand;
+import org.hspconsortium.platform.api.model.Sandbox;
+import org.hspconsortium.platform.api.service.SandboxService;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.security.oauth2.common.exceptions.UnauthorizedUserException;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyString;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 public class MultitenantSandboxControllerTest {
 
@@ -127,48 +121,6 @@ public class MultitenantSandboxControllerTest {
     public void resetTestUserNotAuthorized() {
         when(sandboxService.verifyUser(request, teamId)).thenReturn(false);
         multitenantSandboxController.reset(request, teamId, new ResetSandboxCommand());
-    }
-
-    @Test
-    public void getSnapshotsTest() {
-        Set<String> stringSet = new HashSet<>();
-        when(sandboxService.getSandboxSnapshots(teamId)).thenReturn(stringSet);
-        Set<String> returnedStringSet = multitenantSandboxController.getSnapshots(teamId);
-        assertEquals(stringSet, returnedStringSet);
-    }
-
-    @Test
-    public void snapshotTestTake() {
-        SnapshotSandboxCommand snapshotSandboxCommand = new SnapshotSandboxCommand();
-        snapshotSandboxCommand.setAction(SnapshotSandboxCommand.Action.Take);
-        when(sandboxService.takeSnapshot(teamId, snapshotId)).thenReturn("Success");
-        String returnedString = multitenantSandboxController.snapshot(teamId, snapshotId, snapshotSandboxCommand);
-        assertEquals("Success", returnedString);
-    }
-
-    @Test
-    public void snapshotTestRestore() {
-        SnapshotSandboxCommand snapshotSandboxCommand = new SnapshotSandboxCommand();
-        snapshotSandboxCommand.setAction(SnapshotSandboxCommand.Action.Restore);
-        when(sandboxService.restoreSnapshot(teamId, snapshotId)).thenReturn("Success");
-        String returnedString = multitenantSandboxController.snapshot(teamId, snapshotId, snapshotSandboxCommand);
-        assertEquals("Success", returnedString);
-    }
-
-    @Test
-    public void snapshotTestDelete() {
-        SnapshotSandboxCommand snapshotSandboxCommand = new SnapshotSandboxCommand();
-        snapshotSandboxCommand.setAction(SnapshotSandboxCommand.Action.Delete);
-        when(sandboxService.deleteSnapshot(teamId, snapshotId)).thenReturn("Success");
-        String returnedString = multitenantSandboxController.snapshot(teamId, snapshotId, snapshotSandboxCommand);
-        assertEquals("Success", returnedString);
-    }
-
-    @Test(expected = RuntimeException.class)
-    public void snapshotTestError() {
-        SnapshotSandboxCommand snapshotSandboxCommand = new SnapshotSandboxCommand();
-        when(sandboxService.takeSnapshot(teamId, snapshotId)).thenReturn("Success");
-        multitenantSandboxController.snapshot(teamId, snapshotId, snapshotSandboxCommand);
     }
 
     // Skipping "echo" endpoints because they seem unused.

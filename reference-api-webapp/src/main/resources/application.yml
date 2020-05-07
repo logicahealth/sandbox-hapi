@@ -50,19 +50,25 @@ hspc:
         userAuthPath: /user/authorize
       fhir:
         datasource:
+          schemaPrefix: hspc_8_
           schema: hspc_8_${hspc.platform.api.sandbox.name}
 #          driverClassName: com.mysql.cj.jdbc.Driver
           host: ${DB_HOST:localhost}
-          url: jdbc:mysql://${hspc.platform.api.fhir.datasource.host}:${DB_PORT:3306}/${hspc.platform.api.fhir.datasource.schema}
+          url: jdbc:mysql://${hspc.platform.api.fhir.datasource.host}:${DB_PORT:3306}
           username: ${DB_USER:root}
           password: ${DB_PASSWORD:password}
           emptySchemaScriptPattern: db/mysql/hspc_%s_schema_empty.sql
           starterSchemaScriptPattern: db/mysql/hspc_%s_%s_%s_dataset.sql
           # Comma-separated list of scripts to run in order
           initializationScripts: db/mysql/V1__convert_hapi_3.2.0_to_3.3.0.sql
+          minimumIdle: 2
+          maximumPoolSize: 20
+          idleTimeout: 240000
+          connectionTimeout: 240000
+          leakDetectionThreshold: 0
           cache:
             size: 10
-        defaultTenantId: ${hspc.platform.api.sandbox.name}
+          defaultTenant: ${hspc.platform.api.sandbox.name}
         templateSandboxes: MasterDstu2Empty, MasterDstu2Smart, MasterStu3Empty, MasterStu3Smart, MasterR4Empty, MasterR4Smart
         hibernate:
           dialect: org.hibernate.dialect.MySQL5Dialect
@@ -76,6 +82,9 @@ hspc:
         profileResources: StructureDefinition, CodeSystem, ValueSet, SearchParameter
         maxPageSize: 200
         defaultPageSize: 50
+        description: LogicalHealth FHIR CDR # Shows up in /metadata response
+        fhirSecureServletPath: /data
+        fhirOpenServletPath: /open
     # these values are used for internal calls to the auth server
     authorization:
       protocol: http

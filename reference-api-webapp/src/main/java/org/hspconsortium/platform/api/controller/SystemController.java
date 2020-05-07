@@ -20,17 +20,15 @@
 
 package org.hspconsortium.platform.api.controller;
 
-import org.hspconsortium.platform.api.fhir.DataSourceRepository;
-import org.hspconsortium.platform.api.fhir.model.ResetSecurityCommand;
-import org.hspconsortium.platform.api.fhir.service.SandboxService;
+import org.hspconsortium.platform.api.model.ResetSecurityCommand;
+import org.hspconsortium.platform.api.multitenant.db.DataSourceRepository;
+import org.hspconsortium.platform.api.service.SandboxService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
 
 @RestController
 @RequestMapping("/system")
@@ -68,13 +66,14 @@ public class SystemController {
         return sandboxService.allSandboxes().toString();
     }
 
-    @RequestMapping(value = "/memory", method = RequestMethod.PUT)
-    public HashMap<String, Double> memoryAllSandboxes(@RequestBody List<String> sandboxIds) {
-        return dataSourceRepository.memoryAllSandboxes(sandboxIds);
-    }
-
-    @RequestMapping(value = "/memory/user", method = RequestMethod.PUT)
-    public HashMap<String, Double> memoryAllSandboxesOfUser(@RequestBody List<String> sandboxIds) {
-        return dataSourceRepository.memoryAllSandboxesOfUser(sandboxIds);
-    }
+    // are these needed anymore?
+//    @RequestMapping(value = "/memory", method = RequestMethod.PUT)
+//    public HashMap<String, Double> memoryAllSandboxes(@RequestBody List<String> sandboxIds) {
+//        return dataSourceRepository.memoryAllSandboxes(sandboxIds);
+//    }
+//
+//    @RequestMapping(value = "/memory/user", method = RequestMethod.PUT)
+//    public HashMap<String, Double> memoryAllSandboxesOfUser(@RequestBody List<String> sandboxIds) {
+//        return dataSourceRepository.memoryAllSandboxesOfUser(sandboxIds);
+//    }
 }
