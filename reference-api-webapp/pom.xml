@@ -143,6 +143,16 @@
             <groupId>ca.uhn.hapi.fhir</groupId>
             <artifactId>hapi-fhir-jpaserver-base</artifactId>
             <version>${hapi.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.hibernate</groupId>
+                    <artifactId>hibernate-search-elasticsearch</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>pl.allegro.tech</groupId>
+                    <artifactId>embedded-elasticsearch</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
