@@ -21,7 +21,7 @@
 package org.hspconsortium.platform.api.oauth2;
 
 import org.apache.commons.lang3.Validate;
-import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryConfig;
+import org.hspconsortium.platform.api.smart.fhir.MetadataRepositoryConfig;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

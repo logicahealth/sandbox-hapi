@@ -18,10 +18,10 @@
  *  * #L%
  */
 
-package org.hspconsortium.platform.api.fhir.repository;
+package org.hspconsortium.platform.api.smart.fhir;
 
-import org.hl7.fhir.dstu3.model.CapabilityStatement;
+import ca.uhn.fhir.model.dstu2.resource.Conformance;
 
-public interface MetadataRepositoryStu3 {
-    CapabilityStatement addCapabilityStatement(CapabilityStatement capabilityStatement);
+public interface MetadataRepositoryDstu2 {
+    Conformance addConformance(Conformance conformance);
 }

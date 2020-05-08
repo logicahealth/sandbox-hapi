@@ -18,10 +18,10 @@
  *  * #L%
  */
 
-package org.hspconsortium.platform.api.fhir.repository;
+package org.hspconsortium.platform.api.smart.fhir;
 
-import org.hl7.fhir.r4.model.CapabilityStatement;
+import org.hl7.fhir.dstu3.model.CapabilityStatement;
 
-public interface MetadataRepositoryR4 {
+public interface MetadataRepositoryStu3 {
     CapabilityStatement addCapabilityStatement(CapabilityStatement capabilityStatement);
 }

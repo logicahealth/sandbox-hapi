@@ -18,38 +18,38 @@
  *  * #L%
  */
 
-package org.hspconsortium.platform.api.conformance;
+package org.hspconsortium.platform.api.smart.fhir;
 
 import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
-import ca.uhn.fhir.jpa.provider.JpaConformanceProviderDstu2;
-import ca.uhn.fhir.model.dstu2.composite.MetaDt;
-import ca.uhn.fhir.model.dstu2.resource.Bundle;
-import ca.uhn.fhir.model.dstu2.resource.Conformance;
+import ca.uhn.fhir.jpa.provider.r4.JpaConformanceProviderR4;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.RestfulServer;
-import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryDstu2;
+import org.hl7.fhir.r4.model.Bundle;
+import org.hl7.fhir.r4.model.CapabilityStatement;
+import org.hl7.fhir.r4.model.Meta;
+import org.hspconsortium.platform.api.smart.fhir.MetadataRepositoryR4;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class HspcConformanceProviderDstu2 extends JpaConformanceProviderDstu2 {
-    private MetadataRepositoryDstu2 metadataRepository;
+public class HspcConformanceProviderR4 extends JpaConformanceProviderR4 {
+    private MetadataRepositoryR4 metadataRepository;
 
-    public HspcConformanceProviderDstu2(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, MetaDt> theSystemDao, DaoConfig theDaoConfig, MetadataRepositoryDstu2 metadataRepository) {
+    public HspcConformanceProviderR4(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, Meta> theSystemDao, DaoConfig theDaoConfig, MetadataRepositoryR4 metadataRepository) {
         super(theRestfulServer, theSystemDao, theDaoConfig);
         this.metadataRepository = metadataRepository;
     }
 
-    public void setMetadataRepository(MetadataRepositoryDstu2 metadataRepository) {
+    public void setMetadataRepository(MetadataRepositoryR4 metadataRepository) {
         this.metadataRepository = metadataRepository;
     }
 
     @Override
-    public Conformance getServerConformance(HttpServletRequest theRequest, RequestDetails theRequestDetails) {
-        Conformance conformance = super.getServerConformance(theRequest, theRequestDetails);
+    public CapabilityStatement getServerConformance(HttpServletRequest theRequest, RequestDetails theRequestDetails) {
+        CapabilityStatement capabilityStatement = super.getServerConformance(theRequest, theRequestDetails);
         if (theRequest.getRequestURI().split("/")[2].equals("data")) { // If someone can think of something better, please implement
-            return this.metadataRepository.addConformance(conformance);
+            return this.metadataRepository.addCapabilityStatement(capabilityStatement);
         }
-        return conformance;
+        return capabilityStatement;
     }
 }

@@ -18,7 +18,7 @@
  *  * #L%
  */
 
-package org.hspconsortium.platform.api.fhir.repository;
+package org.hspconsortium.platform.api.smart.fhir;
 
 import org.hl7.fhir.r4.model.*;
 import org.springframework.beans.factory.annotation.Autowired;
