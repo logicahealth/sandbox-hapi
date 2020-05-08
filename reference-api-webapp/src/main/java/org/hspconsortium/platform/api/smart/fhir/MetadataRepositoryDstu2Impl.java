@@ -18,7 +18,7 @@
  *  * #L%
  */
 
-package org.hspconsortium.platform.api.fhir.repository;
+package org.hspconsortium.platform.api.smart.fhir;
 
 import ca.uhn.fhir.model.api.ExtensionDt;
 import ca.uhn.fhir.model.dstu2.composite.BoundCodeableConceptDt;

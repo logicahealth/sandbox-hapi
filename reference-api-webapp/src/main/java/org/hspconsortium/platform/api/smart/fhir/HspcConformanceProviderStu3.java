@@ -18,7 +18,7 @@
  *  * #L%
  */
 
-package org.hspconsortium.platform.api.conformance;
+package org.hspconsortium.platform.api.smart.fhir;
 
 import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
@@ -28,7 +28,7 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.Meta;
-import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryStu3;
+import org.hspconsortium.platform.api.smart.fhir.MetadataRepositoryStu3;
 
 import javax.servlet.http.HttpServletRequest;
 
