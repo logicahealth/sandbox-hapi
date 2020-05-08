@@ -43,6 +43,12 @@ import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Meta;
+import org.hspconsortium.platform.api.conformance.HspcConformanceProviderDstu2;
+import org.hspconsortium.platform.api.conformance.HspcConformanceProviderR4;
+import org.hspconsortium.platform.api.conformance.HspcConformanceProviderStu3;
+import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryDstu2Impl;
+import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryR4Impl;
+import org.hspconsortium.platform.api.fhir.repository.MetadataRepositoryStu3Impl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -128,14 +134,16 @@ public class FhirRestServlet extends RestfulServer {
 		 */
         if (fhirVersion == FhirVersionEnum.DSTU2) {
             IFhirSystemDao<ca.uhn.fhir.model.dstu2.resource.Bundle, MetaDt> systemDao = myAppCtx.getBean("mySystemDaoDstu2", IFhirSystemDao.class);
-            JpaConformanceProviderDstu2 confProvider = new JpaConformanceProviderDstu2(this, systemDao,
-                    myAppCtx.getBean(DaoConfig.class));
-            confProvider.setImplementationDescription("Example Server");
+            HspcConformanceProviderDstu2 confProvider = new HspcConformanceProviderDstu2(this, systemDao,
+                    myAppCtx.getBean(DaoConfig.class),
+                    myAppCtx.getBean(MetadataRepositoryDstu2Impl.class));
+            confProvider.setImplementationDescription(serverDescription);
             setServerConformanceProvider(confProvider);
         } else if (fhirVersion == FhirVersionEnum.DSTU3) {
             IFhirSystemDao<Bundle, Meta> systemDao = myAppCtx.getBean("mySystemDaoDstu3", IFhirSystemDao.class);
-            JpaConformanceProviderDstu3 confProvider = new JpaConformanceProviderDstu3(this, systemDao,
-                    myAppCtx.getBean(DaoConfig.class));
+            HspcConformanceProviderStu3 confProvider = new HspcConformanceProviderStu3(this, systemDao,
+                    myAppCtx.getBean(DaoConfig.class),
+                    myAppCtx.getBean(MetadataRepositoryStu3Impl.class));
             confProvider.setImplementationDescription(serverDescription);
             setServerConformanceProvider(confProvider);
             // CQF implementation
@@ -148,8 +156,9 @@ public class FhirRestServlet extends RestfulServer {
 //            setResourceProviders(provider.getCollectionProviders());
         } else if (fhirVersion == FhirVersionEnum.R4) {
             IFhirSystemDao<org.hl7.fhir.r4.model.Bundle, org.hl7.fhir.r4.model.Meta> systemDao = myAppCtx.getBean("mySystemDaoR4", IFhirSystemDao.class);
-            JpaConformanceProviderR4 confProvider = new JpaConformanceProviderR4(this, systemDao,
-                    myAppCtx.getBean(DaoConfig.class));
+            HspcConformanceProviderR4 confProvider = new HspcConformanceProviderR4(this, systemDao,
+                    myAppCtx.getBean(DaoConfig.class),
+                    myAppCtx.getBean(MetadataRepositoryR4Impl.class));
             confProvider.setImplementationDescription(serverDescription);
             setServerConformanceProvider(confProvider);
         } else {
