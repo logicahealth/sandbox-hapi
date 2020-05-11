@@ -28,7 +28,9 @@ import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.JpaSystemProviderDstu2;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
 import ca.uhn.fhir.jpa.provider.r4.JpaSystemProviderR4;
+import ca.uhn.fhir.jpa.rp.dstu2.ValueSetResourceProvider;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
+import ca.uhn.fhir.jpa.term.api.ITermReadSvcDstu3;
 import ca.uhn.fhir.jpa.util.ResourceProviderFactory;
 import ca.uhn.fhir.model.dstu2.composite.MetaDt;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
@@ -46,6 +48,8 @@ import org.hspconsortium.platform.api.smart.fhir.HspcConformanceProviderStu3;
 import org.hspconsortium.platform.api.smart.fhir.MetadataRepositoryDstu2Impl;
 import org.hspconsortium.platform.api.smart.fhir.MetadataRepositoryR4Impl;
 import org.hspconsortium.platform.api.smart.fhir.MetadataRepositoryStu3Impl;
+import org.opencds.cqf.cql.terminology.TerminologyProvider;
+//import org.opencds.cqf.dstu3.providers.JpaTerminologyProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -143,14 +147,16 @@ public class FhirRestServlet extends RestfulServer {
                     myAppCtx.getBean(MetadataRepositoryStu3Impl.class));
             confProvider.setImplementationDescription(serverDescription);
             setServerConformanceProvider(confProvider);
+
             // CQF implementation
-            // TODO CQF Ruler needs to be upgraded to HAPI 4.2
 //            JpaDataProvider provider = new JpaDataProvider(beans);
-            // TODO JpaTerminologyProvider must be upgraded to HAPI 4.2
-//            TerminologyProvider terminologyProvider = new JpaTerminologyProvider(myAppCtx.getBean("terminologyService", IHapiTerminologySvcDstu3.class), getFhirContext(), (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet"));
+//            // TODO JpaTerminologyProvider must be upgraded to HAPI 4.2
+//            TerminologyProvider terminologyProvider = new org.opencds.cqf.dstu3.providers.JpaTerminologyProvider(myAppCtx.getBean("terminologyService", ITermReadSvcDstu3.class), getFhirContext(), (ValueSetResourceProvider) provider.resolveProvider("ValueSet"));
 //            provider.setTerminologyProvider(terminologyProvider);
 //            resolveResourceProviders(provider, systemDao);
 //            setResourceProviders(provider.getCollectionProviders());
+
+
         } else if (fhirVersion == FhirVersionEnum.R4) {
             IFhirSystemDao<org.hl7.fhir.r4.model.Bundle, org.hl7.fhir.r4.model.Meta> systemDao = myAppCtx.getBean("mySystemDaoR4", IFhirSystemDao.class);
             HspcConformanceProviderR4 confProvider = new HspcConformanceProviderR4(this, systemDao,
@@ -158,6 +164,13 @@ public class FhirRestServlet extends RestfulServer {
                     myAppCtx.getBean(MetadataRepositoryR4Impl.class));
             confProvider.setImplementationDescription(serverDescription);
             setServerConformanceProvider(confProvider);
+            // CQF implementation
+//            JpaDataProvider provider = new JpaDataProvider(beans);
+//            // TODO JpaTerminologyProvider must be upgraded to HAPI 4.2
+//            TerminologyProvider terminologyProvider = new org.opencds.cqf.r4.providers.JpaTerminologyProvider(myAppCtx.getBean("terminologyService", IHapiTerminologySvcDstu3.class), getFhirContext(), (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet"));
+//            provider.setTerminologyProvider(terminologyProvider);
+//            resolveResourceProviders(provider, systemDao);
+//            setResourceProviders(provider.getCollectionProviders());
         } else {
             throw new IllegalStateException();
         }
