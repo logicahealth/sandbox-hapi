@@ -24,13 +24,15 @@ package org.hspconsortium.platform.api;
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.context.FhirVersionEnum;
 import ca.uhn.fhir.jpa.dao.DaoConfig;
+import ca.uhn.fhir.jpa.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
+import ca.uhn.fhir.jpa.provider.BaseJpaResourceProvider;
 import ca.uhn.fhir.jpa.provider.JpaSystemProviderDstu2;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
 import ca.uhn.fhir.jpa.provider.r4.JpaSystemProviderR4;
-import ca.uhn.fhir.jpa.rp.dstu2.ValueSetResourceProvider;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
-import ca.uhn.fhir.jpa.term.api.ITermReadSvcDstu3;
+import ca.uhn.fhir.jpa.term.api.ITermReadSvcR4;
 import ca.uhn.fhir.jpa.util.ResourceProviderFactory;
 import ca.uhn.fhir.model.dstu2.composite.MetaDt;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
@@ -40,16 +42,18 @@ import ca.uhn.fhir.rest.server.RestfulServer;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
 import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import org.apache.commons.lang3.StringUtils;
-import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.Meta;
+import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.hspconsortium.platform.api.smart.fhir.HspcConformanceProviderDstu2;
 import org.hspconsortium.platform.api.smart.fhir.HspcConformanceProviderR4;
 import org.hspconsortium.platform.api.smart.fhir.HspcConformanceProviderStu3;
 import org.hspconsortium.platform.api.smart.fhir.MetadataRepositoryDstu2Impl;
 import org.hspconsortium.platform.api.smart.fhir.MetadataRepositoryR4Impl;
 import org.hspconsortium.platform.api.smart.fhir.MetadataRepositoryStu3Impl;
+import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
+import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
+import org.opencds.cqf.cql.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
-//import org.opencds.cqf.dstu3.providers.JpaTerminologyProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -91,17 +95,22 @@ public class FhirRestServlet extends RestfulServer {
 
     private String fhirOpenServletPathPart;
 
+    DaoRegistry registry;
+
     @SuppressWarnings("unchecked")
     @Override
     protected void initialize() throws ServletException {
         super.initialize();
         setFhirContext(fhirContext);
 
+        this.registry = myAppCtx.getBean(DaoRegistry.class);
+
         fhirSecureServletPathPart = (fhirSecureServletPath != null && fhirSecureServletPath.length() > 0 ? fhirSecureServletPath.substring(1) : "");
 
         fhirOpenServletPathPart = (fhirOpenServletPath != null && fhirOpenServletPath.length() > 0 ? fhirOpenServletPath.substring(1) : "");
 
         FhirVersionEnum fhirVersion = fhirContext.getVersion().getVersion();
+
 
         // configure the parser to allow versioned resource references, see http://hapifhir.io/doc_resource_references.html#Versioned_References
         getFhirContext().getParserOptions().setStripVersionsFromReferences(false);
@@ -141,7 +150,7 @@ public class FhirRestServlet extends RestfulServer {
             confProvider.setImplementationDescription(serverDescription);
             setServerConformanceProvider(confProvider);
         } else if (fhirVersion == FhirVersionEnum.DSTU3) {
-            IFhirSystemDao<Bundle, Meta> systemDao = myAppCtx.getBean("mySystemDaoDstu3", IFhirSystemDao.class);
+            IFhirSystemDao<org.hl7.fhir.dstu3.model.Bundle, Meta> systemDao = myAppCtx.getBean("mySystemDaoDstu3", IFhirSystemDao.class);
             HspcConformanceProviderStu3 confProvider = new HspcConformanceProviderStu3(this, systemDao,
                     myAppCtx.getBean(DaoConfig.class),
                     myAppCtx.getBean(MetadataRepositoryStu3Impl.class));
@@ -154,8 +163,9 @@ public class FhirRestServlet extends RestfulServer {
 //            TerminologyProvider terminologyProvider = new org.opencds.cqf.dstu3.providers.JpaTerminologyProvider(myAppCtx.getBean("terminologyService", ITermReadSvcDstu3.class), getFhirContext(), (ValueSetResourceProvider) provider.resolveProvider("ValueSet"));
 //            provider.setTerminologyProvider(terminologyProvider);
 //            resolveResourceProviders(provider, systemDao);
+//            TODO: fix to match the method
+//            resolveProvidersStu3(providerFactory, localSystemTerminologyProvider, registry);
 //            setResourceProviders(provider.getCollectionProviders());
-
 
         } else if (fhirVersion == FhirVersionEnum.R4) {
             IFhirSystemDao<org.hl7.fhir.r4.model.Bundle, org.hl7.fhir.r4.model.Meta> systemDao = myAppCtx.getBean("mySystemDaoR4", IFhirSystemDao.class);
@@ -167,9 +177,11 @@ public class FhirRestServlet extends RestfulServer {
             // CQF implementation
 //            JpaDataProvider provider = new JpaDataProvider(beans);
 //            // TODO JpaTerminologyProvider must be upgraded to HAPI 4.2
-//            TerminologyProvider terminologyProvider = new org.opencds.cqf.r4.providers.JpaTerminologyProvider(myAppCtx.getBean("terminologyService", IHapiTerminologySvcDstu3.class), getFhirContext(), (ValueSetResourceProvider) provider.resolveResourceProvider("ValueSet"));
+//            TerminologyProvider terminologyProvider = new org.opencds.cqf.r4.providers.JpaTerminologyProvider(myAppCtx.getBean("terminologyService", ITermReadSvcR4.class), getFhirContext(), ca.uhn.fhir.jpa.rp.r4.ValueSetResourceProvider.class);
 //            provider.setTerminologyProvider(terminologyProvider);
 //            resolveResourceProviders(provider, systemDao);
+//            TODO: fix to match the method
+//            resolveProvidersR4(providerFactory, localSystemTerminologyProvider, registry);
 //            setResourceProviders(provider.getCollectionProviders());
         } else {
             throw new IllegalStateException();
@@ -230,7 +242,7 @@ public class FhirRestServlet extends RestfulServer {
          * with this feature.
          */
         // TODO this must be upgraded to HAPI 4.2
-//        if (fhirVersionEnum == FhirVersionEnum.DSTU3) {
+//        if (fhirVersion == FhirVersionEnum.DSTU3) {
 //            registerProvider(myAppCtx.getBean(TerminologyUploaderProviderDstu3.class));
 //        }
     }
@@ -320,7 +332,130 @@ public class FhirRestServlet extends RestfulServer {
         throw new NullPointerException("Tenant does not exist in path: " + servletPath);
     }
 
-    // TODO CQF Ruler needs to be upgraded to HAPI 4.2
+    protected org.opencds.cqf.library.stu3.NarrativeProvider getNarrativeProviderStu3() {
+        return new org.opencds.cqf.library.stu3.NarrativeProvider();
+    }
+
+    protected org.opencds.cqf.library.r4.NarrativeProvider getNarrativeProviderR4() {
+        return new org.opencds.cqf.library.r4.NarrativeProvider();
+    }
+
+    // Since resource provider resolution not lazy, the providers here must be resolved in the correct order of dependencies.
+    private void resolveProvidersStu3(EvaluationProviderFactory providerFactory, org.opencds.cqf.dstu3.providers.JpaTerminologyProvider localSystemTerminologyProvider, DaoRegistry registry)
+            throws ServletException
+    {
+        org.opencds.cqf.library.stu3.NarrativeProvider narrativeProvider = this.getNarrativeProviderStu3();
+        org.opencds.cqf.dstu3.providers.HQMFProvider hqmfProvider = new org.opencds.cqf.dstu3.providers.HQMFProvider();
+
+        // Code System Update
+        org.opencds.cqf.dstu3.providers.CodeSystemUpdateProvider csUpdate = new org.opencds.cqf.dstu3.providers.CodeSystemUpdateProvider(
+                this.getDao(org.hl7.fhir.dstu3.model.ValueSet.class),
+                this.getDao(org.hl7.fhir.dstu3.model.CodeSystem.class));
+        this.registerProvider(csUpdate);
+
+        // Cache Value Sets
+        org.opencds.cqf.dstu3.providers.CacheValueSetsProvider cvs = new org.opencds.cqf.dstu3.providers.CacheValueSetsProvider(this.registry.getSystemDao(), this.getDao(org.hl7.fhir.dstu3.model.Endpoint.class));
+        this.registerProvider(cvs);
+
+        //Library processing
+        org.opencds.cqf.dstu3.providers.LibraryOperationsProvider libraryProvider = new org.opencds.cqf.dstu3.providers.LibraryOperationsProvider((ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider)this.getResourceProvider(org.hl7.fhir.dstu3.model.Library.class), narrativeProvider);
+        this.registerProvider(libraryProvider);
+
+        // CQL Execution
+        org.opencds.cqf.dstu3.providers.CqlExecutionProvider cql = new org.opencds.cqf.dstu3.providers.CqlExecutionProvider(libraryProvider, providerFactory);
+        this.registerProvider(cql);
+
+        // Bundle processing
+        org.opencds.cqf.dstu3.providers.ApplyCqlOperationProvider bundleProvider = new org.opencds.cqf.dstu3.providers.ApplyCqlOperationProvider(providerFactory, this.getDao(org.hl7.fhir.dstu3.model.Bundle.class));
+        this.registerProvider(bundleProvider);
+
+        // Measure processing
+        org.opencds.cqf.dstu3.providers.MeasureOperationsProvider measureProvider = new org.opencds.cqf.dstu3.providers.MeasureOperationsProvider(this.registry, providerFactory, narrativeProvider, hqmfProvider,
+                libraryProvider, (ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider)this.getResourceProvider(org.hl7.fhir.dstu3.model.Measure.class));
+        this.registerProvider(measureProvider);
+
+        // // ActivityDefinition processing
+        org.opencds.cqf.dstu3.providers.ActivityDefinitionApplyProvider actDefProvider = new org.opencds.cqf.dstu3.providers.ActivityDefinitionApplyProvider(this.fhirContext, cql, this.getDao(org.hl7.fhir.dstu3.model.ActivityDefinition.class));
+        this.registerProvider(actDefProvider);
+
+        JpaFhirRetrieveProvider localSystemRetrieveProvider = new JpaFhirRetrieveProvider(registry, new SearchParameterResolver(this.fhirContext));
+
+        // PlanDefinition processing
+        org.opencds.cqf.dstu3.providers.PlanDefinitionApplyProvider planDefProvider = new org.opencds.cqf.dstu3.providers.PlanDefinitionApplyProvider(this.fhirContext, actDefProvider, this.getDao(org.hl7.fhir.dstu3.model.PlanDefinition.class), this.getDao(org.hl7.fhir.dstu3.model.ActivityDefinition.class), cql);
+        this.registerProvider(planDefProvider);
+
+        org.opencds.cqf.dstu3.servlet.CdsHooksServlet.setPlanDefinitionProvider(planDefProvider);
+        org.opencds.cqf.dstu3.servlet.CdsHooksServlet.setLibraryResolutionProvider(libraryProvider);
+        org.opencds.cqf.dstu3.servlet.CdsHooksServlet.setSystemTerminologyProvider(localSystemTerminologyProvider);
+        org.opencds.cqf.dstu3.servlet.CdsHooksServlet.setSystemRetrieveProvider(localSystemRetrieveProvider);
+    }
+
+    // Since resource provider resolution not lazy, the providers here must be resolved in the correct order of dependencies.
+    private void resolveProvidersR4(EvaluationProviderFactory providerFactory, org.opencds.cqf.r4.providers.JpaTerminologyProvider localSystemTerminologyProvider, DaoRegistry registry)
+            throws ServletException
+    {
+        org.opencds.cqf.library.r4.NarrativeProvider narrativeProvider = this.getNarrativeProviderR4();
+        org.opencds.cqf.r4.providers.HQMFProvider hqmfProvider = new org.opencds.cqf.r4.providers.HQMFProvider();
+
+        // Code System Update
+        org.opencds.cqf.r4.providers.CodeSystemUpdateProvider csUpdate = new org.opencds.cqf.r4.providers.CodeSystemUpdateProvider(
+                this.getDao(org.hl7.fhir.r4.model.ValueSet.class),
+                this.getDao(org.hl7.fhir.r4.model.CodeSystem.class));
+        this.registerProvider(csUpdate);
+
+        // Cache Value Sets
+        org.opencds.cqf.r4.providers.CacheValueSetsProvider cvs = new org.opencds.cqf.r4.providers.CacheValueSetsProvider(this.registry.getSystemDao(), this.getDao(org.hl7.fhir.r4.model.Endpoint.class));
+        this.registerProvider(cvs);
+
+        //Library processing
+        org.opencds.cqf.r4.providers.LibraryOperationsProvider libraryProvider = new org.opencds.cqf.r4.providers.LibraryOperationsProvider((ca.uhn.fhir.jpa.rp.r4.LibraryResourceProvider)this.getResourceProvider(org.hl7.fhir.r4.model.Library.class), narrativeProvider);
+        this.registerProvider(libraryProvider);
+
+        // CQL Execution
+        org.opencds.cqf.r4.providers.CqlExecutionProvider cql = new org.opencds.cqf.r4.providers.CqlExecutionProvider(libraryProvider, providerFactory);
+        this.registerProvider(cql);
+
+        // Bundle processing
+        org.opencds.cqf.r4.providers.ApplyCqlOperationProvider bundleProvider = new org.opencds.cqf.r4.providers.ApplyCqlOperationProvider(providerFactory, this.getDao(org.hl7.fhir.r4.model.Bundle.class));
+        this.registerProvider(bundleProvider);
+
+        // Measure processing
+        org.opencds.cqf.r4.providers.MeasureOperationsProvider measureProvider = new org.opencds.cqf.r4.providers.MeasureOperationsProvider(this.registry, providerFactory, narrativeProvider, hqmfProvider,
+                libraryProvider, (ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider)this.getResourceProvider(org.hl7.fhir.r4.model.Measure.class));
+        this.registerProvider(measureProvider);
+
+        // // ActivityDefinition processing
+        org.opencds.cqf.r4.providers.ActivityDefinitionApplyProvider actDefProvider = new org.opencds.cqf.r4.providers.ActivityDefinitionApplyProvider(this.fhirContext, cql, this.getDao(org.hl7.fhir.r4.model.ActivityDefinition.class));
+        this.registerProvider(actDefProvider);
+
+        JpaFhirRetrieveProvider localSystemRetrieveProvider = new JpaFhirRetrieveProvider(registry, new SearchParameterResolver(this.fhirContext));
+
+        // PlanDefinition processing
+        org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider planDefProvider = new org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider(this.fhirContext, actDefProvider, this.getDao(org.hl7.fhir.r4.model.PlanDefinition.class), this.getDao(org.hl7.fhir.r4.model.ActivityDefinition.class), cql);
+        this.registerProvider(planDefProvider);
+
+        org.opencds.cqf.r4.servlet.CdsHooksServlet.setPlanDefinitionProvider(planDefProvider);
+        org.opencds.cqf.r4.servlet.CdsHooksServlet.setLibraryResolutionProvider(libraryProvider);
+        org.opencds.cqf.r4.servlet.CdsHooksServlet.setSystemTerminologyProvider(localSystemTerminologyProvider);
+        org.opencds.cqf.r4.servlet.CdsHooksServlet.setSystemRetrieveProvider(localSystemRetrieveProvider);
+    }
+
+
+
+    protected <T extends IBaseResource> IFhirResourceDao<T> getDao(Class<T> clazz) {
+        return this.registry.getResourceDao(clazz);
+    }
+
+
+    protected <T extends IBaseResource> BaseJpaResourceProvider<T> getResourceProvider(Class<T> clazz) {
+        return (BaseJpaResourceProvider<T> ) this.getResourceProviders().stream()
+                .filter(x -> x.getResourceType().getSimpleName().equals(clazz.getSimpleName())).findFirst().get();
+    }
+}
+
+
+
+//  CQF Ruler needs to be upgraded to HAPI 4.2
 //    private void resolveResourceProviders(JpaDataProvider provider, IFhirSystemDao<org.hl7.fhir.dstu3.model.Bundle, Meta> systemDao) throws ServletException {
 //        NarrativeProvider narrativeProvider = new NarrativeProvider();
 //        HQMFProvider hqmfProvider = new HQMFProvider();
@@ -425,4 +560,3 @@ public class FhirRestServlet extends RestfulServer {
 ////        register(bulkDataGroupProvider, provider.getCollectionProviders());
 //    }
 
-}
