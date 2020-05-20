@@ -235,21 +235,6 @@ public class FhirRestServlet extends RestfulServer {
             this.registerInterceptor(interceptor);
         }
 
-        // TODO: this has been taken care of in enableCors()
-		/*
-		 * If you are hosting this server at a specific DNS name, the server will try to
-		 * figure out the FHIR base URL based on what the web container tells it, but
-		 * this doesn't always work. If you are setting links in your search bundles that
-		 * just refer to "localhost", you might want to use a server address strategy:
-		 */
-        //setServerAddressStrategy(new HardcodedServerAddressStrategy("http://mydomain.com/fhir/baseDstu3"));
-//
-//        if (serverAddress != null && !StringUtils.isEmpty(serverAddress) && !serverAddress.equals("default")) {
-//            setServerAddressStrategy(new MultiTenantServerAddressStrategy(serverAddress + fhirServletPath, environment));
-//        } else {
-//            setServerAddressStrategy(new MultiTenantServerAddressStrategy(environment));
-//        }
-
         /*
          * If you are using DSTU3+, you may want to add a terminology uploader, which allows
          * uploading of external terminologies such as Snomed CT. Note that this uploader
@@ -257,23 +242,11 @@ public class FhirRestServlet extends RestfulServer {
          * so it is a potential security vulnerability. Consider using an AuthorizationInterceptor
          * with this feature.
          */
-        // TODO this must be upgraded to HAPI 4.2
         if (fhirVersion == FhirVersionEnum.DSTU3) {
-//            registerProvider(myAppCtx.getBean(TerminologyUploaderProviderDstu3.class));
+            registerProvider(myAppCtx.getBean(ca.uhn.fhir.jpa.provider.TerminologyUploaderProvider.class));
         }
     }
 
-//    @Override
-//    protected String getRequestPath(String requestFullPath, String servletContextPath, String servletPath) {
-//        // remove the tenant info from the servletPath, then interpret the rest as the FHIR path
-//        String withoutControllerPath = servletPath.substring(this.escapedLength(fhirServletPath) + 1);
-//        int indexOfFhirPathStart = withoutControllerPath.indexOf("/");
-//        if (indexOfFhirPathStart == -1) {
-//            return "";
-//        }
-//        String fhirPath = withoutControllerPath.substring(indexOfFhirPathStart);
-//        return fhirPath;
-//    }
     /**
      * account for tenant and mapping
      */
