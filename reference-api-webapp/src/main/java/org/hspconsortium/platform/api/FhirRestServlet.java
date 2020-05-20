@@ -29,38 +29,52 @@ import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.BaseJpaResourceProvider;
 import ca.uhn.fhir.jpa.provider.JpaSystemProviderDstu2;
+import ca.uhn.fhir.jpa.provider.TerminologyUploaderProvider;
+import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
+import ca.uhn.fhir.jpa.provider.r4.JpaConformanceProviderR4;
 import ca.uhn.fhir.jpa.provider.r4.JpaSystemProviderR4;
+import ca.uhn.fhir.jpa.rp.r4.ValueSetResourceProvider;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
+import ca.uhn.fhir.jpa.term.api.ITermReadSvcDstu3;
 import ca.uhn.fhir.jpa.term.api.ITermReadSvcR4;
 import ca.uhn.fhir.jpa.util.ResourceProviderFactory;
 import ca.uhn.fhir.model.dstu2.composite.MetaDt;
 import ca.uhn.fhir.narrative.DefaultThymeleafNarrativeGenerator;
 import ca.uhn.fhir.rest.api.EncodingEnum;
 import ca.uhn.fhir.rest.server.ETagSupportEnum;
+import ca.uhn.fhir.rest.server.HardcodedServerAddressStrategy;
 import ca.uhn.fhir.rest.server.RestfulServer;
+import ca.uhn.fhir.rest.server.interceptor.CorsInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.IServerInterceptor;
+import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
 import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import org.apache.commons.lang3.StringUtils;
 import org.hl7.fhir.dstu3.model.Meta;
 import org.hl7.fhir.instance.model.api.IBaseResource;
+import org.hl7.fhir.r4.model.ValueSet;
 import org.hspconsortium.platform.api.smart.fhir.HspcConformanceProviderDstu2;
 import org.hspconsortium.platform.api.smart.fhir.HspcConformanceProviderR4;
 import org.hspconsortium.platform.api.smart.fhir.HspcConformanceProviderStu3;
 import org.hspconsortium.platform.api.smart.fhir.MetadataRepositoryDstu2Impl;
 import org.hspconsortium.platform.api.smart.fhir.MetadataRepositoryR4Impl;
 import org.hspconsortium.platform.api.smart.fhir.MetadataRepositoryStu3Impl;
+import org.opencds.cqf.common.config.HapiProperties;
 import org.opencds.cqf.common.evaluation.EvaluationProviderFactory;
 import org.opencds.cqf.common.retrieve.JpaFhirRetrieveProvider;
 import org.opencds.cqf.cql.searchparam.SearchParameterResolver;
 import org.opencds.cqf.cql.terminology.TerminologyProvider;
+import org.opencds.cqf.r4.evaluation.ProviderFactory;
+import org.opencds.cqf.r4.providers.JpaTerminologyProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
+import org.springframework.web.cors.CorsConfiguration;
 
 import javax.servlet.ServletException;
+import java.util.Arrays;
 import java.util.Collection;
 
 @Component("fhirRestServlet")
@@ -158,15 +172,15 @@ public class FhirRestServlet extends RestfulServer {
             setServerConformanceProvider(confProvider);
 
             // CQF implementation
-//            JpaDataProvider provider = new JpaDataProvider(beans);
-//            // TODO JpaTerminologyProvider must be upgraded to HAPI 4.2
-//            TerminologyProvider terminologyProvider = new org.opencds.cqf.dstu3.providers.JpaTerminologyProvider(myAppCtx.getBean("terminologyService", ITermReadSvcDstu3.class), getFhirContext(), (ValueSetResourceProvider) provider.resolveProvider("ValueSet"));
-//            provider.setTerminologyProvider(terminologyProvider);
-//            resolveResourceProviders(provider, systemDao);
-//            TODO: fix to match the method
-//            resolveProvidersStu3(providerFactory, localSystemTerminologyProvider, registry);
-//            setResourceProviders(provider.getCollectionProviders());
+            JpaConformanceProviderDstu3 configProviderStu3 = new JpaConformanceProviderDstu3(this, systemDao, myAppCtx.getBean(DaoConfig.class));
+            configProviderStu3.setImplementationDescription("CQF Ruler FHIR DSTU3 Server");
+            setServerConformanceProvider(configProviderStu3);
 
+            org.opencds.cqf.dstu3.providers.JpaTerminologyProvider localSystemTerminologyProvider = new org.opencds.cqf.dstu3.providers.JpaTerminologyProvider(myAppCtx.getBean("terminologyService", ITermReadSvcDstu3.class), getFhirContext(), (ca.uhn.fhir.jpa.rp.dstu3.ValueSetResourceProvider)this.getResourceProvider(org.hl7.fhir.dstu3.model.ValueSet.class));
+            EvaluationProviderFactory providerFactory = new ProviderFactory(this.fhirContext, this.registry, localSystemTerminologyProvider);
+
+            resolveProvidersStu3(providerFactory, localSystemTerminologyProvider, this.registry);
+            enableCors();
         } else if (fhirVersion == FhirVersionEnum.R4) {
             IFhirSystemDao<org.hl7.fhir.r4.model.Bundle, org.hl7.fhir.r4.model.Meta> systemDao = myAppCtx.getBean("mySystemDaoR4", IFhirSystemDao.class);
             HspcConformanceProviderR4 confProvider = new HspcConformanceProviderR4(this, systemDao,
@@ -175,14 +189,15 @@ public class FhirRestServlet extends RestfulServer {
             confProvider.setImplementationDescription(serverDescription);
             setServerConformanceProvider(confProvider);
             // CQF implementation
-//            JpaDataProvider provider = new JpaDataProvider(beans);
-//            // TODO JpaTerminologyProvider must be upgraded to HAPI 4.2
-//            TerminologyProvider terminologyProvider = new org.opencds.cqf.r4.providers.JpaTerminologyProvider(myAppCtx.getBean("terminologyService", ITermReadSvcR4.class), getFhirContext(), ca.uhn.fhir.jpa.rp.r4.ValueSetResourceProvider.class);
-//            provider.setTerminologyProvider(terminologyProvider);
-//            resolveResourceProviders(provider, systemDao);
-//            TODO: fix to match the method
-//            resolveProvidersR4(providerFactory, localSystemTerminologyProvider, registry);
-//            setResourceProviders(provider.getCollectionProviders());
+            JpaConformanceProviderR4 configProvider = new JpaConformanceProviderR4(this, systemDao, myAppCtx.getBean(DaoConfig.class));
+            configProvider.setImplementationDescription("CQF Ruler FHIR R4 Server");
+            setServerConformanceProvider(configProvider);
+
+            JpaTerminologyProvider localSystemTerminologyProvider = new JpaTerminologyProvider(myAppCtx.getBean("terminologyService",  ITermReadSvcR4.class), getFhirContext(), (ValueSetResourceProvider)this.getResourceProvider(ValueSet.class));
+            EvaluationProviderFactory providerFactory = new ProviderFactory(this.fhirContext, this.registry, localSystemTerminologyProvider);
+
+            resolveProvidersR4(providerFactory, localSystemTerminologyProvider, this.registry);
+            enableCors();
         } else {
             throw new IllegalStateException();
         }
@@ -220,6 +235,7 @@ public class FhirRestServlet extends RestfulServer {
             this.registerInterceptor(interceptor);
         }
 
+        // TODO: this has been taken care of in enableCors()
 		/*
 		 * If you are hosting this server at a specific DNS name, the server will try to
 		 * figure out the FHIR base URL based on what the web container tells it, but
@@ -242,9 +258,9 @@ public class FhirRestServlet extends RestfulServer {
          * with this feature.
          */
         // TODO this must be upgraded to HAPI 4.2
-//        if (fhirVersion == FhirVersionEnum.DSTU3) {
+        if (fhirVersion == FhirVersionEnum.DSTU3) {
 //            registerProvider(myAppCtx.getBean(TerminologyUploaderProviderDstu3.class));
-//        }
+        }
     }
 
 //    @Override
@@ -342,9 +358,8 @@ public class FhirRestServlet extends RestfulServer {
 
     // Since resource provider resolution not lazy, the providers here must be resolved in the correct order of dependencies.
     private void resolveProvidersStu3(EvaluationProviderFactory providerFactory, org.opencds.cqf.dstu3.providers.JpaTerminologyProvider localSystemTerminologyProvider, DaoRegistry registry)
-            throws ServletException
     {
-        org.opencds.cqf.library.stu3.NarrativeProvider narrativeProvider = this.getNarrativeProviderStu3();
+        org.opencds.cqf.library.stu3.NarrativeProvider narrativeProviderStu3 = this.getNarrativeProviderStu3();
         org.opencds.cqf.dstu3.providers.HQMFProvider hqmfProvider = new org.opencds.cqf.dstu3.providers.HQMFProvider();
 
         // Code System Update
@@ -358,7 +373,7 @@ public class FhirRestServlet extends RestfulServer {
         this.registerProvider(cvs);
 
         //Library processing
-        org.opencds.cqf.dstu3.providers.LibraryOperationsProvider libraryProvider = new org.opencds.cqf.dstu3.providers.LibraryOperationsProvider((ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider)this.getResourceProvider(org.hl7.fhir.dstu3.model.Library.class), narrativeProvider);
+        org.opencds.cqf.dstu3.providers.LibraryOperationsProvider libraryProvider = new org.opencds.cqf.dstu3.providers.LibraryOperationsProvider((ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider)this.getResourceProvider(org.hl7.fhir.dstu3.model.Library.class), narrativeProviderStu3);
         this.registerProvider(libraryProvider);
 
         // CQL Execution
@@ -370,7 +385,7 @@ public class FhirRestServlet extends RestfulServer {
         this.registerProvider(bundleProvider);
 
         // Measure processing
-        org.opencds.cqf.dstu3.providers.MeasureOperationsProvider measureProvider = new org.opencds.cqf.dstu3.providers.MeasureOperationsProvider(this.registry, providerFactory, narrativeProvider, hqmfProvider,
+        org.opencds.cqf.dstu3.providers.MeasureOperationsProvider measureProvider = new org.opencds.cqf.dstu3.providers.MeasureOperationsProvider(this.registry, providerFactory, narrativeProviderStu3, hqmfProvider,
                 libraryProvider, (ca.uhn.fhir.jpa.rp.dstu3.MeasureResourceProvider)this.getResourceProvider(org.hl7.fhir.dstu3.model.Measure.class));
         this.registerProvider(measureProvider);
 
@@ -392,9 +407,8 @@ public class FhirRestServlet extends RestfulServer {
 
     // Since resource provider resolution not lazy, the providers here must be resolved in the correct order of dependencies.
     private void resolveProvidersR4(EvaluationProviderFactory providerFactory, org.opencds.cqf.r4.providers.JpaTerminologyProvider localSystemTerminologyProvider, DaoRegistry registry)
-            throws ServletException
     {
-        org.opencds.cqf.library.r4.NarrativeProvider narrativeProvider = this.getNarrativeProviderR4();
+        org.opencds.cqf.library.r4.NarrativeProvider narrativeProviderR4 = this.getNarrativeProviderR4();
         org.opencds.cqf.r4.providers.HQMFProvider hqmfProvider = new org.opencds.cqf.r4.providers.HQMFProvider();
 
         // Code System Update
@@ -408,7 +422,7 @@ public class FhirRestServlet extends RestfulServer {
         this.registerProvider(cvs);
 
         //Library processing
-        org.opencds.cqf.r4.providers.LibraryOperationsProvider libraryProvider = new org.opencds.cqf.r4.providers.LibraryOperationsProvider((ca.uhn.fhir.jpa.rp.r4.LibraryResourceProvider)this.getResourceProvider(org.hl7.fhir.r4.model.Library.class), narrativeProvider);
+        org.opencds.cqf.r4.providers.LibraryOperationsProvider libraryProvider = new org.opencds.cqf.r4.providers.LibraryOperationsProvider((ca.uhn.fhir.jpa.rp.r4.LibraryResourceProvider)this.getResourceProvider(org.hl7.fhir.r4.model.Library.class), narrativeProviderR4);
         this.registerProvider(libraryProvider);
 
         // CQL Execution
@@ -420,7 +434,7 @@ public class FhirRestServlet extends RestfulServer {
         this.registerProvider(bundleProvider);
 
         // Measure processing
-        org.opencds.cqf.r4.providers.MeasureOperationsProvider measureProvider = new org.opencds.cqf.r4.providers.MeasureOperationsProvider(this.registry, providerFactory, narrativeProvider, hqmfProvider,
+        org.opencds.cqf.r4.providers.MeasureOperationsProvider measureProvider = new org.opencds.cqf.r4.providers.MeasureOperationsProvider(this.registry, providerFactory, narrativeProviderR4, hqmfProvider,
                 libraryProvider, (ca.uhn.fhir.jpa.rp.r4.MeasureResourceProvider)this.getResourceProvider(org.hl7.fhir.r4.model.Measure.class));
         this.registerProvider(measureProvider);
 
@@ -450,6 +464,52 @@ public class FhirRestServlet extends RestfulServer {
     protected <T extends IBaseResource> BaseJpaResourceProvider<T> getResourceProvider(Class<T> clazz) {
         return (BaseJpaResourceProvider<T> ) this.getResourceProviders().stream()
                 .filter(x -> x.getResourceType().getSimpleName().equals(clazz.getSimpleName())).findFirst().get();
+    }
+
+    private void enableCors() {
+
+        /*
+         * This interceptor formats the output using nice colourful
+         * HTML output when the request is detected to come from a
+         * browser.
+         */
+        ResponseHighlighterInterceptor responseHighlighterInterceptor = myAppCtx.getBean(ResponseHighlighterInterceptor.class);
+        this.registerInterceptor(responseHighlighterInterceptor);
+        /*
+         * If you are hosting this server at a specific DNS name, the server will try to
+         * figure out the FHIR base URL based on what the web container tells it, but
+         * this doesn't always work. If you are setting links in your search bundles that
+         * just refer to "localhost", you might want to use a server address strategy:
+         */
+        String serverAddress = HapiProperties.getServerAddress();
+        if (serverAddress != null && serverAddress.length() > 0)
+        {
+            setServerAddressStrategy(new HardcodedServerAddressStrategy(serverAddress));
+        }
+
+        registerProvider(myAppCtx.getBean(TerminologyUploaderProvider.class));
+
+        if (HapiProperties.getCorsEnabled())
+        {
+            CorsConfiguration config = new CorsConfiguration();
+            config.addAllowedHeader("x-fhir-starter");
+            config.addAllowedHeader("Origin");
+            config.addAllowedHeader("Accept");
+            config.addAllowedHeader("X-Requested-With");
+            config.addAllowedHeader("Content-Type");
+            config.addAllowedHeader("Authorization");
+            config.addAllowedHeader("Cache-Control");
+
+            config.addAllowedOrigin(HapiProperties.getCorsAllowedOrigin());
+
+            config.addExposedHeader("Location");
+            config.addExposedHeader("Content-Location");
+            config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+
+            // Create the interceptor and register it
+            CorsInterceptor interceptor = new CorsInterceptor(config);
+            registerInterceptor(interceptor);
+        }
     }
 }
 
