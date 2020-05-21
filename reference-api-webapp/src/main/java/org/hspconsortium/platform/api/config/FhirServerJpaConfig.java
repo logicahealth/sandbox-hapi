@@ -60,6 +60,7 @@ public class FhirServerJpaConfig {
         retVal.setAllowMultipleDelete(true);
         retVal.setIndexMissingFields(DaoConfig.IndexEnabledEnum.ENABLED);
         retVal.setReuseCachedSearchResultsForMillis(null);
+        retVal.setAllowContainsSearches(true);
         return retVal;
     }
 
