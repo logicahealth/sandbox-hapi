@@ -350,12 +350,12 @@ public class FhirRestServlet extends RestfulServer {
         this.registerProvider(libraryProvider);
 
         // CQL Execution
-        org.opencds.cqf.dstu3.providers.CqlExecutionProvider cql = new org.opencds.cqf.dstu3.providers.CqlExecutionProvider(libraryProvider, providerFactory);
-        this.registerProvider(cql);
+//        org.opencds.cqf.dstu3.providers.CqlExecutionProvider cql = new org.opencds.cqf.dstu3.providers.CqlExecutionProvider(libraryProvider, providerFactory);
+//        this.registerProvider(cql);
 
         // Bundle processing
-        org.opencds.cqf.dstu3.providers.ApplyCqlOperationProvider bundleProvider = new org.opencds.cqf.dstu3.providers.ApplyCqlOperationProvider(providerFactory, this.getDao(org.hl7.fhir.dstu3.model.Bundle.class));
-        this.registerProvider(bundleProvider);
+//        org.opencds.cqf.dstu3.providers.ApplyCqlOperationProvider bundleProvider = new org.opencds.cqf.dstu3.providers.ApplyCqlOperationProvider(providerFactory, this.getDao(org.hl7.fhir.dstu3.model.Bundle.class));
+//        this.registerProvider(bundleProvider);
 
         // Measure processing
         org.opencds.cqf.dstu3.providers.MeasureOperationsProvider measureProvider = new org.opencds.cqf.dstu3.providers.MeasureOperationsProvider(this.registry, providerFactory, narrativeProviderStu3, hqmfProvider,
@@ -363,19 +363,19 @@ public class FhirRestServlet extends RestfulServer {
         this.registerProvider(measureProvider);
 
         // // ActivityDefinition processing
-        org.opencds.cqf.dstu3.providers.ActivityDefinitionApplyProvider actDefProvider = new org.opencds.cqf.dstu3.providers.ActivityDefinitionApplyProvider(this.fhirContext, cql, this.getDao(org.hl7.fhir.dstu3.model.ActivityDefinition.class));
-        this.registerProvider(actDefProvider);
+//        org.opencds.cqf.dstu3.providers.ActivityDefinitionApplyProvider actDefProvider = new org.opencds.cqf.dstu3.providers.ActivityDefinitionApplyProvider(this.fhirContext, cql, this.getDao(org.hl7.fhir.dstu3.model.ActivityDefinition.class));
+//        this.registerProvider(actDefProvider);
 
-        JpaFhirRetrieveProvider localSystemRetrieveProvider = new JpaFhirRetrieveProvider(registry, new SearchParameterResolver(this.fhirContext));
+//        JpaFhirRetrieveProvider localSystemRetrieveProvider = new JpaFhirRetrieveProvider(registry, new SearchParameterResolver(this.fhirContext));
 
         // PlanDefinition processing
-        org.opencds.cqf.dstu3.providers.PlanDefinitionApplyProvider planDefProvider = new org.opencds.cqf.dstu3.providers.PlanDefinitionApplyProvider(this.fhirContext, actDefProvider, this.getDao(org.hl7.fhir.dstu3.model.PlanDefinition.class), this.getDao(org.hl7.fhir.dstu3.model.ActivityDefinition.class), cql);
-        this.registerProvider(planDefProvider);
+//        org.opencds.cqf.dstu3.providers.PlanDefinitionApplyProvider planDefProvider = new org.opencds.cqf.dstu3.providers.PlanDefinitionApplyProvider(this.fhirContext, actDefProvider, this.getDao(org.hl7.fhir.dstu3.model.PlanDefinition.class), this.getDao(org.hl7.fhir.dstu3.model.ActivityDefinition.class), cql);
+//        this.registerProvider(planDefProvider);
 
-        org.opencds.cqf.dstu3.servlet.CdsHooksServlet.setPlanDefinitionProvider(planDefProvider);
+//        org.opencds.cqf.dstu3.servlet.CdsHooksServlet.setPlanDefinitionProvider(planDefProvider);
         org.opencds.cqf.dstu3.servlet.CdsHooksServlet.setLibraryResolutionProvider(libraryProvider);
         org.opencds.cqf.dstu3.servlet.CdsHooksServlet.setSystemTerminologyProvider(localSystemTerminologyProvider);
-        org.opencds.cqf.dstu3.servlet.CdsHooksServlet.setSystemRetrieveProvider(localSystemRetrieveProvider);
+//        org.opencds.cqf.dstu3.servlet.CdsHooksServlet.setSystemRetrieveProvider(localSystemRetrieveProvider);
     }
 
     // Since resource provider resolution not lazy, the providers here must be resolved in the correct order of dependencies.
@@ -399,12 +399,12 @@ public class FhirRestServlet extends RestfulServer {
         this.registerProvider(libraryProvider);
 
         // CQL Execution
-        org.opencds.cqf.r4.providers.CqlExecutionProvider cql = new org.opencds.cqf.r4.providers.CqlExecutionProvider(libraryProvider, providerFactory);
-        this.registerProvider(cql);
+//        org.opencds.cqf.r4.providers.CqlExecutionProvider cql = new org.opencds.cqf.r4.providers.CqlExecutionProvider(libraryProvider, providerFactory);
+//        this.registerProvider(cql);
 
         // Bundle processing
-        org.opencds.cqf.r4.providers.ApplyCqlOperationProvider bundleProvider = new org.opencds.cqf.r4.providers.ApplyCqlOperationProvider(providerFactory, this.getDao(org.hl7.fhir.r4.model.Bundle.class));
-        this.registerProvider(bundleProvider);
+//        org.opencds.cqf.r4.providers.ApplyCqlOperationProvider bundleProvider = new org.opencds.cqf.r4.providers.ApplyCqlOperationProvider(providerFactory, this.getDao(org.hl7.fhir.r4.model.Bundle.class));
+//        this.registerProvider(bundleProvider);
 
         // Measure processing
         org.opencds.cqf.r4.providers.MeasureOperationsProvider measureProvider = new org.opencds.cqf.r4.providers.MeasureOperationsProvider(this.registry, providerFactory, narrativeProviderR4, hqmfProvider,
@@ -412,19 +412,19 @@ public class FhirRestServlet extends RestfulServer {
         this.registerProvider(measureProvider);
 
         // // ActivityDefinition processing
-        org.opencds.cqf.r4.providers.ActivityDefinitionApplyProvider actDefProvider = new org.opencds.cqf.r4.providers.ActivityDefinitionApplyProvider(this.fhirContext, cql, this.getDao(org.hl7.fhir.r4.model.ActivityDefinition.class));
-        this.registerProvider(actDefProvider);
+//        org.opencds.cqf.r4.providers.ActivityDefinitionApplyProvider actDefProvider = new org.opencds.cqf.r4.providers.ActivityDefinitionApplyProvider(this.fhirContext, cql, this.getDao(org.hl7.fhir.r4.model.ActivityDefinition.class));
+//        this.registerProvider(actDefProvider);
 
-        JpaFhirRetrieveProvider localSystemRetrieveProvider = new JpaFhirRetrieveProvider(registry, new SearchParameterResolver(this.fhirContext));
+//        JpaFhirRetrieveProvider localSystemRetrieveProvider = new JpaFhirRetrieveProvider(registry, new SearchParameterResolver(this.fhirContext));
 
         // PlanDefinition processing
-        org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider planDefProvider = new org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider(this.fhirContext, actDefProvider, this.getDao(org.hl7.fhir.r4.model.PlanDefinition.class), this.getDao(org.hl7.fhir.r4.model.ActivityDefinition.class), cql);
-        this.registerProvider(planDefProvider);
+//        org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider planDefProvider = new org.opencds.cqf.r4.providers.PlanDefinitionApplyProvider(this.fhirContext, actDefProvider, this.getDao(org.hl7.fhir.r4.model.PlanDefinition.class), this.getDao(org.hl7.fhir.r4.model.ActivityDefinition.class), cql);
+//        this.registerProvider(planDefProvider);
 
-        org.opencds.cqf.r4.servlet.CdsHooksServlet.setPlanDefinitionProvider(planDefProvider);
+//        org.opencds.cqf.r4.servlet.CdsHooksServlet.setPlanDefinitionProvider(planDefProvider);
         org.opencds.cqf.r4.servlet.CdsHooksServlet.setLibraryResolutionProvider(libraryProvider);
         org.opencds.cqf.r4.servlet.CdsHooksServlet.setSystemTerminologyProvider(localSystemTerminologyProvider);
-        org.opencds.cqf.r4.servlet.CdsHooksServlet.setSystemRetrieveProvider(localSystemRetrieveProvider);
+//        org.opencds.cqf.r4.servlet.CdsHooksServlet.setSystemRetrieveProvider(localSystemRetrieveProvider);
     }
 
 

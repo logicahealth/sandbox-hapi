@@ -226,12 +226,12 @@
         <dependency>
             <groupId>org.opencds.cqf</groupId>
             <artifactId>r4</artifactId>
-            <version>0.1.14.4</version>
+            <version>0.1.15-SNAPSHOT</version>
         </dependency>
         <dependency>
             <groupId>org.opencds.cqf</groupId>
             <artifactId>dstu3</artifactId>
-            <version>0.1.14.4</version>
+            <version>0.1.15-SNAPSHOT</version>
         </dependency>
     </dependencies>
 
