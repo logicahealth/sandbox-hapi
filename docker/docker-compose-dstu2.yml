@@ -26,10 +26,10 @@ services:
       resources:
         limits:
           cpus: '0.50'
-          memory: 512M
+          memory: 1024M
         reservations:
           cpus: '0.2'
-          memory: 512M
+          memory: 1024M
     environment:
       DB_HOST: "api-dstu2-db"
       DB_USER: "root"
