@@ -26,10 +26,10 @@ services:
       resources:
         limits:
           cpus: '0.50'
-          memory: 1024M
+          memory: 1536m
         reservations:
           cpus: '0.2'
-          memory: 1024M
+          memory: 1536m
     environment:
       DB_HOST: "api-stu3-db"
       DB_USER: "root"
