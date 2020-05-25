@@ -12,7 +12,7 @@
 
     <groupId>org.hspconsortium.reference</groupId>
     <artifactId>hspc-reference-api-parent</artifactId>
-    <version>2.6.8-SNAPSHOT</version>
+    <version>2.6.9-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
