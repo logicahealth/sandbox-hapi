@@ -1,4 +1,4 @@
-FROM openjdk:11-jdk
+FROM openjdk:11.0.7-slim
 ADD hspc-reference-api-webapp-2.4.2-SNAPSHOT.jar hspc-reference-api-webapp-2.4.2-SNAPSHOT.jar
 ADD migrate-hapi-370.sh migrate-hapi-370.sh
 ADD all-sandboxes-to-370.sh all-sandboxes-to-370.sh

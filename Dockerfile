@@ -1,4 +1,4 @@
-FROM openjdk:11-jdk
+FROM openjdk:11.0.7-slim
 ADD reference-api-webapp/target/hspc-reference-api-webapp*.jar app.jar
 #RUN apk add --update mysql mysql-client
 ENV JAVA_OPTS=""
