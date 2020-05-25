@@ -9,7 +9,7 @@ ADD hapi-fhir-3.7.0-cli hapi-fhir-3.7.0-cli
 RUN chmod 755 migrate-hapi-370.sh
 RUN chmod 755 run-fhir-server.sh
 RUN chmod 755 all-sandboxes-to-370.sh
-RUN apk add --update mysql mysql-client
+#RUN apk add --update mysql mysql-client
 RUN apk update && apk add bash && apk add curl
 ENV user user
 ENV pass pass
