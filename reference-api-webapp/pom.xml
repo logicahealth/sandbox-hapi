@@ -264,6 +264,7 @@
                             <failOnError>
                                 false
                             </failOnError>
+                            <javadocExecutable>${java.home}/bin/javadoc</javadocExecutable>
                         </configuration>
                     </execution>
                 </executions>
