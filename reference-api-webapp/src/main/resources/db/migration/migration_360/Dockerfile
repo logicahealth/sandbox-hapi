@@ -1,4 +1,4 @@
-FROM openjdk:11.0.7-slim
+FROM openjdk:11.0.7-jdk-slim
 ADD hspc-reference-api-webapp-2.4.2-SNAPSHOT.jar hspc-reference-api-webapp-2.4.2-SNAPSHOT.jar
 ADD all_8_sandboxes_reindexed.sh all_8_sandboxes_reindexed.sh
 ADD run-fhir-server.sh run-fhir-server.sh
