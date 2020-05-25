@@ -81,7 +81,7 @@ public class FhirMultiTenantController extends ServletForwardingController {
             request.setAttribute(SANDBOX_NAME_ATTRIBUTE, tenant);
             Sandbox sandbox = sandboxService.get(tenant);
             request.setAttribute(SANDBOX_OBJECT_ATTRIBUTE, sandbox);
-            this.handleRequest(request, response);
+//            this.handleRequest(request, response);
 
             this.handleRequestInternal(request, response);
         } catch (ServletException e) {
