@@ -20,8 +20,8 @@
 
 package org.hspconsortium.platform.api.controller;
 
-import org.hspconsortium.platform.api.fhir.DataSourceRepository;
-import org.hspconsortium.platform.api.fhir.service.SandboxService;
+import org.hspconsortium.platform.api.multitenant.db.DataSourceRepository;
+import org.hspconsortium.platform.api.service.SandboxService;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;

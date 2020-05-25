@@ -21,6 +21,7 @@
 package org.hspconsortium.platform.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -42,6 +43,7 @@ import java.util.concurrent.Executor;
 @EnableCaching
 @SpringBootApplication
 @EnableAsync
+@EnableEncryptableProperties
 public class HSPCReferenceApiMultitenantApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
