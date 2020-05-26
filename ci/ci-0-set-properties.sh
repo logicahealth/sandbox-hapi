@@ -42,6 +42,8 @@ echo "SPRING_PROFILES_ACTIVE:$SPRING_PROFILES_ACTIVE"
 
 export TEMPLATE_FILE="../aws/task-definition-${FHIR_VERSION}.json"
 
+echo "TEMPLATE_FILE:$TEMPLATE_FILE"
+
 export VERSION_SNAPSHOT_REGEX="^[0-9]+\.[0-9]+\.[0-9]+-SNAPSHOT$"
 
 export VERSION_RELEASE_REGEX="^[0-9]+\.[0-9]+\.[0-9]+$"
