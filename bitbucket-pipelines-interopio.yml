@@ -1,6 +1,6 @@
 # This project uses the GitFlow Workflow as defined here:
 #   https://www.atlassian.com/git/tutorials/comparing-workflows#GitFlow-workflow
-image: hspconsortium/hspc-ubuntu-base
+image: hspconsortium/hspc-ubuntu-base:0.2.1
 clone:           # the 'clone' section
   depth: 1       # the depth, in this case the clone will contain last one commits
 
