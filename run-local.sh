@@ -52,13 +52,13 @@ else
     tenant="multitenant"
     jar="reference-api-webapp/target/hspc-reference-api-webapp-*.jar"
 fi
-jenv local 1.8
+jenv local 11
 set -x
 
 echo "running..."
 java \
   -Dspring.profiles.active=${profile},${tenant},local \
   -Xms256M \
-  -Xmx1024M \
+  -Xmx1536m \
   -Dhspc.platform.api.sandbox.name=${sandbox_name} \
   -jar ${jar}
