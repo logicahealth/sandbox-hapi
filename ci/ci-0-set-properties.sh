@@ -24,11 +24,21 @@ export PROJECT_NAME="api"
 
 export PROJECT_FULL_NAME="${PROJECT_NAME}-v8-${FHIR_VERSION}-${TARGET_ENV}"
 
+echo "PROJECT_FULL_NAME:$PROJECT_FULL_NAME"
+
+mvn -f ../pom.xml -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec
+
 export PROJECT_VERSION=$(mvn -f ../pom.xml -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
+
+echo "PROJECT_VERSION:$PROJECT_VERSION"
 
 export DOCKER_IMAGE_COORDINATES="hspconsortium/${PROJECT_NAME}:${PROJECT_VERSION}"
 
+echo "DOCKER_IMAGE_COORDINATES:$DOCKER_IMAGE_COORDINATES"
+
 export SPRING_PROFILES_ACTIVE="${TARGET_ENV},multitenant,${FHIR_VERSION}"
+
+echo "SPRING_PROFILES_ACTIVE:$SPRING_PROFILES_ACTIVE"
 
 export TEMPLATE_FILE="../aws/task-definition-${FHIR_VERSION}.json"
 
