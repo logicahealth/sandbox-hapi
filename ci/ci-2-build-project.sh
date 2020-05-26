@@ -27,4 +27,4 @@ if [[ ${rc} -ne 0 ]] ; then
 fi
 
 rm ../reference-api-webapp/target/*-sources.jar
-rm ../reference-api-webapp/target/*-javadoc.jar
+# rm ../reference-api-webapp/target/*-javadoc.jar
