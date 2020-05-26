@@ -26,7 +26,7 @@ export PROJECT_FULL_NAME="${PROJECT_NAME}-v8-${FHIR_VERSION}-${TARGET_ENV}"
 
 echo "PROJECT_FULL_NAME:$PROJECT_FULL_NAME"
 
-mvn -f ../pom.xml -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec
+# mvn -f ../pom.xml -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec
 
 export PROJECT_VERSION=$(mvn -f ../pom.xml -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
 
