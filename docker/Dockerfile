@@ -3,7 +3,7 @@ FROM openjdk:11.0.7-jdk-slim
 # mapped to host for filesystem mounting
 VOLUME /tmp
 
-ADD target/hspc-reference-api-webapp-*-SNAPSHOT.jar app.jar
+ADD target/hspc-reference-api-webapp-*.jar app.jar
 
 #RUN apk add --update mysql mysql-client
 
