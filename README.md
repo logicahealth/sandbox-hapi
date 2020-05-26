@@ -43,7 +43,7 @@ The reference-api-oauth2 library configures OAuth2/OpenID Connect security for a
 The reference-api-mysql library configures a MySQL FHIR resource repository to be used by the reference-api-webapp library.
 
 ### How do I set up?
-This project uses Java 8.  Please make sure that your Project SDK is set to use Java 8.
+This project uses Java 11.  Please make sure that your Project SDK is set to use Java 11.
 
 #### Step 1: Preconditions
     For secured configuration, the reference-api server must register a client with the reference-authorization server.

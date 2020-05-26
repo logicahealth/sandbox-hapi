@@ -12,7 +12,7 @@
 
     <groupId>org.hspconsortium.reference</groupId>
     <artifactId>hspc-reference-api-parent</artifactId>
-    <version>2.7.5-SNAPSHOT</version>
+    <version>2.7.6-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
@@ -33,7 +33,7 @@
         <thymeleaf-extras-conditionalcomments.version>2.1.2.RELEASE</thymeleaf-extras-conditionalcomments.version>
         <thymeleaf-layout-dialect.version>2.2.1</thymeleaf-layout-dialect.version>
         <thymeleaf-extras-data-attribute.version>2.1.0-SNAPSHOT</thymeleaf-extras-data-attribute.version>
-        <thymeleaf-extras-java8time.version>3.0.0.RELEASE</thymeleaf-extras-java8time.version>
+        <!--<thymeleaf-extras-java8time.version>3.0.0.RELEASE</thymeleaf-extras-java8time.version>-->
         <guava.version>27.1-jre</guava.version>
         <!-- Most artifacts don't need to be an executable jar, so skip by default -->
         <springboot_jar.skip>true</springboot_jar.skip>
