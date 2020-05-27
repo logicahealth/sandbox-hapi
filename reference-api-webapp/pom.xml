@@ -395,7 +395,7 @@
                     </dependency>
                 </dependencies>
                 <configuration>
-                    <argLine>${surefireArgLine} -Xmx1536m</argLine>
+                    <argLine>${surefireArgLine} -Xmx1024m</argLine>
                     <!--<useSystemClassLoader>false</useSystemClassLoader>-->
                     <forkCount>0</forkCount>
                     <excludes>
