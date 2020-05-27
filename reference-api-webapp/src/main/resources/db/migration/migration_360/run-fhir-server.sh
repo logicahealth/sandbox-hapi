@@ -37,7 +37,7 @@ if [[ "$environment" == "local" ]]; then
     java \
         -Dspring.profiles.active=${profile},multitenant \
         -Xms256M \
-        -Xmx1024m \
+        -Xmx1536m \
         -DnameForShutdown=1 \
         -Dhspc.platform.api.sandbox.name=${sandbox_name} \
         -jar ${jar} &> output.log &
@@ -46,7 +46,7 @@ if [[ "$environment" == "local" ]]; then
     java \
       -Dspring.profiles.active=${profile},multitenant,${environment} \
       -Xms256M \
-      -Xmx1024m \
+      -Xmx1536m \
       -DnameForShutdown=1 \
       -Dhspc.platform.api.sandbox.name=${sandbox_name} \
       -Djasypt.encryptor.password=${jasypt_password} \
