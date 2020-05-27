@@ -59,6 +59,6 @@ echo "running..."
 java \
   -Dspring.profiles.active=${profile},${tenant},local \
   -Xms256M \
-  -Xmx1536m \
+  -Xmx1024m \
   -Dhspc.platform.api.sandbox.name=${sandbox_name} \
   -jar ${jar}
