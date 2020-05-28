@@ -5,7 +5,9 @@ VOLUME /tmp
 
 ADD target/hspc-reference-api-webapp-*.jar app.jar
 
-#RUN apk add --update mysql mysql-client
+RUN apt-get update && apt-get dist-upgrade
+
+RUN apt-get install -y default-mysql-client
 
 ENV JAVA_OPTS="-Xmx1536m -Djava.security.egd=file:/dev/./urandom"
 
