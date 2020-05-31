@@ -1,6 +1,6 @@
 # This project uses the GitFlow Workflow as defined here:
 #   https://www.atlassian.com/git/tutorials/comparing-workflows#GitFlow-workflow
-image: hspconsortium/hspc-ubuntu-base
+image: hspconsortium/hspc-ubuntu-base:0.2.1
 clone:           # the 'clone' section
   depth: 1       # the depth, in this case the clone will contain last one commits
 
@@ -87,7 +87,7 @@ pipelines:
              - rc=$?
              - if [[ ${rc} -ne 0 ]] ; then echo 'mvn build failed'; exit $rc fi
              - rm ../reference-api-webapp/target/*-sources.jar
-             - rm ../reference-api-webapp/target/*-javadoc.jar
+#             - rm ../reference-api-webapp/target/*-javadoc.jar  # this file location has been changed, no need to remove
              - docker login -u ${DOCKER_HUB_USERNAME} -p ${DOCKER_HUB_PASSWORD}
              - cd ../docker; ./build.sh $DOCKER_IMAGE_COORDINATES $TARGET_ENV
              - cd ../ci

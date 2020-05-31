@@ -2,7 +2,7 @@
  *  * #%L
  *  *
  *  * %%
- *  * Copyright (C) 2014-2019 Healthcare Services Platform Consortium
+ *  * Copyright (C) 2014-2020 Healthcare Services Platform Consortium
  *  * %%
  *  * Licensed under the Apache License, Version 2.0 (the "License");
  *  * you may not use this file except in compliance with the License.
@@ -28,11 +28,10 @@ import com.google.common.hash.HashFunction;
 import com.google.common.hash.Hasher;
 import com.google.common.hash.Hashing;
 import org.apache.commons.lang3.Validate;
-import org.hspconsortium.platform.api.fhir.model.DataSet;
-import org.hspconsortium.platform.api.fhir.model.ResetSandboxCommand;
-import org.hspconsortium.platform.api.fhir.model.Sandbox;
-import org.hspconsortium.platform.api.fhir.model.SnapshotSandboxCommand;
-import org.hspconsortium.platform.api.fhir.service.SandboxService;
+import org.hspconsortium.platform.api.model.DataSet;
+import org.hspconsortium.platform.api.model.ResetSandboxCommand;
+import org.hspconsortium.platform.api.model.Sandbox;
+import org.hspconsortium.platform.api.service.SandboxService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +42,10 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
 
 @RestController
 @RequestMapping("${hspc.platform.api.sandboxPath:/{teamId}/sandbox}")
@@ -117,35 +119,6 @@ public class MultitenantSandboxController {
         }
         sandboxService.reset(teamId, resetSandboxCommand.getDataSet());
         return "Success";
-    }
-
-    @RequestMapping(path = "/snapshot", method = RequestMethod.GET)
-    public Set<String> getSnapshots(@PathVariable String teamId) {
-        return sandboxService.getSandboxSnapshots(teamId);
-    }
-
-    @RequestMapping(path = "/snapshot/{snapshotId}", method = RequestMethod.POST)
-    public String snapshot(@PathVariable String teamId,
-                            @PathVariable("snapshotId") String snapshotId,
-                            @RequestBody SnapshotSandboxCommand snapshotSandboxCommand) {
-        Validate.notNull(teamId);
-        Validate.notNull(snapshotId);
-        Validate.isTrue(snapshotId.matches("^[a-zA-Z0-9]+$"), "Snapshot ID must only contain alphanumeric characters");
-        Validate.isTrue(snapshotId.length() < 20, "Snapshot ID must be less than 20 characters");
-        Validate.notNull(snapshotSandboxCommand);
-        Validate.notNull(snapshotSandboxCommand.getAction());
-
-        logger.info("Sandbox Snapshot action of [" + snapshotSandboxCommand.getAction() + "], requested for " + teamId + ", " + snapshotId);
-        switch (snapshotSandboxCommand.getAction()) {
-            case Take:
-                return sandboxService.takeSnapshot(teamId, snapshotId);
-            case Restore:
-                return sandboxService.restoreSnapshot(teamId, snapshotId);
-            case Delete:
-                return sandboxService.deleteSnapshot(teamId, snapshotId);
-            default:
-                throw new RuntimeException("Unknown sandbox command action: " + snapshotSandboxCommand.getAction());
-        }
     }
 
     @GetMapping("/echo/**")
