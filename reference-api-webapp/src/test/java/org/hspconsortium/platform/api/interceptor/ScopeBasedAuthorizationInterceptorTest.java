@@ -2,7 +2,7 @@
  *  * #%L
  *  *
  *  * %%
- *  * Copyright (C) 2014-2019 Healthcare Services Platform Consortium
+ *  * Copyright (C) 2014-2020 Healthcare Services Platform Consortium
  *  * %%
  *  * Licensed under the Apache License, Version 2.0 (the "License");
  *  * you may not use this file except in compliance with the License.
@@ -22,14 +22,10 @@ package org.hspconsortium.platform.api.interceptor;
 
 import ca.uhn.fhir.rest.api.RestOperationTypeEnum;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
-import org.hspconsortium.platform.api.authorization.ScopeBasedAuthorizationParams;
-import org.hspconsortium.platform.api.oauth2.HspcOAuth2Authentication;
+import org.hspconsortium.platform.api.smart.authorization.ScopeBasedAuthorizationParams;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.oauth2.provider.OAuth2Request;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
