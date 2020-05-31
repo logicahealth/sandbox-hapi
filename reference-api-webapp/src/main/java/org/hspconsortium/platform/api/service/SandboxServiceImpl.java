@@ -2,7 +2,7 @@
  *  * #%L
  *  *
  *  * %%
- *  * Copyright (C) 2014-2019 Healthcare Services Platform Consortium
+ *  * Copyright (C) 2014-2020 Healthcare Services Platform Consortium
  *  * %%
  *  * Licensed under the Apache License, Version 2.0 (the "License");
  *  * you may not use this file except in compliance with the License.
@@ -21,13 +21,12 @@
 package org.hspconsortium.platform.api.service;
 
 import org.apache.commons.lang3.Validate;
-import org.hspconsortium.platform.api.fhir.DatabaseProperties;
-import org.hspconsortium.platform.api.fhir.service.SandboxService;
-import org.hspconsortium.platform.api.fhir.model.DataSet;
-import org.hspconsortium.platform.api.fhir.model.Sandbox;
-import org.hspconsortium.platform.api.persister.SandboxPersister;
-import org.hspconsortium.platform.api.persister.SchemaNotInitializedException;
-import org.hspconsortium.platform.api.security.TenantInfoRequestMatcher;
+import org.hspconsortium.platform.api.DatabaseProperties;
+import org.hspconsortium.platform.api.model.DataSet;
+import org.hspconsortium.platform.api.model.Sandbox;
+import org.hspconsortium.platform.api.multitenant.db.SandboxPersister;
+import org.hspconsortium.platform.api.multitenant.db.SchemaNotInitializedException;
+import org.hspconsortium.platform.api.multitenant.TenantInfoRequestMatcher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +42,6 @@ import org.springframework.web.client.RestTemplate;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
 import java.util.Collection;
-import java.util.Set;
 
 @Component
 public class SandboxServiceImpl implements SandboxService {
@@ -212,61 +210,6 @@ public class SandboxServiceImpl implements SandboxService {
             // ignore, will be fixed when saving
         }
         return null;
-    }
-    
-    @Override
-    public Set<String> getSandboxSnapshots(String teamId) {
-        logger.info("getSandboxSnapshots for: " + teamId);
-        Sandbox existing = get(teamId);
-
-        if (existing == null) {
-            throw new RuntimeException("Unable to take snapshot of sandbox that does not exist: [" + teamId + "]");
-        }
-
-        Set<String> results = sandboxPersister.getSnapshots(existing);
-        logger.info("found snapshots: {" + String.join(", ", results) + "}");
-        return results;
-    }
-    
-    @Override
-    public String takeSnapshot(String teamId, String snapshotId) {
-        Sandbox existing = get(teamId);
-
-        if (existing == null) {
-            throw new RuntimeException("Unable to take snapshot of sandbox that does not exist: [" + teamId + "]");
-        }
-
-        return sandboxPersister.takeSnapshot(existing, snapshotId);
-    }
-
-    @Override
-    public String restoreSnapshot(String teamId, String snapshotId) {
-        logger.info("restoreSnapshot called for " + teamId + ", " + snapshotId);
-        Sandbox existing = get(teamId);
-
-        if (existing == null) {
-            throw new RuntimeException("Unable to restore snapshot of sandbox that does not exist: [" + teamId + "]");
-        }
-        logger.info("existing: " + existing.getTeamId());
-
-        return sandboxPersister.restoreSnapshot(existing, snapshotId);
-    }
-
-    @Override
-    public String deleteSnapshot(String teamId, String snapshotId) {
-        Sandbox existing = get(teamId);
-
-        if (existing == null) {
-            // don't fail on delete
-            return null;
-        }
-
-        try {
-            return sandboxPersister.deleteSnapshot(existing, snapshotId);
-        } catch (RuntimeException e) {
-            // don't fail on delete
-            return null;
-        }
     }
 
     @Override

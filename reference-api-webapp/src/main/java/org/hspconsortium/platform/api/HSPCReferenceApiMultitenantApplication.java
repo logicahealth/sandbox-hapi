@@ -2,7 +2,7 @@
  *  * #%L
  *  *
  *  * %%
- *  * Copyright (C) 2014-2019 Healthcare Services Platform Consortium
+ *  * Copyright (C) 2014-2020 Healthcare Services Platform Consortium
  *  * %%
  *  * Licensed under the Apache License, Version 2.0 (the "License");
  *  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@
 package org.hspconsortium.platform.api;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ulisesbocchio.jasyptspringboot.annotation.EnableEncryptableProperties;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -42,6 +43,7 @@ import java.util.concurrent.Executor;
 @EnableCaching
 @SpringBootApplication
 @EnableAsync
+@EnableEncryptableProperties
 public class HSPCReferenceApiMultitenantApplication extends SpringBootServletInitializer {
 
     public static void main(String[] args) {
