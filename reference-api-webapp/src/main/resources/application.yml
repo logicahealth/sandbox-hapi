@@ -64,11 +64,11 @@ hspc:
           starterSchemaScriptPattern: db/mysql/hspc_%s_%s_%s_dataset.sql
           # Comma-separated list of scripts to run in order
           initializationScripts: db/mysql/V1__convert_hapi_3.2.0_to_3.3.0.sql
-          minimumIdle: 2
-          maximumPoolSize: 20
-          idleTimeout: 240000
-          connectionTimeout: 240000
-          leakDetectionThreshold: 0
+#          minimumIdle: 2
+#          maximumPoolSize: 20
+#          idleTimeout: 240000
+#          connectionTimeout: 240000
+#          leakDetectionThreshold: 0
           cache:
             size: 10
           defaultTenant: ${hspc.platform.api.sandbox.name}
