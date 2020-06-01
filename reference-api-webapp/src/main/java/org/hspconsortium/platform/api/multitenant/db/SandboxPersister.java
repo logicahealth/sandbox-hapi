@@ -67,8 +67,8 @@ public class SandboxPersister {
     @Value("${hspc.platform.api.fhir.datasource.starterSchemaScriptPattern}")
     private String starterSchemaScriptPattern;
 
-    @Value("${hspc.platform.api.fhir.datasource.initializationScripts}")
-    private String[] additionalScripts;
+//    @Value("${hspc.platform.api.fhir.datasource.initializationScripts}")
+//    private String[] additionalScripts;
 
     @Value("${hspc.platform.api.fhir.datasource.password}")
     private String dbpassword;
