@@ -29,14 +29,14 @@ case "${ENVIRONMENT}" in
 local)
   HOST="127.0.0.1"
   ;;
-dev)
-  HOST="mysqldb.interopio-dev.com"
+stage)
+  HOST="sandboxdb-stage.logicahealth.org"
   ;;
 test)
-  HOST="mysqldb.interopio-test.com"
+  HOST="sandboxdb-test.logicahealth.org"
   ;;
 prod)
-  HOST="db.interopio.com"
+  HOST="sandboxdb.logicahealth.org"
   ;;
 esac
 

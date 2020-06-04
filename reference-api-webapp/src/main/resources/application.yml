@@ -65,7 +65,7 @@ hspc:
           # Comma-separated list of scripts to run in order
 #          initializationScripts: db/mysql/V1__convert_hapi_3.2.0_to_3.3.0.sql
           minimumIdle: 2
-          maximumPoolSize: 5
+          maximumPoolSize: 4
           idleTimeout: 30000
           connectionTimeout: 60000
           leakDetectionThreshold: 0

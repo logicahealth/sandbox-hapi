@@ -132,6 +132,7 @@ public class DataSourceRepository {
 
         DataSource ds = createDataSource(tenantIdentifier);
         datasourceCache.put(tenantIdentifier, new DataSourceCacheWrapper(ds, LocalDateTime.now()));
+        log.warn("datasourceCache size: " + datasourceCache.size());
         return ds;
     }
 
@@ -157,6 +158,7 @@ public class DataSourceRepository {
             //verify for a valid datasource
             conn = ds.getConnection();
             conn.isValid(2);
+            log.warn("Creating datasource: " + tenant);
         } catch (SQLException e) {
             log.error(String.format("Connection couldn't be established for tenant '%s'.", tenant));
             ds = null;
@@ -191,20 +193,21 @@ public class DataSourceRepository {
 
     private void removeLastUsedFromCache() {
         LocalDateTime oldestDate = null;
-        String oldestTennant = null;
+        String oldestTenant = null;
         for (String key : datasourceCache.keySet()) {
             LocalDateTime date = datasourceCache.get(key).getLastUsedDate();
             if (oldestDate == null || date.isBefore(oldestDate)) {
                 oldestDate = date;
-                oldestTennant = key;
+                oldestTenant = key;
             }
         }
+        log.warn("Evicting datasource: " + oldestTenant);
 
         //drop all connections before removing datasource
-        HikariDataSource oldestDataSource = (HikariDataSource) datasourceCache.get(oldestTennant).getDataSource();
+        HikariDataSource oldestDataSource = (HikariDataSource) datasourceCache.get(oldestTenant).getDataSource();
         oldestDataSource.close();
 
-        datasourceCache.remove(oldestTennant);
+        datasourceCache.remove(oldestTenant);
     }
 
     private void loadIndexFiles() {
