@@ -101,14 +101,14 @@ pipelines:
 
     # build docker image and push to nexus
     - export IMAGE_NAME=$(cat ci/container-definitions_dev.json | jq --raw-output '.[0].image')
-    - docker login -u $NEXUS_USR -p $NEXUS_PWD nexus.interopion.com:18083
+    - docker login -u $NEXUS_USR -p $NEXUS_PWD nexus.logicahealth.org:18083
     - docker build -t $IMAGE_NAME .
     - docker push $IMAGE_NAME
     # register the ECS task definition and capture the version
-    - export TASK_VERSION=$(aws ecs register-task-definition --execution-role-arn arn:aws:iam::888922156537:role/ecsTaskExecutionRole --family interopio-auth-td --container-definitions $(cat ci/container-definitions_dev.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
+    - export TASK_VERSION=$(aws ecs register-task-definition --execution-role-arn arn:aws:iam::888922156537:role/ecsTaskExecutionRole --family hspc-auth-td --container-definitions $(cat ci/container-definitions_dev.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
     - echo "Registered ECS Task Definition - " $TASK_VERSION
     # update the service to use the latest task definition
-    - aws ecs update-service --cluster interopio-dev --service interopio-auth-dev-sv --task-definition interopio-auth-td:$TASK_VERSION
+    - aws ecs update-service --cluster hspc-test --service hspc-auth-dev-sv --task-definition hspc-auth-td:$TASK_VERSION
   - step:
       name: Create Release (this will cause the master branch to build and release to test)
       trigger: manual
@@ -158,21 +158,21 @@ pipelines:
         name: Deploy to test
         deployment: test
         script:
-          # maven test, build and deploy artifact to nexus.interopion.com/maven-snapshots
+          # maven test, build and deploy artifact to nexus.logicahealth.org/maven-snapshots
           - mvn -V -B -s ci/settings.xml deploy
           # build dynamic container-definitions
           - export PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
           - sed -i -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" ci/container-definitions_test.json
-          # build docker image and push to nexus.interopion.com:18083 (docker-interopion)
+          # build docker image and push to nexus.logicahealth.org:18083 (docker-hspcn)
           - export IMAGE_NAME=$(cat ci/container-definitions_test.json | jq --raw-output '.[0].image')
-          - docker login -u $NEXUS_USR -p $NEXUS_PWD nexus.interopion.com:18083
+          - docker login -u $NEXUS_USR -p $NEXUS_PWD nexus.logicahealth.org:18083
           - docker build -t $IMAGE_NAME .
           - docker push $IMAGE_NAME
           # register the ECS task definition and capture the version
-          - export TASK_VERSION=$(aws ecs register-task-definition --execution-role-arn arn:aws:iam::888922156537:role/ecsTaskExecutionRole --family interopio-auth-test-td --container-definitions $(cat ci/container-definitions_test.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
+          - export TASK_VERSION=$(aws ecs register-task-definition --execution-role-arn arn:aws:iam::888922156537:role/ecsTaskExecutionRole --family hspc-auth-test-td --container-definitions $(cat ci/container-definitions_test.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
           - echo "Registered ECS Task Definition - " $TASK_VERSION
           # update the service to use the latest task definition
-          - aws ecs update-service --cluster interopio-test --service interopio-auth-test-sv --task-definition interopio-auth-test-td:$TASK_VERSION
+          - aws ecs update-service --cluster hspc-test --service hspc-auth-test-sv --task-definition hspc-auth-test-td:$TASK_VERSION
     - step:
         caches:
           - maven
@@ -184,10 +184,10 @@ pipelines:
           - export PROJECT_VERSION=$(mvn -q -Dexec.executable="echo" -Dexec.args='${project.version}' --non-recursive exec:exec)
           - sed -i -e "s/{{PROJECT_VERSION}}/$PROJECT_VERSION/g" ci/container-definitions_prod.json
           # register the ECS task definition and capture the version
-          - export TASK_VERSION=$(aws ecs register-task-definition --execution-role-arn arn:aws:iam::888922156537:role/ecsTaskExecutionRole --family interopio-auth-prod-td --container-definitions $(cat ./ci/container-definitions_prod.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
+          - export TASK_VERSION=$(aws ecs register-task-definition --execution-role-arn arn:aws:iam::888922156537:role/ecsTaskExecutionRole --family hspc-auth-prod-td --container-definitions $(cat ./ci/container-definitions_prod.json | jq -c '.')  | jq --raw-output '.taskDefinition.revision')
           - echo "Task definition:" $TASK_VERSION
           # update the service to use the latest task definition
-          - aws ecs update-service --cluster interopio-prod --service interopio-auth-prod-sv --task-definition interopio-auth-prod-td:$TASK_VERSION
+          - aws ecs update-service --cluster hspc-prod --service hspc-auth-prod-sv --task-definition hspc-auth-prod-td:$TASK_VERSION
 
 options:
   docker: true
