@@ -35,14 +35,14 @@ stage)
 test)
   HOST="sandboxdb-test.logicahealth.org"
   ;;
-prod)
-  HOST="sandboxdb.logicahealth.org"
-  ;;
+#prod)
+#  HOST="sandboxdb.logicahealth.org"
+#  ;;
 esac
 
 echo $HOST
 
-schemas=$(echo "SELECT schema_name FROM information_schema.SCHEMATA WHERE UPPER(schema_name) LIKE 'iocdr_%'" | mysql -h "$HOST" -u $MYSQL_USER -p$MYSQL_PASS)
+schemas=$(echo "SELECT schema_name FROM information_schema.SCHEMATA WHERE UPPER(schema_name) LIKE 'HSPC_8_%'" | mysql -h "$HOST" -u $MYSQL_USER -p$MYSQL_PASS)
 printf "%s\n" "${schemas[@]}" >temp-migration-text.txt
 getArray() {
   schemas=() # Create array
@@ -54,7 +54,7 @@ getArray "temp-migration-text.txt"
 
 for i in "${schemas[@]:1}"; do
   echo $i;
-  mysql -h "$HOST" -u "$MYSQL_USER" "-p$MYSQL_PASS" "$i" < test.sql # Change test.sql to migrate-420.sql for actual migration
+  mysql -h "$HOST" -u "$MYSQL_USER" "-p$MYSQL_PASS" -f "$i" < migrate-420.sql # Change test.sql to migrate-420.sql for actual migration
   #mysql -h "$HOST" -u "$MYSQL_USER" "-p$MYSQL_PASS" "$i" -e "select count(*) from HFJ_SEARCH;"
 done
 
