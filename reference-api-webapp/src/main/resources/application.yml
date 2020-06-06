@@ -63,14 +63,14 @@ hspc:
           emptySchemaScriptPattern: db/mysql/hspc_%s_schema_empty.sql
           starterSchemaScriptPattern: db/mysql/hspc_%s_%s_%s_dataset.sql
           # Comma-separated list of scripts to run in order
-          initializationScripts: db/mysql/V1__convert_hapi_3.2.0_to_3.3.0.sql
+#          initializationScripts: db/mysql/V1__convert_hapi_3.2.0_to_3.3.0.sql
           minimumIdle: 2
-          maximumPoolSize: 100
+          maximumPoolSize: 4
           idleTimeout: 30000
           connectionTimeout: 60000
           leakDetectionThreshold: 0
           cache:
-            size: 10
+            size: 5
           defaultTenant: ${hspc.platform.api.sandbox.name}
         templateSandboxes: MasterDstu2Empty, MasterDstu2Smart, MasterStu3Empty, MasterStu3Smart, MasterR4Empty, MasterR4Smart
         hibernate:

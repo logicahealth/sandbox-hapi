@@ -22,9 +22,13 @@ package org.hspconsortium.platform.api.config;
 
 import ca.uhn.fhir.jpa.config.BaseJavaConfigDstu3;
 import ca.uhn.fhir.jpa.search.DatabaseBackedPagingProvider;
+import ca.uhn.fhir.jpa.search.ISearchCoordinatorSvc;
+import org.hspconsortium.platform.api.search.LogicaSearchCoordinatorSvcImpl;
+import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 
 @Configuration
@@ -36,6 +40,12 @@ public class FhirServerConfigStu3 extends BaseJavaConfigDstu3 {
 
     @Value("${hspc.platform.api.fhir.defaultPageSize}")
     private Integer defaultPageSize;
+
+    @Bean(autowire = Autowire.BY_TYPE)
+    @Primary
+    public ISearchCoordinatorSvc searchCoordinatorSvc() {
+        return new LogicaSearchCoordinatorSvcImpl();
+    }
 
     @Bean
     public DatabaseBackedPagingProvider databaseBackedPagingProvider(){
