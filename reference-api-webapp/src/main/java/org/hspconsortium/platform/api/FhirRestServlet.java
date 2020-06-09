@@ -27,6 +27,7 @@ import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
+import ca.uhn.fhir.jpa.interceptor.CascadingDeleteInterceptor;
 import ca.uhn.fhir.jpa.provider.BaseJpaResourceProvider;
 import ca.uhn.fhir.jpa.provider.JpaSystemProviderDstu2;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
@@ -215,6 +216,9 @@ public class FhirRestServlet extends RestfulServer {
             this.registerInterceptor(interceptor);
         }
 
+        CascadingDeleteInterceptor cascadingDeleteInterceptor = (CascadingDeleteInterceptor) myAppCtx.getBean("cascadingDeleteInterceptor");
+        this.registerInterceptor(cascadingDeleteInterceptor);
+
         /*
          * If you are using DSTU3+, you may want to add a terminology uploader, which allows
          * uploading of external terminologies such as Snomed CT. Note that this uploader
@@ -329,8 +333,12 @@ public class FhirRestServlet extends RestfulServer {
         org.opencds.cqf.dstu3.providers.LibraryOperationsProvider libraryProvider = new org.opencds.cqf.dstu3.providers.LibraryOperationsProvider((ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider)this.getResourceProvider(org.hl7.fhir.dstu3.model.Library.class), narrativeProviderStu3);
         this.registerProvider(libraryProvider);
 
+        //Library processing
+        org.opencds.cqf.common.providers.LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResolutionProvider = new org.opencds.cqf.common.providers.InMemoryLibraryResourceProvider();
+        this.registerProvider(libraryResolutionProvider);
+
         // CQL Execution
-        org.opencds.cqf.dstu3.providers.CqlExecutionProvider cql = new org.opencds.cqf.dstu3.providers.CqlExecutionProvider(libraryProvider, providerFactory, this.fhirContext);
+        org.opencds.cqf.dstu3.providers.CqlExecutionProvider cql = new org.opencds.cqf.dstu3.providers.CqlExecutionProvider(libraryResolutionProvider, providerFactory);
         this.registerProvider(cql);
 
         // Bundle processing
