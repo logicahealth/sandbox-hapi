@@ -20,7 +20,10 @@
 
 package org.hspconsortium.platform.api.config;
 
+import ca.uhn.fhir.interceptor.api.IInterceptorBroadcaster;
 import ca.uhn.fhir.jpa.dao.DaoConfig;
+import ca.uhn.fhir.jpa.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.interceptor.CascadingDeleteInterceptor;
 import ca.uhn.fhir.jpa.model.entity.ModelConfig;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
 import ca.uhn.fhir.rest.server.interceptor.ResponseHighlighterInterceptor;
@@ -61,6 +64,7 @@ public class FhirServerJpaConfig {
         retVal.setIndexMissingFields(DaoConfig.IndexEnabledEnum.ENABLED);
         retVal.setReuseCachedSearchResultsForMillis(null);
         retVal.setAllowContainsSearches(true);
+        retVal.setExpungeEnabled(true);
         return retVal;
     }
 
@@ -137,5 +141,10 @@ public class FhirServerJpaConfig {
         JpaTransactionManager retVal = new JpaTransactionManager();
         retVal.setEntityManagerFactory(entityManagerFactory);
         return retVal;
+    }
+
+    @Bean
+    public CascadingDeleteInterceptor cascadingDeleteInterceptor (DaoRegistry theDaoRegistry, IInterceptorBroadcaster theInterceptorBroadcaster) {
+        return new CascadingDeleteInterceptor(theDaoRegistry, theInterceptorBroadcaster);
     }
 }
