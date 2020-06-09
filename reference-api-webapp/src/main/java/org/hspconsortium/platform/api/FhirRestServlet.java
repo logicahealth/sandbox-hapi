@@ -27,6 +27,7 @@ import ca.uhn.fhir.jpa.dao.DaoConfig;
 import ca.uhn.fhir.jpa.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.dao.IFhirResourceDao;
 import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
+import ca.uhn.fhir.jpa.interceptor.CascadingDeleteInterceptor;
 import ca.uhn.fhir.jpa.provider.BaseJpaResourceProvider;
 import ca.uhn.fhir.jpa.provider.JpaSystemProviderDstu2;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaSystemProviderDstu3;
@@ -214,6 +215,9 @@ public class FhirRestServlet extends RestfulServer {
         for (IServerInterceptor interceptor : interceptorBeans) {
             this.registerInterceptor(interceptor);
         }
+
+        CascadingDeleteInterceptor cascadingDeleteInterceptor = (CascadingDeleteInterceptor) myAppCtx.getBean("cascadingDeleteInterceptor");
+        this.registerInterceptor(cascadingDeleteInterceptor);
 
         /*
          * If you are using DSTU3+, you may want to add a terminology uploader, which allows
