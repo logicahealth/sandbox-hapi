@@ -333,8 +333,12 @@ public class FhirRestServlet extends RestfulServer {
         org.opencds.cqf.dstu3.providers.LibraryOperationsProvider libraryProvider = new org.opencds.cqf.dstu3.providers.LibraryOperationsProvider((ca.uhn.fhir.jpa.rp.dstu3.LibraryResourceProvider)this.getResourceProvider(org.hl7.fhir.dstu3.model.Library.class), narrativeProviderStu3);
         this.registerProvider(libraryProvider);
 
+        //Library processing
+        org.opencds.cqf.common.providers.LibraryResolutionProvider<org.hl7.fhir.dstu3.model.Library> libraryResolutionProvider = new org.opencds.cqf.common.providers.InMemoryLibraryResourceProvider();
+        this.registerProvider(libraryResolutionProvider);
+
         // CQL Execution
-        org.opencds.cqf.dstu3.providers.CqlExecutionProvider cql = new org.opencds.cqf.dstu3.providers.CqlExecutionProvider(libraryProvider, providerFactory, this.fhirContext);
+        org.opencds.cqf.dstu3.providers.CqlExecutionProvider cql = new org.opencds.cqf.dstu3.providers.CqlExecutionProvider(libraryResolutionProvider, providerFactory);
         this.registerProvider(cql);
 
         // Bundle processing
