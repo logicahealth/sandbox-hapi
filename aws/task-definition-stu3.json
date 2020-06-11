@@ -12,7 +12,7 @@
           "protocol": "tcp"
         }
       ],
-      "memory": 2048,
+      "memory": 3072,
       "logConfiguration": {
         "logDriver": "awslogs",
         "options": {
