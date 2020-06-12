@@ -9,8 +9,6 @@ hspc:
           host: sandboxdb.logicahealth.org
           username: system
           password: ENC(PN5w0Ds+k3I2vOVS/dZM/N9HaIFZgGIX)
-          cache:
-            size: 50
       sandboxManagerApi:
         url: https://${SBMA_HOST:sandbox-api.logicahealth.org}
         transactionPath: /analytics/transaction
