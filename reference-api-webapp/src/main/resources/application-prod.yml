@@ -3,7 +3,7 @@ hspc:
   platform:
     api:
       oauth2:
-        clientSecret: ENC(yiE6GSYRCu0a0akXASqcisn1pzHjTGjgpMv6Prz6IsfpwTstI+CC0bqRhCFRF+g5)
+        clientSecret: secret
       fhir:
         datasource:
           host: sandboxdb.logicahealth.org
