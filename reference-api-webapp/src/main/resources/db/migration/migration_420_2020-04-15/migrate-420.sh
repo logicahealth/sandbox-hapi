@@ -29,9 +29,6 @@ case "${ENVIRONMENT}" in
 local)
   HOST="127.0.0.1"
   ;;
-stage)
-  HOST="sandboxdb-stage.logicahealth.org"
-  ;;
 test)
   HOST="sandboxdb-test.logicahealth.org"
   ;;
