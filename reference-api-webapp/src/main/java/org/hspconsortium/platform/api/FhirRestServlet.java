@@ -229,6 +229,10 @@ public class FhirRestServlet extends RestfulServer {
         if (fhirVersion == FhirVersionEnum.DSTU3) {
             registerProvider(myAppCtx.getBean(ca.uhn.fhir.jpa.provider.TerminologyUploaderProvider.class));
         }
+
+        if (fhirVersion == FhirVersionEnum.R4) {
+            registerProvider(myAppCtx.getBean(ca.uhn.fhir.jpa.provider.TerminologyUploaderProvider.class));
+        }
     }
 
     /**
