@@ -35,32 +35,49 @@ The following default port assignments exist
 This project uses Java 11.  Please make sure that your Project SDK is set to use Java 11.
 
 #### Step 1: Preconditions
-1. For secured configuration, the reference-api server must register a client with the reference-authorization server.  This can only be done after setting up the reference-auth server with it's "oic" schema. 
+For secured configuration, the reference-api server must register a client with the reference-authorization server.  This can only be done after setting up the reference-auth server with it's "oic" schema. 
    From MySQL
     
         mysql> use oic;
         mysql> source {install path}/reference-api-webapp/src/main/resources/db/openidconnect/mysql/resource-server-client.sql;
     
-    * note this script is included with the complete installation of the reference-impl (optional)
 
-2. Create the following schemas hspc_8_hspc8, hspc_8_hspc9, hspc_8_hspc10 and then run the SQL script reference-api-webapp/src/main/resources/db/empty_schema.sql.
-3. Create the following schemas hspc_8_MasterDstu2Empty, hspc_8_MasterR4Empty, hspc_8_MasterStu3Empty and then run the SQL script reference-api-webapp/src/main/resources/db/empty_schema.sql.
-    Then edit the reference-api-webapp/src/main/resources/db/create_tenant_info_table.sql to insert INSERT INTO hspc_tenant_info (tenant_id, hspc_schema_version, allow_open_endpoint)
-                                                                                                    VALUES (MasterDstu2Empty, '8', 'F');
-    Then edit the reference-api-webapp/src/main/resources/db/create_tenant_info_table.sql to insert INSERT INTO hspc_tenant_info (tenant_id, hspc_schema_version, allow_open_endpoint)
-                                                                                                    VALUES (MasterR4Empty, '8', 'F'); 
-    Then edit the reference-api-webapp/src/main/resources/db/create_tenant_info_table.sql to insert INSERT INTO hspc_tenant_info (tenant_id, hspc_schema_version, allow_open_endpoint)
-                                                                                                     VALUES (MasterStu3Empty, '8', 'F');                                                
-4. Create the following schema hspc_8_MasterDstu2Smart and then run the SQL script reference-api-webapp/src/main/resources/db/mysql/hspc_8_dstu2_default_dataset.sql
-    Then edit the reference-api-webapp/src/main/resources/db/create_tenant_info_table.sql to insert INSERT INTO hspc_tenant_info (tenant_id, hspc_schema_version, allow_open_endpoint)
-                                                                                                    VALUES (MasterDstu2Smart, '8', 'F');
-5. Create the following schema hspc_8_MasterR4Smart and then run the SQL script reference-api-webapp/src/main/resources/db/mysql/hspc_8_r4_default_dataset.sql
-    Then edit the reference-api-webapp/src/main/resources/db/create_tenant_info_table.sql to insert INSERT INTO hspc_tenant_info (tenant_id, hspc_schema_version, allow_open_endpoint)
-                                                                                                    VALUES (MasterR4Smart, '8', 'F');
-6. Create the following schema hspc_8_MasterStu3Smart and then run the SQL script reference-api-webapp/src/main/resources/db/mysql/hspc_8_stu3_default_dataset.sql
-    Then edit the reference-api-webapp/src/main/resources/db/create_tenant_info_table.sql to insert INSERT INTO hspc_tenant_info (tenant_id, hspc_schema_version, allow_open_endpoint)
-                                                                                                    VALUES (MasterStu3Smart, '8', 'F');
+2. Create the following schemas hspc_8_hspc8, hspc_8_hspc9, hspc_8_hspc10 and then run the SQL script reference-api-webapp/src/main/resources/db/empty_schema.sql on each of them.
+
+3. Create the following schemas hspc_8_MasterDstu2Empty, hspc_8_MasterR4Empty, hspc_8_MasterStu3Empty and then run the SQL script reference-api-webapp/src/main/resources/db/empty_schema.sql on each of them.
+    
+    Then edit the reference-api-webapp/src/main/resources/db/create_tenant_info_table.sql to insert correct value for the tenant_id and run the script on hspc_8_MasterDstu2Empty schema
+    
+            INSERT INTO hspc_tenant_info (tenant_id, hspc_schema_version, allow_open_endpoint) VALUES (MasterDstu2Empty, '8', 'F');
+    
+    Then edit the reference-api-webapp/src/main/resources/db/create_tenant_info_table.sql to insert correct value for the tenant_id and run the script on hspc_8_MasterR4Empty schema
+    
+            INSERT INTO hspc_tenant_info (tenant_id, hspc_schema_version, allow_open_endpoint) VALUES (MasterR4Empty, '8', 'F'); 
+    
+    Then edit the reference-api-webapp/src/main/resources/db/create_tenant_info_table.sql to insert correct value for the tenant_id and run the script on hspc_8_MasterStu3Empty schema
+    
+            INSERT INTO hspc_tenant_info (tenant_id, hspc_schema_version, allow_open_endpoint) VALUES (MasterStu3Empty, '8', 'F');  
+                                                  
+4. Create the schema hspc_8_MasterDstu2Smart and then run the SQL script reference-api-webapp/src/main/resources/db/mysql/hspc_8_dstu2_default_dataset.sql
+    
+    Then edit the reference-api-webapp/src/main/resources/db/create_tenant_info_table.sql to insert correct value for the tenant_id and run the script on hspc_8_MasterDstu2Smart schema
+    
+            INSERT INTO hspc_tenant_info (tenant_id, hspc_schema_version, allow_open_endpoint) VALUES (MasterDstu2Smart, '8', 'F');
+            
+5. Create the schema hspc_8_MasterR4Smart and then run the SQL script reference-api-webapp/src/main/resources/db/mysql/hspc_8_r4_default_dataset.sql
+   
+    Then edit the reference-api-webapp/src/main/resources/db/create_tenant_info_table.sql to insert correct value for the tenant_id and run the script on hspc_8_MasterR4Smart schema
+    
+            INSERT INTO hspc_tenant_info (tenant_id, hspc_schema_version, allow_open_endpoint) VALUES (MasterR4Smart, '8', 'F');
+    
+6. Create the schema hspc_8_MasterStu3Smart and then run the SQL script reference-api-webapp/src/main/resources/db/mysql/hspc_8_stu3_default_dataset.sql
+    
+    Then edit the reference-api-webapp/src/main/resources/db/create_tenant_info_table.sql to insert correct value for the tenant_id and run the script on hspc_8_MasterStu3Smart schema
+    
+            INSERT INTO hspc_tenant_info (tenant_id, hspc_schema_version, allow_open_endpoint) VALUES (MasterStu3Smart, '8', 'F');
+    
 7. After the above schemas are created, run the appropriate HAPI migration script on the all the schemas reference-api-webapp/src/main/resources/db/migration  
+
 #### Step 2: Maven Build
 In the terminal, run the following command:
 

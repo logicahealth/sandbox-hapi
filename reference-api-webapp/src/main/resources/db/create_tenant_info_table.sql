@@ -28,7 +28,7 @@ CREATE TABLE hspc_tenant_info (
 );
 
 INSERT INTO hspc_tenant_info (tenant_id, hspc_schema_version, allow_open_endpoint)
-VALUES (?, '2', 'T');
+VALUES (?, '8', 'F');
 
 *** Notes ***
 To roll this out, create a temp table that has the following columns:
@@ -39,7 +39,7 @@ select
 	CONCAT(
 		CONCAT('INSERT INTO ', sub1.table_schema),
 		'.hspc_tenant_info (tenant_id, hspc_schema_version, allow_open_endpoint)
-        VALUES (?, 2,
+        VALUES (?, 8,
 		hspc_schema_version VARCHAR(10) NOT NULL,
 		allow_open_endpoint VARCHAR(1) NOT NULL
 		);')
