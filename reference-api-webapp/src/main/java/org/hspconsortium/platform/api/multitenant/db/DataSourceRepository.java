@@ -126,7 +126,7 @@ public class DataSourceRepository {
             return dsWrapper.getDataSource();
         }
 
-        if (datasourceCache.size() == dataSourceCacheSize) {
+        if (datasourceCache.size() >= dataSourceCacheSize) {
             removeLastUsedFromCache();
         }
 
