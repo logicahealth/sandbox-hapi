@@ -5,7 +5,7 @@ VOLUME /tmp
 
 ADD target/hspc-reference-api-webapp-*.jar app.jar
 
-RUN apt-get update && apt-get dist-upgrade
+RUN apt-get update -y && apt-get dist-upgrade -y
 
 RUN apt-get install -y default-mysql-client
 
