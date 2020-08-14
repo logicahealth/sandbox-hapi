@@ -562,5 +562,4 @@ create index IDX_CONCEPT_UPDATED on TRM_CONCEPT (CONCEPT_UPDATED);
 
 SET FOREIGN_KEY_CHECKS = 1;
 
--- Script version 2.0
 
