@@ -18,6 +18,11 @@ spring:
     multipart:
       max-file-size: 10MB
       max-request-size: 10MB
+  batch:
+    job:
+      enabled: false
+
+
 jasypt:
   encryptor:
     algorithm: PBEWithMD5AndDES
@@ -121,6 +126,10 @@ hspc:
             endpoint:
         includeSourceQueryParameter: true
 
+management:
+  health:
+    elasticsearch:
+      enabled: false
 ---
 
 spring:

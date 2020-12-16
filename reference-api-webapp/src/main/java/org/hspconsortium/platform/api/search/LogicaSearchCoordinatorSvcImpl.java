@@ -4,15 +4,18 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.interceptor.api.HookParams;
 import ca.uhn.fhir.interceptor.api.IInterceptorBroadcaster;
 import ca.uhn.fhir.interceptor.api.Pointcut;
+import ca.uhn.fhir.jpa.api.config.DaoConfig;
+import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
+import ca.uhn.fhir.jpa.api.dao.IDao;
+import ca.uhn.fhir.jpa.api.dao.IFhirResourceDao;
+import ca.uhn.fhir.jpa.api.svc.ISearchCoordinatorSvc;
 import ca.uhn.fhir.jpa.dao.*;
 import ca.uhn.fhir.jpa.entity.Search;
 import ca.uhn.fhir.jpa.entity.SearchInclude;
 import ca.uhn.fhir.jpa.entity.SearchTypeEnum;
 import ca.uhn.fhir.jpa.interceptor.JpaPreResourceAccessDetails;
-import ca.uhn.fhir.jpa.model.cross.ResourcePersistentId;
 import ca.uhn.fhir.jpa.model.search.SearchRuntimeDetails;
 import ca.uhn.fhir.jpa.model.search.SearchStatusEnum;
-import ca.uhn.fhir.jpa.search.ISearchCoordinatorSvc;
 import ca.uhn.fhir.jpa.search.cache.ISearchCacheSvc;
 import ca.uhn.fhir.jpa.search.cache.ISearchResultCacheSvc;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
@@ -26,6 +29,7 @@ import ca.uhn.fhir.rest.api.SummaryEnum;
 import ca.uhn.fhir.rest.api.server.IBundleProvider;
 import ca.uhn.fhir.rest.api.server.IPreResourceAccessDetails;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
+import ca.uhn.fhir.rest.api.server.storage.ResourcePersistentId;
 import ca.uhn.fhir.rest.server.IPagingProvider;
 import ca.uhn.fhir.rest.server.SimpleBundleProvider;
 import ca.uhn.fhir.rest.server.exceptions.BaseServerResponseException;
@@ -434,7 +438,7 @@ public class LogicaSearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
             // Load the results synchronously
             final List<ResourcePersistentId> pids = new ArrayList<>();
 
-            try (IResultIterator resultIter = theSb.createQuery(theParams, searchRuntimeDetails, theRequestDetails)) {
+            try (IResultIterator resultIter = theSb.createQuery(theParams, searchRuntimeDetails, theRequestDetails, null)) {
                 while (resultIter.hasNext()) {
                     pids.add(resultIter.next());
                     if (theLoadSynchronousUpTo != null && pids.size() >= theLoadSynchronousUpTo) {
@@ -956,7 +960,7 @@ public class LogicaSearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
             if (wantCount) {
                 ourLog.trace("Performing count");
                 ISearchBuilder sb = newSearchBuilder();
-                Iterator<Long> countIterator = sb.createCountQuery(myParams, mySearch.getUuid(), myRequest);
+                Iterator<Long> countIterator = sb.createCountQuery(myParams, mySearch.getUuid(), myRequest, null);
                 Long count = countIterator.next();
                 ourLog.trace("Got count {}", count);
 
@@ -1032,7 +1036,7 @@ public class LogicaSearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
             /*
              * Construct the SQL query we'll be sending to the database
              */
-            try (IResultIterator resultIterator = sb.createQuery(myParams, mySearchRuntimeDetails, myRequest)) {
+            try (IResultIterator resultIterator = sb.createQuery(myParams, mySearchRuntimeDetails, myRequest, null)) {
                 assert (resultIterator != null);
 
                 /*

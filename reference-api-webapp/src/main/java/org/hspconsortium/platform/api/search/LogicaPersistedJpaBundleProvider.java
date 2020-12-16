@@ -4,21 +4,20 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.interceptor.api.HookParams;
 import ca.uhn.fhir.interceptor.api.IInterceptorBroadcaster;
 import ca.uhn.fhir.interceptor.api.Pointcut;
-import ca.uhn.fhir.jpa.dao.IDao;
+import ca.uhn.fhir.jpa.api.dao.IDao;
+import ca.uhn.fhir.jpa.api.svc.ISearchCoordinatorSvc;
 import ca.uhn.fhir.jpa.dao.ISearchBuilder;
 import ca.uhn.fhir.jpa.dao.SearchBuilderFactory;
 import ca.uhn.fhir.jpa.entity.Search;
 import ca.uhn.fhir.jpa.entity.SearchTypeEnum;
-import ca.uhn.fhir.jpa.model.cross.ResourcePersistentId;
 import ca.uhn.fhir.jpa.model.entity.BaseHasResource;
 import ca.uhn.fhir.jpa.model.entity.ResourceHistoryTable;
-import ca.uhn.fhir.jpa.search.ISearchCoordinatorSvc;
-import ca.uhn.fhir.jpa.search.PersistedJpaBundleProvider;
 import ca.uhn.fhir.jpa.search.cache.ISearchCacheSvc;
 import ca.uhn.fhir.jpa.util.InterceptorUtil;
 import ca.uhn.fhir.jpa.util.JpaInterceptorBroadcaster;
 import ca.uhn.fhir.model.primitive.InstantDt;
 import ca.uhn.fhir.rest.api.server.*;
+import ca.uhn.fhir.rest.api.server.storage.ResourcePersistentId;
 import ca.uhn.fhir.rest.server.servlet.ServletRequestDetails;
 import org.hl7.fhir.instance.model.api.IBaseResource;
 import org.slf4j.Logger;
@@ -165,21 +164,11 @@ public class LogicaPersistedJpaBundleProvider implements IBundleProvider {
         return template.execute(theStatus -> toResourceList(sb, pidsSubList));
     }
 
-    private void ensureDependenciesInjected() {
-        if (myPlatformTransactionManager == null) {
-            PersistedJpaBundleProvider tempJpaBlahBlah =  new PersistedJpaBundleProvider(this.myRequest, this.myUuid, this.myDao, this.mySearchBuilderFactory);
-            myDao.injectDependenciesIntoBundleProvider(tempJpaBlahBlah);
-            // I've never seen this called, hopefully it's just in place for running tests
-            throw new IllegalStateException("This method should not be called due to our ghetto multi-tenant implementation.");
-        }
-    }
-
     /**
      * Returns false if the entity can't be found
      */
     public boolean ensureSearchEntityLoaded() {
         if (mySearchEntity == null) {
-            ensureDependenciesInjected();
 
             Optional<Search> searchOpt = mySearchCacheSvc.fetchByUuid(myUuid);
             if (!searchOpt.isPresent()) {
@@ -204,7 +193,6 @@ public class LogicaPersistedJpaBundleProvider implements IBundleProvider {
     @Nonnull
     @Override
     public List<IBaseResource> getResources(final int theFromIndex, final int theToIndex) {
-        ensureDependenciesInjected();
 
         TransactionTemplate template = new TransactionTemplate(myPlatformTransactionManager);
 
