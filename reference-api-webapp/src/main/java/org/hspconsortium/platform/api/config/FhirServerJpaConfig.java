@@ -80,14 +80,6 @@ public class FhirServerJpaConfig {
         return daoConfig().getModelConfig();
     }
 
-//    @Bean
-//    @Primary
-//    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, MultiTenantConnectionProvider multiTenantConnectionProvider, CurrentTenantIdentifierResolver currentTenantIdentifierResolver) {
-//        LocalContainerEntityManagerFactoryBean retVal = new LocalContainerEntityManagerFactoryBean();
-//        setLocalContainerEntityManagerFactoryBeanProperties(retVal, dataSource, multiTenantConnectionProvider, currentTenantIdentifierResolver);
-//        return retVal;
-//    }
-
     @Bean
     public HapiFhirLocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, MultiTenantConnectionProvider multiTenantConnectionProvider, CurrentTenantIdentifierResolver currentTenantIdentifierResolver) {
         var retVal = new HapiFhirLocalContainerEntityManagerFactoryBean();

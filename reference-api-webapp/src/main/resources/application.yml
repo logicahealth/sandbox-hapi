@@ -22,7 +22,6 @@ spring:
     job:
       enabled: false
 
-
 jasypt:
   encryptor:
     algorithm: PBEWithMD5AndDES
