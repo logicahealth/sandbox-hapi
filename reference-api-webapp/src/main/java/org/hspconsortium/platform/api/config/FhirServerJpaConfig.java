@@ -38,7 +38,6 @@ import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Lazy;
 import org.springframework.context.annotation.Primary;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -72,6 +71,7 @@ public class FhirServerJpaConfig {
         retVal.setReuseCachedSearchResultsForMillis(null);
         retVal.setAllowContainsSearches(true);
         retVal.setExpungeEnabled(true);
+        retVal.setUseLegacySearchBuilder(true);
         return retVal;
     }
 
@@ -104,7 +104,7 @@ public class FhirServerJpaConfig {
 
     private Properties jpaProperties(MultiTenantConnectionProvider multiTenantConnectionProvider, CurrentTenantIdentifierResolver currentTenantIdentifierResolver) {
         Properties extraProperties = new Properties();
-        extraProperties.put("hibernate.dialect", org.hibernate.dialect.MySQL5Dialect.class.getName());
+        extraProperties.put("hibernate.dialect", org.hibernate.dialect.MySQL57Dialect.class.getName());
         extraProperties.put("hibernate.format_sql", "true");
         extraProperties.put("hibernate.show_sql", "false");
         extraProperties.put("hibernate.hbm2ddl.auto", "none");

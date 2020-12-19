@@ -4,6 +4,7 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.interceptor.api.HookParams;
 import ca.uhn.fhir.interceptor.api.IInterceptorBroadcaster;
 import ca.uhn.fhir.interceptor.api.Pointcut;
+import ca.uhn.fhir.interceptor.model.RequestPartitionId;
 import ca.uhn.fhir.jpa.api.config.DaoConfig;
 import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.api.dao.IDao;
@@ -16,6 +17,8 @@ import ca.uhn.fhir.jpa.entity.SearchTypeEnum;
 import ca.uhn.fhir.jpa.interceptor.JpaPreResourceAccessDetails;
 import ca.uhn.fhir.jpa.model.search.SearchRuntimeDetails;
 import ca.uhn.fhir.jpa.model.search.SearchStatusEnum;
+import ca.uhn.fhir.jpa.partition.IRequestPartitionHelperSvc;
+import ca.uhn.fhir.jpa.search.PersistedJpaBundleProviderFactory;
 import ca.uhn.fhir.jpa.search.cache.ISearchCacheSvc;
 import ca.uhn.fhir.jpa.search.cache.ISearchResultCacheSvc;
 import ca.uhn.fhir.jpa.searchparam.SearchParameterMap;
@@ -113,7 +116,10 @@ public class LogicaSearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
      * Set in {@link #start()}
      */
     private boolean myCustomIsolationSupported;
-
+    @Autowired
+    private PersistedJpaBundleProviderFactory myPersistedJpaBundleProviderFactory;
+    @Autowired
+    private IRequestPartitionHelperSvc myRequestPartitionHelperService;
     /**
      * Constructor
      */
@@ -227,7 +233,8 @@ public class LogicaSearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
                     String resourceType = search.getResourceType();
                     SearchParameterMap params = search.getSearchParameterMap().orElseThrow(() -> new IllegalStateException("No map in PASSCOMPLET search"));
                     IFhirResourceDao<?> resourceDao = myDaoRegistry.getResourceDao(resourceType);
-                    SearchContinuationTask task = new SearchContinuationTask(search, resourceDao, params, resourceType, theRequestDetails);
+                    RequestPartitionId requestPartitionId = myRequestPartitionHelperService.determineReadPartitionForRequest(theRequestDetails, resourceType);
+                    SearchContinuationTask task = new SearchContinuationTask(search, resourceDao, params, resourceType, theRequestDetails, requestPartitionId);
                     myIdToSearchTask.put(search.getUuid(), task);
                     FutureTask<Void> futureTask = new FutureTask<Void>(task);
                     Thread searchThread = new Thread(futureTask);
@@ -281,7 +288,7 @@ public class LogicaSearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
 
         if (theParams.isLoadSynchronous() || loadSynchronousUpTo != null) {
             ourLog.debug("Search {} is loading in synchronous mode", searchUuid);
-            return executeQuery(theParams, theRequestDetails, searchUuid, sb, loadSynchronousUpTo);
+            return executeQuery(theResourceType, theParams, theRequestDetails, searchUuid, sb, loadSynchronousUpTo);
         }
 
         /*
@@ -352,7 +359,9 @@ public class LogicaSearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
                 .addIfMatchesType(ServletRequestDetails.class, theRequestDetails);
         JpaInterceptorBroadcaster.doCallHooks(myInterceptorBroadcaster, theRequestDetails, Pointcut.STORAGE_PRESEARCH_REGISTERED, params);
 
-        SearchTask task = new SearchTask(search, theCallingDao, theParams, theResourceType, theRequestDetails);
+        RequestPartitionId requestPartitionId = myRequestPartitionHelperService.determineReadPartitionForRequest(theRequestDetails, theResourceType);
+
+        SearchTask task = new SearchTask(search, theCallingDao, theParams, theResourceType, theRequestDetails, requestPartitionId);
         myIdToSearchTask.put(search.getUuid(), task);
         FutureTask<Void> futureTask = new FutureTask<Void>(task);
         Thread searchThread = new Thread(futureTask);
@@ -426,7 +435,7 @@ public class LogicaSearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
         return searchToUse;
     }
 
-    private IBundleProvider executeQuery(SearchParameterMap theParams, RequestDetails theRequestDetails, String theSearchUuid, ISearchBuilder theSb, Integer theLoadSynchronousUpTo) {
+    private IBundleProvider executeQuery(String theResourceType, SearchParameterMap theParams, RequestDetails theRequestDetails, String theSearchUuid, ISearchBuilder theSb, Integer theLoadSynchronousUpTo) {
         SearchRuntimeDetails searchRuntimeDetails = new SearchRuntimeDetails(theRequestDetails, theSearchUuid);
         searchRuntimeDetails.setLoadSynchronous(true);
 
@@ -438,7 +447,9 @@ public class LogicaSearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
             // Load the results synchronously
             final List<ResourcePersistentId> pids = new ArrayList<>();
 
-            try (IResultIterator resultIter = theSb.createQuery(theParams, searchRuntimeDetails, theRequestDetails, null)) {
+            RequestPartitionId requestPartitionId = myRequestPartitionHelperService.determineReadPartitionForRequest(theRequestDetails, theResourceType);
+
+            try (IResultIterator resultIter = theSb.createQuery(theParams, searchRuntimeDetails, theRequestDetails, requestPartitionId)) {
                 while (resultIter.hasNext()) {
                     pids.add(resultIter.next());
                     if (theLoadSynchronousUpTo != null && pids.size() >= theLoadSynchronousUpTo) {
@@ -580,6 +591,7 @@ public class LogicaSearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
         private final CountDownLatch myCompletionLatch;
         private final ArrayList<ResourcePersistentId> myUnsyncedPids = new ArrayList<>();
         private final RequestDetails myRequest;
+        private final RequestPartitionId myRequestPartitionId;
         private Search mySearch;
         private boolean myAbortRequested;
         private int myCountSavedTotal = 0;
@@ -593,7 +605,7 @@ public class LogicaSearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
         /**
          * Constructor
          */
-        protected SearchTask(Search theSearch, IDao theCallingDao, SearchParameterMap theParams, String theResourceType, RequestDetails theRequest) {
+        protected SearchTask(Search theSearch, IDao theCallingDao, SearchParameterMap theParams, String theResourceType, RequestDetails theRequest, RequestPartitionId theRequestPartitionId) {
             mySearch = theSearch;
             myCallingDao = theCallingDao;
             myParams = theParams;
@@ -601,6 +613,7 @@ public class LogicaSearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
             myCompletionLatch = new CountDownLatch(1);
             mySearchRuntimeDetails = new SearchRuntimeDetails(theRequest, mySearch.getUuid());
             mySearchRuntimeDetails.setQueryString(theParams.toNormalizedQueryString(theCallingDao.getContext()));
+            myRequestPartitionId = theRequestPartitionId;
             myRequest = theRequest;
         }
 
@@ -960,7 +973,7 @@ public class LogicaSearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
             if (wantCount) {
                 ourLog.trace("Performing count");
                 ISearchBuilder sb = newSearchBuilder();
-                Iterator<Long> countIterator = sb.createCountQuery(myParams, mySearch.getUuid(), myRequest, null);
+                Iterator<Long> countIterator = sb.createCountQuery(myParams, mySearch.getUuid(), myRequest, myRequestPartitionId);
                 Long count = countIterator.next();
                 ourLog.trace("Got count {}", count);
 
@@ -1036,7 +1049,7 @@ public class LogicaSearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
             /*
              * Construct the SQL query we'll be sending to the database
              */
-            try (IResultIterator resultIterator = sb.createQuery(myParams, mySearchRuntimeDetails, myRequest, null)) {
+            try (IResultIterator resultIterator = sb.createQuery(myParams, mySearchRuntimeDetails, myRequest, myRequestPartitionId)) {
                 assert (resultIterator != null);
 
                 /*
@@ -1088,8 +1101,8 @@ public class LogicaSearchCoordinatorSvcImpl implements ISearchCoordinatorSvc {
 
     public class SearchContinuationTask extends SearchTask {
 
-        public SearchContinuationTask(Search theSearch, IDao theCallingDao, SearchParameterMap theParams, String theResourceType, RequestDetails theRequest) {
-            super(theSearch, theCallingDao, theParams, theResourceType, theRequest);
+        public SearchContinuationTask(Search theSearch, IDao theCallingDao, SearchParameterMap theParams, String theResourceType, RequestDetails theRequest, RequestPartitionId theRequestPartitionId) {
+            super(theSearch, theCallingDao, theParams, theResourceType, theRequest, theRequestPartitionId);
         }
 
         @Override
