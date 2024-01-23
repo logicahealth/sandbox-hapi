@@ -1,7 +1,9 @@
 package org.hspconsortium.platform.api.search;
 
+import ca.uhn.fhir.jpa.entity.TermCodeSystem;
 import ca.uhn.fhir.jpa.entity.TermConcept;
 import ca.uhn.fhir.jpa.entity.TermConceptParentChildLink;
+import ca.uhn.fhir.jpa.model.entity.ResourceTable;
 import ca.uhn.fhir.jpa.term.api.ITermDeferredStorageSvc;
 import org.hl7.fhir.r4.model.ConceptMap;
 import org.hl7.fhir.r4.model.ValueSet;
@@ -41,6 +43,26 @@ public class MockDstu2TermDeferredStorageSvc implements ITermDeferredStorageSvc 
 
     @Override
     public void addValueSetsToStorageQueue(List<ValueSet> theValueSets) {
+        throw new UnsupportedOperationException("This class is not implemented in DSTU2");
+    }
+
+    @Override
+    public void deleteCodeSystem(TermCodeSystem termCodeSystem) {
+        throw new UnsupportedOperationException("This class is not implemented in DSTU2");
+    }
+
+    @Override
+    public void deleteCodeSystemForResource(ResourceTable resourceTable) {
+        throw new UnsupportedOperationException("This class is not implemented in DSTU2");
+    }
+
+    @Override
+    public void saveAllDeferred() {
+        throw new UnsupportedOperationException("This class is not implemented in DSTU2");
+    }
+
+    @Override
+    public void logQueueForUnitTest() {
         throw new UnsupportedOperationException("This class is not implemented in DSTU2");
     }
 }
