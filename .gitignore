@@ -13,6 +13,9 @@
 .DS_Store
 .idea
 
+# VS Code
+.vscode
+
 # maven
 target
 overlays
@@ -22,6 +25,7 @@ hs_err_pid*
 
 *.retry
 ops/
+
 
 # docker target folder
 docker/target
