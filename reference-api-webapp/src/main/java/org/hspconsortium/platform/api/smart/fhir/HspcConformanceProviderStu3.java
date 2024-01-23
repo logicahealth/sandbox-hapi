@@ -20,15 +20,15 @@
 
 package org.hspconsortium.platform.api.smart.fhir;
 
-import ca.uhn.fhir.jpa.dao.DaoConfig;
-import ca.uhn.fhir.jpa.dao.IFhirSystemDao;
+import ca.uhn.fhir.jpa.api.config.DaoConfig;
+import ca.uhn.fhir.jpa.api.dao.IFhirSystemDao;
 import ca.uhn.fhir.jpa.provider.dstu3.JpaConformanceProviderDstu3;
+import ca.uhn.fhir.jpa.searchparam.registry.ISearchParamRegistry;
 import ca.uhn.fhir.rest.api.server.RequestDetails;
 import ca.uhn.fhir.rest.server.RestfulServer;
 import org.hl7.fhir.dstu3.model.Bundle;
 import org.hl7.fhir.dstu3.model.CapabilityStatement;
 import org.hl7.fhir.dstu3.model.Meta;
-import org.hspconsortium.platform.api.smart.fhir.MetadataRepositoryStu3;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -36,8 +36,8 @@ public class HspcConformanceProviderStu3 extends JpaConformanceProviderDstu3 {
 
     private MetadataRepositoryStu3 metadataRepository;
 
-    public HspcConformanceProviderStu3(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, Meta> theSystemDao, DaoConfig theDaoConfig, MetadataRepositoryStu3 metadataRepository) {
-        super(theRestfulServer, theSystemDao, theDaoConfig);
+    public HspcConformanceProviderStu3(RestfulServer theRestfulServer, IFhirSystemDao<Bundle, Meta> theSystemDao, DaoConfig theDaoConfig, MetadataRepositoryStu3 metadataRepository, ISearchParamRegistry theSearchParamRegistry) {
+        super(theRestfulServer, theSystemDao, theDaoConfig, theSearchParamRegistry);
         this.metadataRepository = metadataRepository;
     }
 
