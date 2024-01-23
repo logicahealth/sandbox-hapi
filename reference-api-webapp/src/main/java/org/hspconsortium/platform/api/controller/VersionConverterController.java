@@ -116,42 +116,42 @@ public class VersionConverterController {
     private void convert(String resourceString, String resourceName, String authToken) {
         if (resourceName.equals("Patient")) {
             org.hl7.fhir.dstu3.model.Patient input = parser.parseResource(org.hl7.fhir.dstu3.model.Patient.class, resourceString);
-            var output = converter.convertResource(input, false);
+            org.hl7.fhir.r4.model.Patient output = converter.convertPatient(input);
             uploadProfile(resourceName, FhirContext.forR4().newJsonParser().encodeResourceToString(output), output.getId().split("/")[1], authToken);
         }
         if (resourceName.equals("Practitioner")) {
             org.hl7.fhir.dstu3.model.Practitioner input = parser.parseResource(org.hl7.fhir.dstu3.model.Practitioner.class, resourceString);
-            var output = converter.convertResource(input, false);
+            org.hl7.fhir.r4.model.Practitioner output = converter.convertPractitioner(input);
             uploadProfile(resourceName, FhirContext.forR4().newJsonParser().encodeResourceToString(output), output.getId().split("/")[1], authToken);
         }
         if (resourceName.equals("AllergyIntolerance")) {
             org.hl7.fhir.dstu3.model.AllergyIntolerance input = parser.parseResource(org.hl7.fhir.dstu3.model.AllergyIntolerance.class, resourceString);
-            var output = converter.convertResource(input, false);
+            org.hl7.fhir.r4.model.AllergyIntolerance output = converter.convertAllergyIntolerance(input);
             uploadProfile(resourceName, FhirContext.forR4().newJsonParser().encodeResourceToString(output), output.getId().split("/")[1], authToken);
         }
         if (resourceName.equals("Binary")) {
             org.hl7.fhir.dstu3.model.Binary input = parser.parseResource(org.hl7.fhir.dstu3.model.Binary.class, resourceString);
-            var output = converter.convertResource(input, false);
+            org.hl7.fhir.r4.model.Binary output = converter.convertBinary(input);
             uploadProfile(resourceName, FhirContext.forR4().newJsonParser().encodeResourceToString(output), output.getId(), authToken);
         }
         if (resourceName.equals("Condition")) {
             org.hl7.fhir.dstu3.model.Condition input = parser.parseResource(org.hl7.fhir.dstu3.model.Condition.class, resourceString);
-            var output = converter.convertResource(input, false);
+            org.hl7.fhir.r4.model.Condition output = converter.convertCondition(input);
             uploadProfile(resourceName, FhirContext.forR4().newJsonParser().encodeResourceToString(output), output.getId().split("/")[1], authToken);
         }
         if (resourceName.equals("DocumentReference")) {
             org.hl7.fhir.dstu3.model.DocumentReference input = parser.parseResource(org.hl7.fhir.dstu3.model.DocumentReference.class, resourceString);
-            var output = converter.convertResource(input, false);
+            org.hl7.fhir.r4.model.DocumentReference output = converter.convertDocumentReference(input);
             uploadProfile(resourceName, FhirContext.forR4().newJsonParser().encodeResourceToString(output), output.getId().split("/")[1], authToken);
         }
         if (resourceName.equals("Encounter")) {
             org.hl7.fhir.dstu3.model.Encounter input = parser.parseResource(org.hl7.fhir.dstu3.model.Encounter.class, resourceString);
-            var output = converter.convertResource(input, false);
+            org.hl7.fhir.r4.model.Encounter output = converter.convertEncounter(input);
             uploadProfile(resourceName, FhirContext.forR4().newJsonParser().encodeResourceToString(output), output.getId().split("/")[1], authToken);
         }
         if (resourceName.equals("FamilyMemberHistory")) {
             org.hl7.fhir.dstu3.model.FamilyMemberHistory input = parser.parseResource(org.hl7.fhir.dstu3.model.FamilyMemberHistory.class, resourceString);
-            var output = converter.convertResource(input, false);
+            org.hl7.fhir.r4.model.FamilyMemberHistory output = converter.convertFamilyMemberHistory(input);
             uploadProfile(resourceName, FhirContext.forR4().newJsonParser().encodeResourceToString(output), output.getId().split("/")[1], authToken);
         }
         if (resourceName.equals("ImagingStudy")) {
@@ -161,27 +161,27 @@ public class VersionConverterController {
         }
         if (resourceName.equals("Immunization")) {
             org.hl7.fhir.dstu3.model.Immunization input = parser.parseResource(org.hl7.fhir.dstu3.model.Immunization.class, resourceString);
-            var output = converter.convertResource(input, false);
+            org.hl7.fhir.r4.model.Immunization output = converter.convertImmunization(input);
             uploadProfile(resourceName, FhirContext.forR4().newJsonParser().encodeResourceToString(output), output.getId().split("/")[1], authToken);
         }
         if (resourceName.equals("List")) {
             org.hl7.fhir.dstu3.model.ListResource input = parser.parseResource(org.hl7.fhir.dstu3.model.ListResource.class, resourceString);
-            var output = converter.convertResource(input, false);
+            org.hl7.fhir.r4.model.ListResource output = converter.convertList(input);
             uploadProfile(resourceName, FhirContext.forR4().newJsonParser().encodeResourceToString(output), output.getId().split("/")[1], authToken);
         }
         if (resourceName.equals("MedicationDispense")) {
             org.hl7.fhir.dstu3.model.MedicationDispense input = parser.parseResource(org.hl7.fhir.dstu3.model.MedicationDispense.class, resourceString);
-            var output = converter.convertResource(input, false);
+            org.hl7.fhir.r4.model.MedicationDispense output = converter.convertMedicationDispense(input);
             uploadProfile(resourceName, FhirContext.forR4().newJsonParser().encodeResourceToString(output), output.getId().split("/")[1], authToken);
         }
         if (resourceName.equals("MedicationRequest")) {
             org.hl7.fhir.dstu3.model.MedicationRequest input = parser.parseResource(org.hl7.fhir.dstu3.model.MedicationRequest.class, resourceString);
-            var output = converter.convertResource(input, false);
+            org.hl7.fhir.r4.model.MedicationRequest output = converter.convertMedicationRequest(input);
             uploadProfile(resourceName, FhirContext.forR4().newJsonParser().encodeResourceToString(output), output.getId().split("/")[1], authToken);
         }
         if (resourceName.equals("Observation")) {
             org.hl7.fhir.dstu3.model.Observation input = parser.parseResource(org.hl7.fhir.dstu3.model.Observation.class, resourceString);
-            var output = converter.convertResource(input, false);
+            org.hl7.fhir.r4.model.Observation output = converter.convertObservation(input);
             uploadProfile(resourceName, FhirContext.forR4().newJsonParser().encodeResourceToString(output), output.getId().split("/")[1], authToken);
         }
         if (resourceName.equals("Procedure")) {

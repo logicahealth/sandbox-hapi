@@ -5,6 +5,7 @@ package ca.uhn.fhir.rest.server.method;
  * HAPI FHIR - Server Framework
  * %%
  * Copyright (C) 2014 - 2020 University Health Network
+ * Copyright (C) 2020 - Logica Health
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +108,7 @@ public class ConformanceMethodBinding extends BaseResourceReturningMethodBinding
 
         var cacheControlHeaders = theRequest.getHeaders(Constants.HEADER_CACHE_CONTROL);
         cacheControlHeaders.add("no-cache");
-        CacheControlDirective cacheControlDirective = new CacheControlDirective().parse(theRequest.getHeaders(Constants.HEADER_CACHE_CONTROL));
+        CacheControlDirective cacheControlDirective = new CacheControlDirective().parse(cacheControlHeaders);
 
         if (cacheControlDirective.isNoCache())
             conf = null;
@@ -154,25 +155,25 @@ public class ConformanceMethodBinding extends BaseResourceReturningMethodBinding
     }
 
     @Override
-    public MethodMatchEnum incomingServerRequestMatchesMethod(RequestDetails theRequest) {
+    public boolean incomingServerRequestMatchesMethod(RequestDetails theRequest) {
         if (theRequest.getRequestType() == RequestTypeEnum.OPTIONS) {
             if (theRequest.getOperation() == null && theRequest.getResourceName() == null) {
-                return MethodMatchEnum.EXACT;
+                return true;
             }
         }
 
         if (theRequest.getResourceName() != null) {
-            return MethodMatchEnum.NONE;
+            return false;
         }
 
         if ("metadata".equals(theRequest.getOperation())) {
             if (theRequest.getRequestType() == RequestTypeEnum.GET) {
-                return MethodMatchEnum.EXACT;
+                return true;
             }
             throw new MethodNotAllowedException("/metadata request must use HTTP GET", RequestTypeEnum.GET);
         }
 
-        return MethodMatchEnum.NONE;
+        return false;
     }
 
     @Nonnull

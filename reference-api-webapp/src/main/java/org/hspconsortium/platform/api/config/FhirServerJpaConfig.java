@@ -20,11 +20,9 @@
 
 package org.hspconsortium.platform.api.config;
 
-import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.interceptor.api.IInterceptorBroadcaster;
-import ca.uhn.fhir.jpa.api.config.DaoConfig;
-import ca.uhn.fhir.jpa.api.dao.DaoRegistry;
-import ca.uhn.fhir.jpa.config.HapiFhirLocalContainerEntityManagerFactoryBean;
+import ca.uhn.fhir.jpa.dao.DaoConfig;
+import ca.uhn.fhir.jpa.dao.DaoRegistry;
 import ca.uhn.fhir.jpa.interceptor.CascadingDeleteInterceptor;
 import ca.uhn.fhir.jpa.model.entity.ModelConfig;
 import ca.uhn.fhir.rest.server.interceptor.LoggingInterceptor;
@@ -38,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowire;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Primary;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -55,9 +52,6 @@ public class FhirServerJpaConfig {
     @Autowired
     private DataSourceRepository dataSourceRepository;
 
-    @Autowired
-    @SuppressWarnings("SpringJavaInjectionPointsAutowiringInspection")
-    private FhirContext fhirContext;
     /**
      * Configure FHIR properties around the the JPA server via this bean
      */
@@ -71,7 +65,6 @@ public class FhirServerJpaConfig {
         retVal.setReuseCachedSearchResultsForMillis(null);
         retVal.setAllowContainsSearches(true);
         retVal.setExpungeEnabled(true);
-        retVal.setUseLegacySearchBuilder(true);
         return retVal;
     }
 
@@ -80,21 +73,17 @@ public class FhirServerJpaConfig {
         return daoConfig().getModelConfig();
     }
 
-    @Bean
-    public HapiFhirLocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, MultiTenantConnectionProvider multiTenantConnectionProvider, CurrentTenantIdentifierResolver currentTenantIdentifierResolver) {
-        var retVal = new HapiFhirLocalContainerEntityManagerFactoryBean();
-        setLocalContainerEntityManagerFactoryBeanProperties(retVal, dataSource, multiTenantConnectionProvider, currentTenantIdentifierResolver);
-        return retVal;
-    }
-
-    private void setLocalContainerEntityManagerFactoryBeanProperties(LocalContainerEntityManagerFactoryBean bean, DataSource dataSource, MultiTenantConnectionProvider multiTenantConnectionProvider, CurrentTenantIdentifierResolver currentTenantIdentifierResolver) {
-        bean.setPersistenceUnitName("HAPI_PU");
-        bean.setDataSource(dataSource);
+    @Bean()
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory(DataSource dataSource, MultiTenantConnectionProvider multiTenantConnectionProvider, CurrentTenantIdentifierResolver currentTenantIdentifierResolver) {
+        LocalContainerEntityManagerFactoryBean retVal = new LocalContainerEntityManagerFactoryBean();
+        retVal.setPersistenceUnitName("HAPI_PU");
+        retVal.setDataSource(dataSource);
         String[] packageLocations = {"ca.uhn.fhir.jpa.entity", "ca.uhn.fhir.jpa.model.entity"};
-        bean.setPackagesToScan(packageLocations);
-        bean.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
-        bean.setJpaProperties(jpaProperties(multiTenantConnectionProvider, currentTenantIdentifierResolver));
-        bean.afterPropertiesSet();
+        retVal.setPackagesToScan(packageLocations);
+        retVal.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+        retVal.setJpaProperties(jpaProperties(multiTenantConnectionProvider, currentTenantIdentifierResolver));
+        retVal.afterPropertiesSet();
+        return retVal;
     }
 
     @Bean
@@ -104,7 +93,7 @@ public class FhirServerJpaConfig {
 
     private Properties jpaProperties(MultiTenantConnectionProvider multiTenantConnectionProvider, CurrentTenantIdentifierResolver currentTenantIdentifierResolver) {
         Properties extraProperties = new Properties();
-        extraProperties.put("hibernate.dialect", org.hibernate.dialect.MySQL57Dialect.class.getName());
+        extraProperties.put("hibernate.dialect", org.hibernate.dialect.MySQL5Dialect.class.getName());
         extraProperties.put("hibernate.format_sql", "true");
         extraProperties.put("hibernate.show_sql", "false");
         extraProperties.put("hibernate.hbm2ddl.auto", "none");
@@ -147,8 +136,7 @@ public class FhirServerJpaConfig {
         return retVal;
     }
 
-    @Bean("hapiTransactionManager")
-    @Primary
+    @Bean()
     public JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
         JpaTransactionManager retVal = new JpaTransactionManager();
         retVal.setEntityManagerFactory(entityManagerFactory);
@@ -157,7 +145,6 @@ public class FhirServerJpaConfig {
 
     @Bean
     public CascadingDeleteInterceptor cascadingDeleteInterceptor (DaoRegistry theDaoRegistry, IInterceptorBroadcaster theInterceptorBroadcaster) {
-        return new CascadingDeleteInterceptor(fhirContext, theDaoRegistry, theInterceptorBroadcaster);
+        return new CascadingDeleteInterceptor(theDaoRegistry, theInterceptorBroadcaster);
     }
-
 }

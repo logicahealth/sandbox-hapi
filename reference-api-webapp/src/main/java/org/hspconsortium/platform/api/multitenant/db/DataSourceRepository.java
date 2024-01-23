@@ -111,7 +111,6 @@ public class DataSourceRepository {
             config.setIdleTimeout(idleTimeout);
             config.setConnectionTimeout(connectionTimeout);
             config.setLeakDetectionThreshold(leakDetectionThreshold);
-            config.setPoolName("HikariPool-Default");
 
             defaultDataSource = new HikariDataSource(config);
         }
@@ -186,7 +185,6 @@ public class DataSourceRepository {
         config.setIdleTimeout(idleTimeout);
         config.setConnectionTimeout(connectionTimeout);
         config.setLeakDetectionThreshold(leakDetectionThreshold);
-        config.setPoolName("HikariPool-" + tenant);
 
         loadIndexFiles();
 
